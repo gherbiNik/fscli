@@ -1,5 +1,8 @@
 package ch.supsi.fscli.frontend;
 
+import ch.supsi.fscli.frontend.controller.PreferenceController;
+import ch.supsi.fscli.frontend.model.PreferenceModel;
+import ch.supsi.fscli.frontend.view.PreferenceView;
 import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -29,8 +32,23 @@ public class MainFx extends Application {
     private final TextArea outputView;
     private final TextArea logView;
 
+
+    private final PreferenceView preferenceView;
+    private final PreferenceController preferenceController;
+    private final PreferenceModel preferenceModel;
+
     public MainFx() {
         this.applicationTitle = "filesystem command interpreter simulator";
+
+        // MODEL
+        this.preferenceModel = PreferenceModel.getInstance();
+
+        // CONTROLLER
+        this.preferenceController = PreferenceController.getInstance(preferenceModel);
+
+        // VIEW
+        this.preferenceView = PreferenceView.getInstance(preferenceController);
+
 
         // FILE MENU
         MenuItem newMenuItem = new MenuItem("New");
@@ -61,6 +79,7 @@ public class MainFx extends Application {
         // EDIT MENU
         MenuItem preferencesMenuItem = new MenuItem("Preferences...");
         preferencesMenuItem.setId("preferencesMenuItem");
+        preferencesMenuItem.setOnAction(event -> preferenceView.showView());
 
         this.editMenu = new Menu("Edit");
         this.editMenu.setId("editMenu");

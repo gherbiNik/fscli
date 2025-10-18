@@ -1,4 +1,4 @@
 package ch.supsi.fscli.backend.dataAccess;
 
-public class rpova {
+public interface IPreferenceDAO {
 }

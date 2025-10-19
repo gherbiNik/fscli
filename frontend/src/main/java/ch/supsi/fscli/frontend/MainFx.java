@@ -1,5 +1,8 @@
 package ch.supsi.fscli.frontend;
 
+import ch.supsi.fscli.backend.application.PreferenceApplication;
+import ch.supsi.fscli.backend.business.PreferenceBusiness;
+import ch.supsi.fscli.backend.dataAccess.PreferenceDAO;
 import ch.supsi.fscli.frontend.controller.PreferenceController;
 import ch.supsi.fscli.frontend.model.PreferenceModel;
 import ch.supsi.fscli.frontend.view.PreferenceView;
@@ -36,18 +39,35 @@ public class MainFx extends Application {
     private final PreferenceView preferenceView;
     private final PreferenceController preferenceController;
     private final PreferenceModel preferenceModel;
+    private final PreferenceApplication preferenceApplication;
+    private final PreferenceDAO preferenceDAO;
+    private final PreferenceBusiness preferenceBusiness;
+
 
     public MainFx() {
         this.applicationTitle = "filesystem command interpreter simulator";
 
+        // DAO
+        this.preferenceDAO = PreferenceDAO.getInstance();
+
+        // BUSINESS
+        this.preferenceBusiness = PreferenceBusiness.getInstance(preferenceDAO);
+
+        // APPLICATION
+        this.preferenceApplication = PreferenceApplication.getInstance(preferenceBusiness);
+
         // MODEL
-        this.preferenceModel = PreferenceModel.getInstance();
+        this.preferenceModel = PreferenceModel.getInstance(preferenceApplication);
 
         // CONTROLLER
         this.preferenceController = PreferenceController.getInstance(preferenceModel);
 
         // VIEW
         this.preferenceView = PreferenceView.getInstance(preferenceController);
+
+
+
+
 
 
         // FILE MENU

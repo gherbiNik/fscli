@@ -19,5 +19,15 @@ public class PreferenceController implements IPreferenceController {
         this.preferenceModel = preferenceModel;
     }
 
+    @Override
+    public void setPreferences(String value, Object object) {
+        this.preferenceModel.setPreferences(value, object);
+    }
+
+    @Override
+    public Object getPreferences(String value) {
+        return this.preferenceModel.getPreferences(value);
+    }
+
 
 }

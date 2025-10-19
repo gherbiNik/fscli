@@ -28,7 +28,7 @@ public class PreferenceModel implements IPreferenceModel{
     }
 
     @Override
-    public Object getPreferences(String key) {
+    public String getPreferences(String key) {
         return preferenceApplication.getPreference(key);
     }
 

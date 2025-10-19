@@ -35,7 +35,7 @@ public class PreferenceDAO implements IPreferenceDAO {
     }
 
     private boolean preferencesFileExists() {
-        return Files.exists(this.getpreferencesFilePath());
+        return Files.exists(this.getPreferencesFilePath());
     }
 
     private Path createPreferencesDirectory() {
@@ -47,7 +47,7 @@ public class PreferenceDAO implements IPreferenceDAO {
         }
     }
 
-    private Path getpreferencesFilePath() {
+    private Path getPreferencesFilePath() {
         return Path.of(userHomeDirectory, preferencesDirectory, preferencesFile);
     }
 
@@ -65,7 +65,7 @@ public class PreferenceDAO implements IPreferenceDAO {
         if (!preferencesFileExists()) {
             try {
                 // create user preferences file (with default preferences)
-                try (FileOutputStream outputStream = new FileOutputStream(this.getpreferencesFilePath().toFile())) {
+                try (FileOutputStream outputStream = new FileOutputStream(this.getPreferencesFilePath().toFile())) {
                     defaultPreferences.store(outputStream, "User Preferences");
                 }
                 return true;
@@ -106,28 +106,35 @@ public class PreferenceDAO implements IPreferenceDAO {
         return preferences;
     }
 
+
     @Override
     public Properties getPreferences() {
+        // Se le preferenze sono già caricate in memoria, restituiscile
         if (preferences != null) {
             return preferences;
         }
 
-        // Always try to load from the user preferences file path first
-        preferences = this.loadPreferences(this.getpreferencesFilePath());
-        if (preferences != null) {
-            return preferences;
-        }
+        // Prova a caricare il file delle preferenze esistente
+        preferences = this.loadPreferences(this.getPreferencesFilePath());
 
-        // If user preferences file doesn't exist or failed to load,
-        // load default preferences and create the user file
-        Properties defaultPreferences = this.loadDefaultPreferences();
+        // Se il caricamento fallisce (es. il file non esiste), crealo
+        if (preferences == null) {
+            System.out.println("File delle preferenze non trovato. Verrà creato con i valori di default.");
 
-        // Create the user preferences file with default values
-        if (this.createPreferencesFile(defaultPreferences)) {
-            preferences = defaultPreferences;
-        } else {
-            // If file creation fails, still use the default preferences
-            preferences = defaultPreferences;
+            // Carica i valori di default in un oggetto Properties
+            Properties defaultPreferences = this.loadDefaultPreferences();
+
+            // Usa il tuo metodo (precedentemente non utilizzato) per creare directory e file
+            boolean isFileCreated = this.createPreferencesFile(defaultPreferences);
+
+            if (isFileCreated) {
+                // Se la creazione ha successo, usa queste preferenze
+                preferences = defaultPreferences;
+            } else {
+                // Altrimenti, usa le preferenze di default solo in memoria come fallback
+                System.err.println("ERRORE: Impossibile creare il file delle preferenze. Verranno usate le impostazioni di default solo per questa sessione.");
+                return defaultPreferences;
+            }
         }
 
         return preferences;

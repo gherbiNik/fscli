@@ -4,6 +4,6 @@ import java.nio.file.Path;
 
 public interface IPreferenceModel {
     void setPreferences(String value, Object object);
-    Object getPreferences(String key);
+    String getPreferences(String key);
     Path getUserPreferencesDirectoryPath();
 }

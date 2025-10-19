@@ -79,7 +79,7 @@ public class PreferenceView implements ShowView {
 
         // 2. Colonne Command Line
 
-        columnsSpinner = new Spinner<>(40, 200, 80); // min, max, initial
+        columnsSpinner = new Spinner<>(40, 100, 80); // min, max, initial
         grid.add(new Label("Numero di colonne (caratteri):"), 0, 1);
         grid.add(columnsSpinner, 1, 1);
 
@@ -123,13 +123,13 @@ public class PreferenceView implements ShowView {
     }
 
     private void loadCurrentPreferences(ComboBox<String> languageComboBox, Spinner<Integer> columnsSpinner, Spinner<Integer> outputLinesSpinner, Spinner<Integer> logLinesSpinner, ComboBox<String> commandLineFontComboBox, ComboBox<String> outputAreaFontComboBox, ComboBox<String> logAreaFontComboBox) {
-        languageComboBox.setValue((String) controller.getPreferences("language-tag"));
-        columnsSpinner.getValueFactory().setValue((Integer) controller.getPreferences("column"));
-        outputLinesSpinner.getValueFactory().setValue((Integer) controller.getPreferences("output-area-row"));
-        logLinesSpinner.getValueFactory().setValue((Integer) controller.getPreferences("log-area-row"));
-        commandLineFontComboBox.setValue((String) controller.getPreferences("font-command-line"));
-        outputAreaFontComboBox.setValue((String) controller.getPreferences("font-output-area"));
-        logAreaFontComboBox.setValue((String) controller.getPreferences("font-log-area"));
+        languageComboBox.setValue(controller.getPreferences("language-tag"));
+        columnsSpinner.getValueFactory().setValue(Integer.parseInt(controller.getPreferences("column")));
+        outputLinesSpinner.getValueFactory().setValue(Integer.parseInt(controller.getPreferences("output-area-row")));
+        logLinesSpinner.getValueFactory().setValue(Integer.parseInt(controller.getPreferences("log-area-row")));
+        commandLineFontComboBox.setValue(controller.getPreferences("font-command-line"));
+        outputAreaFontComboBox.setValue(controller.getPreferences("font-output-area"));
+        logAreaFontComboBox.setValue(controller.getPreferences("font-log-area"));
     }
 
     @Override

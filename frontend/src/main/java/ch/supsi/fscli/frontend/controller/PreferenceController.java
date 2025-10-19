@@ -25,7 +25,7 @@ public class PreferenceController implements IPreferenceController {
     }
 
     @Override
-    public Object getPreferences(String value) {
+    public String getPreferences(String value) {
         return this.preferenceModel.getPreferences(value);
     }
 

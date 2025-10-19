@@ -5,6 +5,8 @@ import ch.supsi.fscli.backend.business.PreferenceBusiness;
 import ch.supsi.fscli.backend.dataAccess.PreferenceDAO;
 import ch.supsi.fscli.frontend.controller.PreferenceController;
 import ch.supsi.fscli.frontend.model.PreferenceModel;
+import ch.supsi.fscli.frontend.view.CreditsView;
+import ch.supsi.fscli.frontend.view.HelpView;
 import ch.supsi.fscli.frontend.view.PreferenceView;
 import javafx.application.Application;
 import javafx.geometry.Insets;
@@ -42,7 +44,8 @@ public class MainFx extends Application {
     private final PreferenceApplication preferenceApplication;
     private final PreferenceDAO preferenceDAO;
     private final PreferenceBusiness preferenceBusiness;
-
+    private final HelpView helpView;
+    private final CreditsView creditsView;
 
     public MainFx() {
         this.applicationTitle = "filesystem command interpreter simulator";
@@ -64,10 +67,8 @@ public class MainFx extends Application {
 
         // VIEW
         this.preferenceView = PreferenceView.getInstance(preferenceController);
-
-
-
-
+        this.helpView = HelpView.getInstance();
+        this.creditsView = CreditsView.getInstance();
 
 
         // FILE MENU
@@ -108,9 +109,12 @@ public class MainFx extends Application {
         // HELP MENU
         MenuItem helpMenuItem = new MenuItem("Help");
         helpMenuItem.setId("helpMenuItem");
+        helpMenuItem.setOnAction(event -> helpView.showView());
 
+        // CREDITS MENU
         MenuItem aboutMenuItem = new MenuItem("About");
         aboutMenuItem.setId("aboutMenuItem");
+        aboutMenuItem.setOnAction(event -> creditsView.showView());
 
         this.helpMenu = new Menu("Help");
         this.helpMenu.setId("helpMenu");

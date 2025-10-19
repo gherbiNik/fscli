@@ -14,7 +14,7 @@ public class HelpView implements ShowView{
 
     private Stage stage = new Stage();
 
-    public static ShowView getInstance(){
+    public static HelpView getInstance(){
         if(instance == null){
             instance = new HelpView();
             instance.initialize();
@@ -26,7 +26,7 @@ public class HelpView implements ShowView{
     private void initialize() {
     }
 
-    public HelpView() {
+    private HelpView() {
         initializeUI();
     }
 

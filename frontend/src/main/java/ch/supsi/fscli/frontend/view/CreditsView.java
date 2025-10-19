@@ -13,7 +13,7 @@ public class CreditsView implements ShowView {
     private static CreditsView instance;
     private Stage stage;
 
-    public static ShowView getInstance() {
+    public static CreditsView getInstance() {
         if (instance == null) {
             instance = new CreditsView();
         }

@@ -21,7 +21,7 @@ public class PreferenceApplication implements IPreferenceApplication{
     }
 
     @Override
-    public Object getPreference(String key) {
+    public String getPreference(String key) {
         return this.preferenceBusiness.getPreference(key);
     }
 

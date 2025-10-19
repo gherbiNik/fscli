@@ -35,16 +35,15 @@ public class PreferenceBusiness implements IPreferenceBusiness{
     }
 
     @Override
-    public Object getPreference(String key) {
-        if (key == null || key.isEmpty()) {
+    public String getPreference(String key) {
+        if (key == null || key.isEmpty() || userPreferences == null) {
             return null;
         }
 
-        if (userPreferences == null) {
-            return null;
-        }
+        Object value = userPreferences.get(key);
 
-        return userPreferences.get(key);
+
+        return (value != null) ? value.toString() : null;
     }
 
     @Override

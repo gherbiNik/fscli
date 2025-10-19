@@ -118,17 +118,9 @@ public class PreferenceDAO implements IPreferenceDAO {
             return preferences;
         }
 
-        // If user preferences file doesn't exist or failed to load,
-        // load default preferences and create the user file
-        Properties defaultPreferences = this.loadDefaultPreferences();
 
         // Create the user preferences file with default values
-        if (this.createPreferencesFile(defaultPreferences)) {
-            preferences = defaultPreferences;
-        } else {
-            // If file creation fails, still use the default preferences
-            preferences = defaultPreferences;
-        }
+        preferences = this.loadDefaultPreferences();
 
         return preferences;
     }

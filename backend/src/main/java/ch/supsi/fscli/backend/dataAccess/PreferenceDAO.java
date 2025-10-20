@@ -8,12 +8,14 @@ import java.nio.file.Path;
 import java.util.Properties;
 
 public class PreferenceDAO implements IPreferenceDAO {
-    private static final String userHomeDirectory = System.getProperty("user.home");
+    private static String userHomeDirectory = System.getProperty("user.home");
     private static final String preferencesDirectory = ".fscli";
     private static final String preferencesFile = "preferences.properties";
     
     private static PreferenceDAO instance;
-    private static Properties preferences;
+    private Properties preferences;
+
+    private PreferenceDAO() {}
     
     public static PreferenceDAO getInstance() {
         if (instance == null) {
@@ -22,7 +24,7 @@ public class PreferenceDAO implements IPreferenceDAO {
         return instance;
     }
 
-    private Path getUserPreferencesFilePath() {
+    public Path getUserPreferencesFilePath() {
         return Path.of(userHomeDirectory, preferencesDirectory, preferencesFile);
     }
 
@@ -141,9 +143,9 @@ public class PreferenceDAO implements IPreferenceDAO {
     }
 
     @Override
-    public void setPreference(String key, String string) {
+    public void setPreference(String key, String value) {
 
-        getPreferences().setProperty(key, string);
+        getPreferences().setProperty(key, value);
 
         savePreferences();
     }

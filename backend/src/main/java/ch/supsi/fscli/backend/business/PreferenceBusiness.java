@@ -9,8 +9,9 @@ public class PreferenceBusiness implements IPreferenceBusiness{
     private static PreferenceBusiness instance;
 
     private IPreferenceDAO preferencesDao;
-
     private Properties userPreferences;
+
+    private PreferenceBusiness() {}
 
 
     public static PreferenceBusiness getInstance(IPreferenceDAO preferencesDao) {
@@ -46,8 +47,8 @@ public class PreferenceBusiness implements IPreferenceBusiness{
     }
 
     @Override
-    public void setPreference(String key, Object value) {
-        this.preferencesDao.setPreference(key, value.toString());
+    public void setPreference(String key, String value) {
+        this.preferencesDao.setPreference(key, value);
     }
 
     @Override

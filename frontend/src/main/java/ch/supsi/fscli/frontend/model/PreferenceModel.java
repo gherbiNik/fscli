@@ -10,6 +10,8 @@ public class PreferenceModel implements IPreferenceModel{
     private static PreferenceModel instance;
     private IPreferenceApplication preferenceApplication;
 
+    private PreferenceModel() {}
+
     public static PreferenceModel getInstance(IPreferenceApplication preferenceApplication) {
         if (instance == null) {
             instance = new PreferenceModel();
@@ -23,8 +25,8 @@ public class PreferenceModel implements IPreferenceModel{
     }
 
     @Override
-    public void setPreferences(String value, Object object) {
-        preferenceApplication.setPreference(value, object);
+    public void setPreferences(String key, String value) {
+        preferenceApplication.setPreference(key, value);
     }
 
     @Override

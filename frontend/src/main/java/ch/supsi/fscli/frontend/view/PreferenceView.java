@@ -51,7 +51,7 @@ public class PreferenceView implements ShowView {
 
     }
 
-    public PreferenceView() {
+    private PreferenceView() {
         initializeUI();
 
     }
@@ -110,7 +110,18 @@ public class PreferenceView implements ShowView {
 
         // Sezione Pulsanti
         saveButton = new Button("Salva");
+
+        saveButton.setOnAction(e -> {
+            savePreferences(languageComboBox,columnsSpinner,outputLinesSpinner, logLinesSpinner, commandLineFontComboBox,outputAreaFontComboBox, logAreaFontComboBox);
+            closeView();
+        });
+
         cancelButton = new Button("Annulla");
+
+        cancelButton.setOnAction(e -> {
+            closeView();
+        });
+
         HBox buttonBox = new HBox(10, saveButton, cancelButton);
         buttonBox.setAlignment(javafx.geometry.Pos.CENTER_RIGHT);
 
@@ -120,6 +131,16 @@ public class PreferenceView implements ShowView {
         Scene scene = new Scene(mainLayout, 500, 400);
         stage.setScene(scene);
 
+    }
+
+    private void savePreferences(ComboBox<String> languageComboBox, Spinner<Integer> columnsSpinner, Spinner<Integer> outputLinesSpinner, Spinner<Integer> logLinesSpinner, ComboBox<String> commandLineFontComboBox, ComboBox<String> outputAreaFontComboBox, ComboBox<String> logAreaFontComboBox) {
+        controller.setPreferences("language-tag", languageComboBox.getValue());
+        controller.setPreferences("column", columnsSpinner.getValueFactory().getValue().toString());
+        controller.setPreferences("output-area-row", outputLinesSpinner.getValueFactory().getValue().toString());
+        controller.setPreferences("log-area-row", logLinesSpinner.getValueFactory().getValue().toString());
+        controller.setPreferences("font-command-line", commandLineFontComboBox.getValue());
+        controller.setPreferences("font-output-area", outputAreaFontComboBox.getValue());
+        controller.setPreferences("font-log-area", logAreaFontComboBox.getValue());
     }
 
     private void loadCurrentPreferences(ComboBox<String> languageComboBox, Spinner<Integer> columnsSpinner, Spinner<Integer> outputLinesSpinner, Spinner<Integer> logLinesSpinner, ComboBox<String> commandLineFontComboBox, ComboBox<String> outputAreaFontComboBox, ComboBox<String> logAreaFontComboBox) {

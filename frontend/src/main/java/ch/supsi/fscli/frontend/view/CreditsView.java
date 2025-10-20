@@ -62,7 +62,4 @@ public class CreditsView implements ShowView {
         stage.show();
     }
 
-    public void closeView() {
-        stage.close();
-    }
 }

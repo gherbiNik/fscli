@@ -3,9 +3,11 @@ package ch.supsi.fscli.frontend;
 import ch.supsi.fscli.backend.application.PreferenceApplication;
 import ch.supsi.fscli.backend.business.PreferenceBusiness;
 import ch.supsi.fscli.backend.dataAccess.PreferenceDAO;
+import ch.supsi.fscli.frontend.controller.ExitController;
 import ch.supsi.fscli.frontend.controller.PreferenceController;
 import ch.supsi.fscli.frontend.model.PreferenceModel;
 import ch.supsi.fscli.frontend.view.CreditsView;
+import ch.supsi.fscli.frontend.view.ExitView;
 import ch.supsi.fscli.frontend.view.HelpView;
 import ch.supsi.fscli.frontend.view.PreferenceView;
 import javafx.application.Application;
@@ -46,6 +48,8 @@ public class MainFx extends Application {
     private final PreferenceBusiness preferenceBusiness;
     private final HelpView helpView;
     private final CreditsView creditsView;
+    private final ExitView exitView;
+    private final ExitController exitController;
 
     public MainFx() {
         this.applicationTitle = "filesystem command interpreter simulator";
@@ -64,12 +68,13 @@ public class MainFx extends Application {
 
         // CONTROLLER
         this.preferenceController = PreferenceController.getInstance(preferenceModel);
+        this.exitController = ExitController.getInstance(ExitView.getInstance());
 
         // VIEW
         this.preferenceView = PreferenceView.getInstance(preferenceController);
         this.helpView = HelpView.getInstance();
         this.creditsView = CreditsView.getInstance();
-
+        this.exitView = ExitView.getInstance();
 
         // FILE MENU
         MenuItem newMenuItem = new MenuItem("New");
@@ -84,8 +89,11 @@ public class MainFx extends Application {
         MenuItem saveAsMenuItem = new MenuItem("Save as...");
         saveAsMenuItem.setId("saveAsMenuItem");
 
+        // EXIT MENU
         MenuItem exitMenuItem = new MenuItem("Exit...");
         exitMenuItem.setId("exitMenuItem");
+        exitMenuItem.setOnAction(event -> exitView.showView());
+
 
         this.fileMenu = new Menu("File");
         this.fileMenu.setId("fileMenu");
@@ -213,7 +221,9 @@ public class MainFx extends Application {
             // to handle to exit process...
             //
             // for new we just close the app directly
-            primaryStage.close();
+            //primaryStage.close();
+            e.consume();
+            exitController.showExitDialog();
         });
 
         // show the primary stage

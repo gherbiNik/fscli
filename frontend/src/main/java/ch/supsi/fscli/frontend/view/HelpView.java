@@ -52,7 +52,4 @@ public class HelpView implements ShowView{
         stage.show();
     }
 
-    public void closeView() {
-        stage.close();
-    }
 }

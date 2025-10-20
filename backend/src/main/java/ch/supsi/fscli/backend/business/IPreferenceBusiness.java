@@ -7,6 +7,6 @@ public interface IPreferenceBusiness {
 
     String getPreference(String key);
 
-    void setPreference(String key, Object value);
+    void setPreference(String key, String value);
     Path getUserPreferencesDirectoryPath();
 }

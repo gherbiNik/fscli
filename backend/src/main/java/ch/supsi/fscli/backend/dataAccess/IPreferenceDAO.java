@@ -6,7 +6,9 @@ import java.util.Properties;
 public interface IPreferenceDAO {
     Properties getPreferences();
 
-    void setPreference(String key, String string);
+    void setPreference(String key, String value);
 
     Path getPreferencesDirectoryPath();
+
+    Path getUserPreferencesFilePath();
 }

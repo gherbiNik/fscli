@@ -6,7 +6,10 @@ import java.nio.file.Path;
 
 public class PreferenceApplication implements IPreferenceApplication{
     private static  PreferenceApplication instance;
+
     private IPreferenceBusiness preferenceBusiness;
+
+    private PreferenceApplication() {}
 
     public static PreferenceApplication getInstance(IPreferenceBusiness preferenceBusiness) {
         if (instance == null) {
@@ -26,7 +29,7 @@ public class PreferenceApplication implements IPreferenceApplication{
     }
 
     @Override
-    public void setPreference(String key, Object value) {
+    public void setPreference(String key, String value) {
         this.preferenceBusiness.setPreference(key, value);
     }
 

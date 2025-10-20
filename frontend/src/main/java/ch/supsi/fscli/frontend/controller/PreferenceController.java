@@ -7,6 +7,8 @@ public class PreferenceController implements IPreferenceController {
     private static PreferenceController instance;
     private IPreferenceModel preferenceModel;
 
+    private PreferenceController() {}
+
     public static PreferenceController getInstance(IPreferenceModel preferenceModel) {
         if (instance == null) {
             instance = new PreferenceController();
@@ -20,8 +22,8 @@ public class PreferenceController implements IPreferenceController {
     }
 
     @Override
-    public void setPreferences(String value, Object object) {
-        this.preferenceModel.setPreferences(value, object);
+    public void setPreferences(String key, String value) {
+        this.preferenceModel.setPreferences(key, value);
     }
 
     @Override

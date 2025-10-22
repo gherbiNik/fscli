@@ -3,6 +3,7 @@ package ch.supsi.fscli.backend.application;
 import ch.supsi.fscli.backend.business.IPreferenceBusiness;
 
 import java.nio.file.Path;
+import java.util.Locale;
 
 public class PreferenceApplication implements IPreferenceApplication{
     private static  PreferenceApplication instance;
@@ -36,6 +37,20 @@ public class PreferenceApplication implements IPreferenceApplication{
     @Override
     public Path getUserPreferencesDirectoryPath() {
         return this.preferenceBusiness.getUserPreferencesDirectoryPath();
+    }
+
+
+    @Override
+    public Locale loadLanguagePreference() {
+        String langTag = this.getPreference("language-tag");
+
+        return new Locale(langTag);
+    }
+
+    @Override
+    public void saveLanguagePreference(Locale locale) {
+        String langTag = locale.getLanguage();
+        this.setPreference("language-tag", langTag);
     }
 
 }

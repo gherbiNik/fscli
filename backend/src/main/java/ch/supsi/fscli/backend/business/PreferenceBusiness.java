@@ -30,7 +30,7 @@ public class PreferenceBusiness implements IPreferenceBusiness{
 
     @Override
     public String getCurrentLanguage() {
-        return userPreferences.getProperty("language-tag").substring(0,2);
+        return userPreferences.getProperty("language-tag");
     }
 
     @Override

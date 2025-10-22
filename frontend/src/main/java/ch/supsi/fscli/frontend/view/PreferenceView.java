@@ -72,7 +72,7 @@ public class PreferenceView implements ShowView {
         List<String> availableFonts = Font.getFamilies();
 
         // 1. Lingua
-        languageComboBox = new ComboBox<>(FXCollections.observableArrayList("Italiano", "English"));
+        languageComboBox = new ComboBox<>(FXCollections.observableArrayList("it-IT", "en-US"));
         grid.add(new Label("Lingua:"), 0, 0);
         grid.add(languageComboBox, 1, 0);
 

@@ -6,6 +6,7 @@ import ch.supsi.fscli.backend.dataAccess.PreferenceDAO;
 import ch.supsi.fscli.frontend.controller.ExitController;
 import ch.supsi.fscli.frontend.controller.PreferenceController;
 import ch.supsi.fscli.frontend.model.PreferenceModel;
+import ch.supsi.fscli.frontend.util.I18nManager;
 import ch.supsi.fscli.frontend.view.CreditsView;
 import ch.supsi.fscli.frontend.view.ExitView;
 import ch.supsi.fscli.frontend.view.HelpView;
@@ -20,6 +21,8 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+
+import java.util.Locale;
 
 public class MainFx extends Application {
     private static final int PREF_INSETS_SIZE = 7;
@@ -52,8 +55,6 @@ public class MainFx extends Application {
     private final ExitController exitController;
 
     public MainFx() {
-        this.applicationTitle = "filesystem command interpreter simulator";
-
         // DAO
         this.preferenceDAO = PreferenceDAO.getInstance();
 
@@ -76,26 +77,35 @@ public class MainFx extends Application {
         this.creditsView = CreditsView.getInstance();
         this.exitView = ExitView.getInstance(exitController);
 
+        // --- I18N INITIALIZATION ---
+        Locale loadedLocale = this.preferenceApplication.loadLanguagePreference();
+        I18nManager i18n = I18nManager.getInstance();
+        i18n.setLocale(loadedLocale);
+
+        System.out.println("Application started with language: " + loadedLocale.getLanguage());
+
+        this.applicationTitle = i18n.getString("app.title");
+
         // FILE MENU
-        MenuItem newMenuItem = new MenuItem("New");
+        MenuItem newMenuItem = new MenuItem(i18n.getString("menu.file.new"));
         newMenuItem.setId("newMenuItem");
 
-        MenuItem openMenuItem = new MenuItem("Open...");
+        MenuItem openMenuItem = new MenuItem(i18n.getString("menu.file.open"));
         openMenuItem.setId("openMenuItem");
 
-        MenuItem saveMenuItem = new MenuItem("Save");
+        MenuItem saveMenuItem = new MenuItem(i18n.getString("menu.file.save"));
         saveMenuItem.setId("saveMenuItem");
 
-        MenuItem saveAsMenuItem = new MenuItem("Save as...");
+        MenuItem saveAsMenuItem = new MenuItem(i18n.getString("menu.file.save_as"));
         saveAsMenuItem.setId("saveAsMenuItem");
 
         // EXIT MENU
-        MenuItem exitMenuItem = new MenuItem("Exit...");
+        MenuItem exitMenuItem = new MenuItem(i18n.getString("menu.file.exit"));
         exitMenuItem.setId("exitMenuItem");
         exitMenuItem.setOnAction(event -> exitView.showView());
 
 
-        this.fileMenu = new Menu("File");
+        this.fileMenu = new Menu(i18n.getString("menu.file"));
         this.fileMenu.setId("fileMenu");
         this.fileMenu.getItems().add(newMenuItem);
         this.fileMenu.getItems().add(new SeparatorMenuItem());
@@ -106,25 +116,25 @@ public class MainFx extends Application {
         this.fileMenu.getItems().add(exitMenuItem);
 
         // EDIT MENU
-        MenuItem preferencesMenuItem = new MenuItem("Preferences...");
+        MenuItem preferencesMenuItem = new MenuItem(i18n.getString("menu.edit.preferences"));
         preferencesMenuItem.setId("preferencesMenuItem");
         preferencesMenuItem.setOnAction(event -> preferenceView.showView());
 
-        this.editMenu = new Menu("Edit");
+        this.editMenu = new Menu(i18n.getString("menu.edit"));
         this.editMenu.setId("editMenu");
         this.editMenu.getItems().add(preferencesMenuItem);
 
         // HELP MENU
-        MenuItem helpMenuItem = new MenuItem("Help");
+        MenuItem helpMenuItem = new MenuItem(i18n.getString("menu.help.help"));
         helpMenuItem.setId("helpMenuItem");
         helpMenuItem.setOnAction(event -> helpView.showView());
 
         // CREDITS MENU
-        MenuItem aboutMenuItem = new MenuItem("About");
+        MenuItem aboutMenuItem = new MenuItem(i18n.getString("menu.help.about"));
         aboutMenuItem.setId("aboutMenuItem");
         aboutMenuItem.setOnAction(event -> creditsView.showView());
 
-        this.helpMenu = new Menu("Help");
+        this.helpMenu = new Menu(i18n.getString("menu.help"));
         this.helpMenu.setId("helpMenu");
         this.helpMenu.getItems().add(helpMenuItem);
         this.helpMenu.getItems().add(aboutMenuItem);
@@ -134,10 +144,10 @@ public class MainFx extends Application {
         this.menuBar.getMenus().addAll(fileMenu, editMenu, helpMenu);
 
         // COMMAND LINE
-        this.enter = new Button("enter");
+        this.enter = new Button(i18n.getString("commandLine.enter"));
         this.enter.setId("enter");
 
-        this.commandLineLabel = new Label("command");
+        this.commandLineLabel = new Label(i18n.getString("commandLine.command"));
         this.commandLine = new TextField();
 
         // OUTPUT VIEW (to be encapsulated properly)

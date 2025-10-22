@@ -158,6 +158,7 @@ public class MainFx extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
+        System.out.println("PROVA");
         stageToClose = primaryStage;
 
         // command line

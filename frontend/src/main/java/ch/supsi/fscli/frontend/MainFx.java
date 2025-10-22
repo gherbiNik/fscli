@@ -38,7 +38,7 @@ public class MainFx extends Application {
     private final TextField commandLine;
     private final TextArea outputView;
     private final TextArea logView;
-
+    private static Stage stageToClose;
 
     private final PreferenceView preferenceView;
     private final PreferenceController preferenceController;
@@ -68,13 +68,13 @@ public class MainFx extends Application {
 
         // CONTROLLER
         this.preferenceController = PreferenceController.getInstance(preferenceModel);
-        this.exitController = ExitController.getInstance(ExitView.getInstance());
+        this.exitController = ExitController.getInstance();
 
         // VIEW
         this.preferenceView = PreferenceView.getInstance(preferenceController);
         this.helpView = HelpView.getInstance();
         this.creditsView = CreditsView.getInstance();
-        this.exitView = ExitView.getInstance();
+        this.exitView = ExitView.getInstance(exitController);
 
         // FILE MENU
         MenuItem newMenuItem = new MenuItem("New");
@@ -151,8 +151,15 @@ public class MainFx extends Application {
         this.logView.appendText("This is an example log text...\n");
     }
 
+    public static Stage getStageToClose() {
+        return stageToClose;
+    }
+
+
     @Override
     public void start(Stage primaryStage) throws Exception {
+        stageToClose = primaryStage;
+
         // command line
         this.commandLine.setPrefColumnCount(COMMAND_LINE_PREF_COLUMN_COUNT);
 
@@ -221,9 +228,9 @@ public class MainFx extends Application {
             // to handle to exit process...
             //
             // for new we just close the app directly
-            //primaryStage.close();
             e.consume();
-            exitController.showExitDialog();
+            exitView.showView();
+            //primaryStage.close();
         });
 
         // show the primary stage

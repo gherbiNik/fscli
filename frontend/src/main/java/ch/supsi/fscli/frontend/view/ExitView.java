@@ -1,5 +1,6 @@
 package ch.supsi.fscli.frontend.view;
 
+import ch.supsi.fscli.frontend.controller.ExitController;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -16,17 +17,19 @@ public class ExitView implements ShowView {
     private Stage stage = new Stage();
     private Button confirmButton;
     private Button cancelButton;
+    private ExitController exitController;
 
-    public static ExitView getInstance() {
+    public static ExitView getInstance(ExitController exitController) {
         if (instance == null) {
             instance = new ExitView();
-            instance.initialize();
+            instance.initialize(exitController);
         }
 
         return instance;
     }
 
-    private void initialize() {
+    private void initialize(ExitController exitController) {
+        this.exitController = exitController;
     }
 
     private ExitView() {
@@ -58,6 +61,8 @@ public class ExitView implements ShowView {
         cancelButton = new Button("No");
         cancelButton.setPrefWidth(80);
 
+        setupEventHandlers();
+
         buttonBox.getChildren().addAll(confirmButton, cancelButton);
 
         root.getChildren().addAll(messageLabel, buttonBox);
@@ -66,20 +71,20 @@ public class ExitView implements ShowView {
         stage.setScene(scene);
     }
 
+    private void setupEventHandlers() {
+        confirmButton.setOnAction(e -> {
+            stage.close();
+            exitController.quit();
+        });
+
+        cancelButton.setOnAction(e -> {
+            stage.close();
+        });
+    }
+
     @Override
     public void showView() {
         stage.showAndWait();
     }
 
-    public Button getCancelButton() {
-        return cancelButton;
-    }
-
-    public Button getConfirmButton() {
-        return confirmButton;
-    }
-
-    public void closeView() {
-        stage.close();
-    }
 }

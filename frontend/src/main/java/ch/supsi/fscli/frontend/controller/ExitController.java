@@ -2,43 +2,34 @@ package ch.supsi.fscli.frontend.controller;
 
 import ch.supsi.fscli.frontend.view.ExitView;
 import javafx.application.Platform;
+import javafx.stage.Stage;
+import ch.supsi.fscli.frontend.MainFx;
 
 public class ExitController implements IExitController {
 
     private static ExitController instance;
-    private ExitView exitView;
 
     private ExitController() {}
 
-    public static ExitController getInstance(ExitView exitView) {
+    public static ExitController getInstance() {
         if (instance == null) {
             instance = new ExitController();
         }
-        instance.initialize(exitView);
+        instance.initialize();
         return instance;
     }
 
-    private void initialize(ExitView exitView) {
-        this.exitView = exitView;
-        setupEventHandlers();
+    private void initialize() {
     }
 
-    private void setupEventHandlers() {
-        exitView.getConfirmButton().setOnAction(e -> handleConfirm());
-        exitView.getCancelButton().setOnAction(e -> handleCancel());
-    }
+    public void quit() {
 
-    private void handleConfirm() {
-        exitView.closeView();
-        Platform.exit();
-    }
+        //TODO: check if there is something to save
 
-    private void handleCancel() {
-        exitView.closeView();
-    }
 
-    @Override
-    public void showExitDialog() {
-        exitView.showView();
+        Stage stageToClose = MainFx.getStageToClose();
+        if (stageToClose != null) {
+            stageToClose.close();
+        }
     }
 }

@@ -101,11 +101,27 @@ public class PreferenceDAO implements IPreferenceDAO {
             try (FileInputStream fileInputStream = new FileInputStream(path.toFile())) {
                 preferences.load(fileInputStream);
             }
+
         } catch (IOException e) {
             System.err.println("Errore nel caricamento delle preferenze: " + e.getMessage());
             return null;
         }
         return preferences;
+    }
+
+    private void checkFileLoadedPreferences() {
+
+        if (preferences != null) {
+            if (preferences.getProperty("language-tag") == null ||
+                preferences.getProperty("column") == null ||
+                preferences.getProperty("output-area-row") == null ||
+                preferences.getProperty("log-area-row") == null ||
+                preferences.getProperty("font-command-line") == null ||
+                preferences.getProperty("font-output-area") == null ||
+                preferences.getProperty("font-log-area") == null
+            )
+                preferences = loadDefaultPreferences();
+        }
     }
 
 
@@ -118,6 +134,8 @@ public class PreferenceDAO implements IPreferenceDAO {
 
         // Prova a caricare il file delle preferenze esistente
         preferences = this.loadPreferences(this.getPreferencesFilePath());
+        checkFileLoadedPreferences();
+
 
         // Se il caricamento fallisce (es. il file non esiste), crealo
         if (preferences == null) {

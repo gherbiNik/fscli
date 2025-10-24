@@ -71,16 +71,18 @@ public class MainFx extends Application {
         this.preferenceController = PreferenceController.getInstance(preferenceModel);
         this.exitController = ExitController.getInstance();
 
-        // VIEW
-        this.preferenceView = PreferenceView.getInstance(preferenceController);
-        this.helpView = HelpView.getInstance();
-        this.creditsView = CreditsView.getInstance();
-        this.exitView = ExitView.getInstance(exitController);
-
         // --- I18N INITIALIZATION ---
         Locale loadedLocale = this.preferenceApplication.loadLanguagePreference();
         I18nManager i18n = I18nManager.getInstance();
         i18n.setLocale(loadedLocale);
+
+        // VIEW
+        this.preferenceView = PreferenceView.getInstance(preferenceController, i18n);
+        this.helpView = HelpView.getInstance();
+        this.creditsView = CreditsView.getInstance();
+        this.exitView = ExitView.getInstance(exitController);
+
+
 
         System.out.println("Application started with language: " + loadedLocale.getLanguage());
 

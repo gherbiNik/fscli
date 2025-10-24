@@ -93,11 +93,15 @@ public class MainFx extends Application {
         MenuItem openMenuItem = new MenuItem(i18n.getString("menu.file.open"));
         openMenuItem.setId("openMenuItem");
 
+        //FIXME: if there is no filesystem created, saving should be disabled:
+        //****************************
         MenuItem saveMenuItem = new MenuItem(i18n.getString("menu.file.save"));
         saveMenuItem.setId("saveMenuItem");
-
+        //saveMenuItem.setDisable(true);
         MenuItem saveAsMenuItem = new MenuItem(i18n.getString("menu.file.save_as"));
         saveAsMenuItem.setId("saveAsMenuItem");
+        //****************************
+
 
         // EXIT MENU
         MenuItem exitMenuItem = new MenuItem(i18n.getString("menu.file.exit"));

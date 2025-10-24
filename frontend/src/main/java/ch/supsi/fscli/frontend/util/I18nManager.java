@@ -27,6 +27,7 @@ public class I18nManager {
             return resourceBundle.getString(key);
         } catch (Exception e) {
             System.err.println("Key not found inside the frontend bundle: " + key);
+
             return "!" + key + "!";
         }
     }

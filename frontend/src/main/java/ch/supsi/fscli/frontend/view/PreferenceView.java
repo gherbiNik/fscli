@@ -1,6 +1,7 @@
 package ch.supsi.fscli.frontend.view;
 
 import ch.supsi.fscli.frontend.controller.IPreferenceController;
+import ch.supsi.fscli.frontend.util.I18nManager;
 import javafx.collections.FXCollections;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -23,8 +24,9 @@ public class PreferenceView implements ShowView {
     private static PreferenceView instance;
 
     private IPreferenceController controller;
+    private I18nManager i18nManager;
 
-    // Componenti UI che il Controller dovrà conoscere
+    // --- UI Components as Fields ---
     private ComboBox<String> languageComboBox;
     private Spinner<Integer> columnsSpinner;
     private Spinner<Integer> outputLinesSpinner;
@@ -35,115 +37,130 @@ public class PreferenceView implements ShowView {
     private Button saveButton;
     private Button cancelButton;
 
+    // --- Labels also declared as fields to allow translation ---
+    private Label languageLabel;
+    private Label columnsLabel;
+    private Label outputLinesLabel;
+    private Label logLinesLabel;
+    private Label commandLineFontLabel;
+    private Label outputAreaFontLabel;
+    private Label logAreaFontLabel;
+
     private Stage stage = new Stage();
 
-    public static PreferenceView getInstance(IPreferenceController controller) {
+    public static PreferenceView getInstance(IPreferenceController controller,  I18nManager i18nManager) {
         if (instance == null) {
             instance = new PreferenceView();
-            instance.initialize(controller);
+            instance.initialize(controller, i18nManager);
         }
         return instance;
     }
 
-    private void initialize(IPreferenceController controller) {
+    private void initialize(IPreferenceController controller, I18nManager i18nManager) {
         this.controller = controller;
-        loadCurrentPreferences(languageComboBox,columnsSpinner,outputLinesSpinner, logLinesSpinner, commandLineFontComboBox,outputAreaFontComboBox, logAreaFontComboBox);
-
+        this.i18nManager = i18nManager;
+        applicateTranslation();
+        loadCurrentPreferences();
     }
 
     private PreferenceView() {
+        // This only builds the UI structure now
         initializeUI();
-
     }
 
-
+    // This method now handles ALL text content
+    private void applicateTranslation() {
+        // Assume you have these keys in your resource bundle (e.g., messages_en_US.properties)
+        stage.setTitle(i18nManager.getString("preference.title"));
+        languageLabel.setText(i18nManager.getString("preference.label.language"));
+        columnsLabel.setText(i18nManager.getString("preference.label.columns"));
+        outputLinesLabel.setText(i18nManager.getString("preference.label.outputLines"));
+        logLinesLabel.setText(i18nManager.getString("preference.label.logLines"));
+        commandLineFontLabel.setText(i18nManager.getString("preference.label.commandLineFont"));
+        outputAreaFontLabel.setText(i18nManager.getString("preference.label.outputAreaFont"));
+        logAreaFontLabel.setText(i18nManager.getString("preference.label.logAreaFont"));
+        saveButton.setText(i18nManager.getString("button.save"));
+        cancelButton.setText(i18nManager.getString("button.cancel"));
+    }
 
     private void initializeUI() {
-        stage.setTitle("Preferenze");
         VBox mainLayout = new VBox(15);
         mainLayout.setPadding(new Insets(15));
 
-        // Layout a griglia per le impostazioni
         GridPane grid = new GridPane();
         grid.setHgap(10);
         grid.setVgap(10);
 
-        // Lista di font disponibili sul sistema
         List<String> availableFonts = Font.getFamilies();
 
-        // 1. Lingua
+        // --- Component Creation (without hardcoded text) ---
+        languageLabel = new Label();
         languageComboBox = new ComboBox<>(FXCollections.observableArrayList("it-IT", "en-US"));
-        grid.add(new Label("Lingua:"), 0, 0);
+        grid.add(languageLabel, 0, 0);
         grid.add(languageComboBox, 1, 0);
 
-
-        // 2. Colonne Command Line
-
-        columnsSpinner = new Spinner<>(40, 100, 80); // min, max, initial
-        grid.add(new Label("Numero di colonne (caratteri):"), 0, 1);
+        columnsLabel = new Label();
+        columnsSpinner = new Spinner<>(40, 100, 80);
+        grid.add(columnsLabel, 0, 1);
         grid.add(columnsSpinner, 1, 1);
 
-        // 3. Righe Output Area
+        outputLinesLabel = new Label();
         outputLinesSpinner = new Spinner<>(3, 50, 10);
-        grid.add(new Label("Righe visibili area output (>= 3):"), 0, 2);
+        grid.add(outputLinesLabel, 0, 2);
         grid.add(outputLinesSpinner, 1, 2);
 
-        // 4. Righe Log Area
+        logLinesLabel = new Label();
         logLinesSpinner = new Spinner<>(3, 50, 5);
-        grid.add(new Label("Righe visibili area log (>= 3):"), 0, 3);
+        grid.add(logLinesLabel, 0, 3);
         grid.add(logLinesSpinner, 1, 3);
 
-        // 5. Font Command Line
+        commandLineFontLabel = new Label();
         commandLineFontComboBox = new ComboBox<>(FXCollections.observableArrayList(availableFonts));
-        grid.add(new Label("Font Command Line:"), 0, 4);
+        grid.add(commandLineFontLabel, 0, 4);
         grid.add(commandLineFontComboBox, 1, 4);
 
-        // 6. Font Output Area
+        outputAreaFontLabel = new Label();
         outputAreaFontComboBox = new ComboBox<>(FXCollections.observableArrayList(availableFonts));
-        grid.add(new Label("Font Area Output:"), 0, 5);
+        grid.add(outputAreaFontLabel, 0, 5);
         grid.add(outputAreaFontComboBox, 1, 5);
 
-        // 7. Font Log Area
+        logAreaFontLabel = new Label();
         logAreaFontComboBox = new ComboBox<>(FXCollections.observableArrayList(availableFonts));
-        grid.add(new Label("Font Area Log:"), 0, 6);
+        grid.add(logAreaFontLabel, 0, 6);
         grid.add(logAreaFontComboBox, 1, 6);
 
-        // Sezione Pulsanti
-        saveButton = new Button("Salva");
-
+        saveButton = new Button();
         saveButton.setOnAction(e -> {
-            savePreferences(languageComboBox,columnsSpinner,outputLinesSpinner, logLinesSpinner, commandLineFontComboBox,outputAreaFontComboBox, logAreaFontComboBox);
+            savePreferences();
             closeView();
         });
 
-        cancelButton = new Button("Annulla");
-
-        cancelButton.setOnAction(e -> {
-            closeView();
-        });
+        cancelButton = new Button();
+        cancelButton.setOnAction(e -> closeView());
 
         HBox buttonBox = new HBox(10, saveButton, cancelButton);
-        buttonBox.setAlignment(javafx.geometry.Pos.CENTER_RIGHT);
+        buttonBox.setAlignment(Pos.CENTER_RIGHT);
 
         mainLayout.getChildren().addAll(grid, buttonBox);
         VBox.setVgrow(grid, Priority.ALWAYS);
 
         Scene scene = new Scene(mainLayout, 500, 400);
         stage.setScene(scene);
-
     }
 
-    private void savePreferences(ComboBox<String> languageComboBox, Spinner<Integer> columnsSpinner, Spinner<Integer> outputLinesSpinner, Spinner<Integer> logLinesSpinner, ComboBox<String> commandLineFontComboBox, ComboBox<String> outputAreaFontComboBox, ComboBox<String> logAreaFontComboBox) {
+    // Simplified: No longer needs parameters as it uses the class fields
+    private void savePreferences() {
         controller.setPreferences("language-tag", languageComboBox.getValue());
-        controller.setPreferences("column", columnsSpinner.getValueFactory().getValue().toString());
-        controller.setPreferences("output-area-row", outputLinesSpinner.getValueFactory().getValue().toString());
-        controller.setPreferences("log-area-row", logLinesSpinner.getValueFactory().getValue().toString());
+        controller.setPreferences("column", columnsSpinner.getValue().toString());
+        controller.setPreferences("output-area-row", outputLinesSpinner.getValue().toString());
+        controller.setPreferences("log-area-row", logLinesSpinner.getValue().toString());
         controller.setPreferences("font-command-line", commandLineFontComboBox.getValue());
         controller.setPreferences("font-output-area", outputAreaFontComboBox.getValue());
         controller.setPreferences("font-log-area", logAreaFontComboBox.getValue());
     }
 
-    private void loadCurrentPreferences(ComboBox<String> languageComboBox, Spinner<Integer> columnsSpinner, Spinner<Integer> outputLinesSpinner, Spinner<Integer> logLinesSpinner, ComboBox<String> commandLineFontComboBox, ComboBox<String> outputAreaFontComboBox, ComboBox<String> logAreaFontComboBox) {
+    // Simplified: No longer needs parameters
+    private void loadCurrentPreferences() {
         languageComboBox.setValue(controller.getPreferences("language-tag"));
         columnsSpinner.getValueFactory().setValue(Integer.parseInt(controller.getPreferences("column")));
         outputLinesSpinner.getValueFactory().setValue(Integer.parseInt(controller.getPreferences("output-area-row")));
@@ -161,6 +178,4 @@ public class PreferenceView implements ShowView {
     public void closeView() {
         stage.close();
     }
-
-
 }

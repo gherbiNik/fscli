@@ -4,14 +4,23 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
+
+
     <groupId>ch.supsi.fscli</groupId>
     <artifactId>frontend</artifactId>
     <version>1.0-SNAPSHOT</version>
+    <!-- Application Name -->
+    <name>Filesystem Command-line Simulator</name>
+
+
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
+        <maven.build.timestamp.format>dd/MM/yyyy</maven.build.timestamp.format>
+        <build.timestamp>${maven.build.timestamp}</build.timestamp>
+        <app.developers>Gherbi, Perlini, Belloni</app.developers>
     </properties>
 
     <dependencies>
@@ -46,7 +55,12 @@
 
     <build>
         <finalName>fscli</finalName>
-
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

@@ -1,6 +1,7 @@
 package ch.supsi.fscli.frontend.view;
 
 import ch.supsi.fscli.frontend.controller.ExitController;
+import ch.supsi.fscli.frontend.util.I18nManager;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -13,33 +14,35 @@ import javafx.stage.Stage;
 
 public class ExitView implements ShowView {
     private static ExitView instance;
+    private I18nManager i18nManager;
 
     private Stage stage = new Stage();
     private Button confirmButton;
     private Button cancelButton;
     private ExitController exitController;
 
-    public static ExitView getInstance(ExitController exitController) {
+    public static ExitView getInstance(ExitController exitController, I18nManager i18nManager) {
         if (instance == null) {
             instance = new ExitView();
-            instance.initialize(exitController);
+            instance.initialize(exitController, i18nManager);
         }
 
         return instance;
     }
 
-    private void initialize(ExitController exitController) {
+    private void initialize(ExitController exitController, I18nManager i18nManager) {
         this.exitController = exitController;
+        this.i18nManager = i18nManager;
+        initializeUI();
     }
 
     private ExitView() {
-        initializeUI();
     }
 
     private void initializeUI() {
         stage = new Stage();
 
-        stage.setTitle("Exit");
+        stage.setTitle(i18nManager.getString("confirmation.exit.windowname"));
         stage.initModality(Modality.APPLICATION_MODAL);
         stage.setResizable(false);
 
@@ -49,16 +52,19 @@ public class ExitView implements ShowView {
 
         //TODO: check if there is something to save
 
-        Label messageLabel = new Label("Are you sure you want to exit?");
+        Label messageLabel = new Label(i18nManager.getString("confirmation.exit.ask"));
         messageLabel.setStyle("-fx-font-size: 14px;");
 
         HBox buttonBox = new HBox(10);
         buttonBox.setAlignment(Pos.CENTER);
 
-        confirmButton = new Button("Yes");
+        //confirmation.exit.confirm="Confirm"
+        //confirmation.exit.cancel="Cancel"
+
+        confirmButton = new Button(i18nManager.getString("confirmation.exit.confirm"));
         confirmButton.setPrefWidth(80);
 
-        cancelButton = new Button("No");
+        cancelButton = new Button(i18nManager.getString("confirmation.exit.cancel"));
         cancelButton.setPrefWidth(80);
 
         setupEventHandlers();

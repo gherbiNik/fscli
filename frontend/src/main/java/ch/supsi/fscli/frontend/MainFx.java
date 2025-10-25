@@ -78,7 +78,7 @@ public class MainFx extends Application {
 
         // VIEW
         this.preferenceView = PreferenceView.getInstance(preferenceController, i18n);
-        this.helpView = HelpView.getInstance();
+        this.helpView = HelpView.getInstance(i18n);
         this.creditsView = CreditsView.getInstance(i18n);
         this.exitView = ExitView.getInstance(exitController, i18n);
 

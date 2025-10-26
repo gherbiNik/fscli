@@ -1,7 +1,7 @@
 package ch.supsi.fscli.frontend.model;
 
 import ch.supsi.fscli.backend.application.IPreferenceApplication;
-import ch.supsi.fscli.backend.business.IPreferenceBusiness;
+import javafx.scene.text.Font;
 
 import java.nio.file.Path;
 
@@ -37,5 +37,35 @@ public class PreferenceModel implements IPreferenceModel{
     @Override
     public Path getUserPreferencesDirectoryPath() {
         return preferenceApplication.getUserPreferencesDirectoryPath();
+    }
+
+    @Override
+    public Font getCommandLineFont() {
+        return preferenceApplication.getCommandLineFont();
+    }
+
+    @Override
+    public Font getLogAreaFont() {
+        return preferenceApplication.getLogAreaFont();
+    }
+
+    @Override
+    public Font getOutputAreaFont() {
+        return preferenceApplication.getOutputAreaFont();
+    }
+
+    @Override
+    public int getOutputAreaRow() {
+        return preferenceApplication.getOutputAreaRow();
+    }
+
+    @Override
+    public int getLogAreaRow() {
+        return preferenceApplication.getLogAreaRow();
+    }
+
+    @Override
+    public int getColumn() {
+        return preferenceApplication.getColumn();
     }
 }

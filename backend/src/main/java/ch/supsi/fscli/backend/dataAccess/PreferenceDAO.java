@@ -1,5 +1,7 @@
 package ch.supsi.fscli.backend.dataAccess;
 
+import javafx.scene.text.Font;
+
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -9,8 +11,19 @@ import java.util.Properties;
 
 public class PreferenceDAO implements IPreferenceDAO {
     private static String userHomeDirectory = System.getProperty("user.home");
+
+
+
+    ////////////////
+    /// CONSTANT ///
+    ////////////////
     private static final String preferencesDirectory = ".fscli";
     private static final String preferencesFile = "preferences.properties";
+    private static final double DEFAULT_FONT_SIZE = Font.getDefault().getSize();
+    private static final String DEFAULT_FONT_NAME = Font.getDefault().getName();
+    private static final int DEFAULT_COLUMN = 80;
+    private static final int DEFAULT_OUTPUT_AREA_ROW = 10;
+    private static final int DEFAULT_LOG_AREA_ROW = 5;
     
     private static PreferenceDAO instance;
     private Properties preferences;
@@ -27,6 +40,8 @@ public class PreferenceDAO implements IPreferenceDAO {
     public Path getUserPreferencesFilePath() {
         return Path.of(userHomeDirectory, preferencesDirectory, preferencesFile);
     }
+
+
 
     public Path getPreferencesDirectoryPath() {
         return Path.of(userHomeDirectory, preferencesDirectory);
@@ -84,12 +99,12 @@ public class PreferenceDAO implements IPreferenceDAO {
 
         // Create basic default preferences
         defaultPreferences.setProperty("language-tag", "it-IT");
-        defaultPreferences.setProperty("column", "80");
-        defaultPreferences.setProperty("output-area-row", "10");
-        defaultPreferences.setProperty("log-area-row", "5");
-        defaultPreferences.setProperty("font-command-line", "Arial");
-        defaultPreferences.setProperty("font-output-area", "Arial");
-        defaultPreferences.setProperty("font-log-area", "Arial");
+        defaultPreferences.setProperty("column", DEFAULT_COLUMN+"");
+        defaultPreferences.setProperty("output-area-row", DEFAULT_OUTPUT_AREA_ROW + "");
+        defaultPreferences.setProperty("log-area-row", DEFAULT_LOG_AREA_ROW + "");
+        defaultPreferences.setProperty("font-command-line", DEFAULT_FONT_NAME);
+        defaultPreferences.setProperty("font-output-area", DEFAULT_FONT_NAME);
+        defaultPreferences.setProperty("font-log-area", DEFAULT_FONT_NAME);
 
 
         return defaultPreferences;
@@ -180,5 +195,95 @@ public class PreferenceDAO implements IPreferenceDAO {
             System.err.println("Failed to save preferences: " + e.getMessage());
         }
     }
-    
+
+    @Override
+    public Font getCommandLineFont() {
+        String font = DEFAULT_FONT_NAME;
+        if (preferences != null) {
+            font =  preferences.getProperty("font-command-line") == null ? DEFAULT_FONT_NAME : preferences.getProperty("font-command-line");
+        }
+
+        return new Font(font,DEFAULT_FONT_SIZE);
+    }
+
+    @Override
+    public Font getOutputAreaFont() {
+        String font = DEFAULT_FONT_NAME;
+        if (preferences != null) {
+            font =  preferences.getProperty("font-output-area") == null ? DEFAULT_FONT_NAME : preferences.getProperty("font-output-area");
+        }
+
+        return new Font(font,DEFAULT_FONT_SIZE);
+    }
+
+    @Override
+    public Font getLogAreaFont() {
+        String font = DEFAULT_FONT_NAME;
+        if (preferences != null) {
+            font =  preferences.getProperty("font-log-area") == null ? DEFAULT_FONT_NAME : preferences.getProperty("font-log-area");
+        }
+
+        return new Font(font,DEFAULT_FONT_SIZE);
+    }
+
+    private boolean isValueValidNumberFormat(String valoreStringa) {
+        if (valoreStringa == null || valoreStringa.trim().isEmpty()) {
+            return false;
+        }
+        try {
+            //    usiamo .trim() per rimuovere eventuali spazi bianchi (es. " 25 ")
+            Integer.parseInt(valoreStringa.trim());
+        } catch (NumberFormatException e) {
+            //    Stampa un messaggio di errore (utile per il debug) e restituisci il default.
+            System.err.println("ATTENZIONE: Valore non numerico per 'output-area-row': \"" + valoreStringa + "\". Verrà usato il valore di default.");
+            return false;
+        }
+        return true;
+    }
+
+
+    @Override
+    public int getOutputAreaRow() {
+        if (preferences != null) {
+            String value = preferences.getProperty("output-area-row").trim();
+            if (isValueValidNumberFormat(value)) {
+                return Integer.parseInt(value);
+            }
+            return DEFAULT_OUTPUT_AREA_ROW;
+        }
+        System.err.println("Preferenze nulle, verranno caricate preferenze di default");
+        loadDefaultPreferences();
+        return DEFAULT_OUTPUT_AREA_ROW;
+    }
+
+
+
+    @Override
+    public int getLogAreaRow() {
+        if (preferences != null) {
+            String value = preferences.getProperty("log-area-row").trim();
+            if (isValueValidNumberFormat(value)) {
+                return Integer.parseInt(value);
+            }
+            return DEFAULT_LOG_AREA_ROW;
+        }
+        System.err.println("Preferenze nulle, verranno caricate preferenze di default");
+        loadDefaultPreferences();
+        return DEFAULT_LOG_AREA_ROW;
+    }
+
+    @Override
+    public int getColumn() {
+        if (preferences != null) {
+            String value = preferences.getProperty("column").trim();
+            if (isValueValidNumberFormat(value)) {
+                return Integer.parseInt(value);
+            }
+            return DEFAULT_COLUMN;
+        }
+        System.err.println("Preferenze nulle, verranno caricate preferenze di default");
+        loadDefaultPreferences();
+        return DEFAULT_COLUMN;
+    }
+
 }

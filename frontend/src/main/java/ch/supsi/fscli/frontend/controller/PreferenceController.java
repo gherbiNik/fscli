@@ -1,6 +1,7 @@
 package ch.supsi.fscli.frontend.controller;
 
 import ch.supsi.fscli.frontend.model.IPreferenceModel;
+import javafx.scene.text.Font;
 
 public class PreferenceController implements IPreferenceController {
 
@@ -29,6 +30,36 @@ public class PreferenceController implements IPreferenceController {
     @Override
     public String getPreferences(String value) {
         return this.preferenceModel.getPreferences(value);
+    }
+
+    @Override
+    public Font getCommandLineFont() {
+        return preferenceModel.getCommandLineFont();
+    }
+
+    @Override
+    public Font getOutputAreaFont() {
+        return preferenceModel.getOutputAreaFont();
+    }
+
+    @Override
+    public Font getLogAreaFont() {
+        return preferenceModel.getLogAreaFont();
+    }
+
+    @Override
+    public int getOutputAreaRow() {
+        return preferenceModel.getOutputAreaRow();
+    }
+
+    @Override
+    public int getLogAreaRow() {
+        return preferenceModel.getLogAreaRow();
+    }
+
+    @Override
+    public int getColumn() {
+        return preferenceModel.getColumn();
     }
 
 

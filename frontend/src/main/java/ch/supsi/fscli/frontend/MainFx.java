@@ -157,7 +157,6 @@ public class MainFx extends Application {
         this.commandLine = new TextField();
         this.commandLine.setFont(this.preferenceController.getCommandLineFont());
         this.commandLine.setPrefColumnCount(this.preferenceController.getColumn());
-        System.out.println(commandLine.getPrefColumnCount());
 
         // OUTPUT VIEW (to be encapsulated properly)
         this.outputView = new TextArea();
@@ -167,7 +166,6 @@ public class MainFx extends Application {
         this.outputView.appendText("3This is an example output text...\n");
         this.outputView.appendText("4This is an example output text...\n");
         this.outputView.setPrefRowCount(this.preferenceController.getOutputAreaRow());
-        System.out.println(outputView.getPrefRowCount());
         outputView.setFont(this.preferenceController.getOutputAreaFont());
 
         // LOG VIEW (to be encapsulated properly)
@@ -179,7 +177,6 @@ public class MainFx extends Application {
         this.logView.appendText("4This is an example log text...\n");
         logView.setFont(this.preferenceController.getLogAreaFont());
         logView.setPrefRowCount(this.preferenceController.getLogAreaRow());
-        System.out.println(logView.getPrefRowCount());
     }
 
     public static Stage getStageToClose() {

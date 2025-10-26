@@ -155,16 +155,31 @@ public class MainFx extends Application {
 
         this.commandLineLabel = new Label(i18n.getString("commandLine.command"));
         this.commandLine = new TextField();
+        this.commandLine.setFont(this.preferenceController.getCommandLineFont());
+        this.commandLine.setPrefColumnCount(this.preferenceController.getColumn());
+        System.out.println(commandLine.getPrefColumnCount());
 
         // OUTPUT VIEW (to be encapsulated properly)
         this.outputView = new TextArea();
         this.outputView.setId("outputView");
-        this.outputView.appendText("This is an example output text...\n");
+        this.outputView.appendText("1This is an example output text...\n");
+        this.outputView.appendText("2This is an example output text...\n");
+        this.outputView.appendText("3This is an example output text...\n");
+        this.outputView.appendText("4This is an example output text...\n");
+        this.outputView.setPrefRowCount(this.preferenceController.getOutputAreaRow());
+        System.out.println(outputView.getPrefRowCount());
+        outputView.setFont(this.preferenceController.getOutputAreaFont());
 
         // LOG VIEW (to be encapsulated properly)
         this.logView = new TextArea();
         this.logView.setId("logView");
-        this.logView.appendText("This is an example log text...\n");
+        this.logView.appendText("1This is an example log text...\n");
+        this.logView.appendText("2This is an example log text...\n");
+        this.logView.appendText("3This is an example log text...\n");
+        this.logView.appendText("4This is an example log text...\n");
+        logView.setFont(this.preferenceController.getLogAreaFont());
+        logView.setPrefRowCount(this.preferenceController.getLogAreaRow());
+        System.out.println(logView.getPrefRowCount());
     }
 
     public static Stage getStageToClose() {
@@ -177,7 +192,7 @@ public class MainFx extends Application {
         stageToClose = primaryStage;
 
         // command line
-        this.commandLine.setPrefColumnCount(COMMAND_LINE_PREF_COLUMN_COUNT);
+        //this.commandLine.setPrefColumnCount(COMMAND_LINE_PREF_COLUMN_COUNT);
 
         // horizontal box to hold the command line
         HBox commandLinePane = new HBox();
@@ -203,7 +218,7 @@ public class MainFx extends Application {
         );
 
         // output view
-        this.outputView.setPrefRowCount(PREF_OUTPUT_VIEW_ROW_COUNT);
+        //this.outputView.setPrefRowCount(PREF_OUTPUT_VIEW_ROW_COUNT);
         this.outputView.setEditable(false);
 
         // scroll pane to hold the output view
@@ -214,7 +229,7 @@ public class MainFx extends Application {
         centerPane.setContent(this.outputView);
 
         // log view
-        this.logView.setPrefRowCount(PREF_LOG_VIEW_ROW_COUNT);
+        //this.logView.setPrefRowCount(PREF_LOG_VIEW_ROW_COUNT);
         this.logView.setEditable(false);
 
         // scroll pane to hold log view

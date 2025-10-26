@@ -1,6 +1,7 @@
 package ch.supsi.fscli.backend.business;
 
 import ch.supsi.fscli.backend.dataAccess.IPreferenceDAO;
+import javafx.scene.text.Font;
 
 import java.nio.file.Path;
 import java.util.Properties;
@@ -53,5 +54,35 @@ public class PreferenceBusiness implements IPreferenceBusiness{
     @Override
     public Path getUserPreferencesDirectoryPath() {
         return preferencesDao.getPreferencesDirectoryPath();
+    }
+
+    @Override
+    public Font getCommandLineFont() {
+        return preferencesDao.getCommandLineFont();
+    }
+
+    @Override
+    public Font getOutputAreaFont() {
+        return preferencesDao.getOutputAreaFont();
+    }
+
+    @Override
+    public Font getLogAreaFont() {
+        return preferencesDao.getLogAreaFont();
+    }
+
+    @Override
+    public int getOutputAreaRow() {
+        return preferencesDao.getOutputAreaRow();
+    }
+
+    @Override
+    public int getLogAreaRow() {
+        return preferencesDao.getLogAreaRow();
+    }
+
+    @Override
+    public int getColumn() {
+        return preferencesDao.getColumn();
     }
 }

@@ -1,7 +1,7 @@
 package ch.supsi.fscli.backend.business;
 
 import ch.supsi.fscli.backend.dataAccess.IPreferenceDAO;
-import javafx.scene.text.Font;
+
 
 import java.nio.file.Path;
 import java.util.Properties;
@@ -57,17 +57,17 @@ public class PreferenceBusiness implements IPreferenceBusiness{
     }
 
     @Override
-    public Font getCommandLineFont() {
+    public String getCommandLineFont() {
         return preferencesDao.getCommandLineFont();
     }
 
     @Override
-    public Font getOutputAreaFont() {
+    public String getOutputAreaFont() {
         return preferencesDao.getOutputAreaFont();
     }
 
     @Override
-    public Font getLogAreaFont() {
+    public String getLogAreaFont() {
         return preferencesDao.getLogAreaFont();
     }
 

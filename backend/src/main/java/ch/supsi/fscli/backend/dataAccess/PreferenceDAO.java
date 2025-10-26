@@ -1,6 +1,5 @@
 package ch.supsi.fscli.backend.dataAccess;
 
-import javafx.scene.text.Font;
 
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -19,8 +18,7 @@ public class PreferenceDAO implements IPreferenceDAO {
     ////////////////
     private static final String preferencesDirectory = ".fscli";
     private static final String preferencesFile = "preferences.properties";
-    private static final double DEFAULT_FONT_SIZE = Font.getDefault().getSize();
-    private static final String DEFAULT_FONT_NAME = Font.getDefault().getName();
+    private static final String DEFAULT_FONT_NAME = "System";
     private static final int DEFAULT_COLUMN = 80;
     private static final int DEFAULT_OUTPUT_AREA_ROW = 10;
     private static final int DEFAULT_LOG_AREA_ROW = 5;
@@ -197,33 +195,33 @@ public class PreferenceDAO implements IPreferenceDAO {
     }
 
     @Override
-    public Font getCommandLineFont() {
+    public String getCommandLineFont() {
         String font = DEFAULT_FONT_NAME;
         if (preferences != null) {
             font =  preferences.getProperty("font-command-line") == null ? DEFAULT_FONT_NAME : preferences.getProperty("font-command-line");
         }
 
-        return new Font(font,DEFAULT_FONT_SIZE);
+        return font;
     }
 
     @Override
-    public Font getOutputAreaFont() {
+    public String getOutputAreaFont() {
         String font = DEFAULT_FONT_NAME;
         if (preferences != null) {
             font =  preferences.getProperty("font-output-area") == null ? DEFAULT_FONT_NAME : preferences.getProperty("font-output-area");
         }
 
-        return new Font(font,DEFAULT_FONT_SIZE);
+        return font;
     }
 
     @Override
-    public Font getLogAreaFont() {
+    public String getLogAreaFont() {
         String font = DEFAULT_FONT_NAME;
         if (preferences != null) {
             font =  preferences.getProperty("font-log-area") == null ? DEFAULT_FONT_NAME : preferences.getProperty("font-log-area");
         }
 
-        return new Font(font,DEFAULT_FONT_SIZE);
+        return font;
     }
 
     private boolean isValueValidNumberFormat(String valoreStringa) {

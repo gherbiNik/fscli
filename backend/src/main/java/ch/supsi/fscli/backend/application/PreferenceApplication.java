@@ -1,7 +1,7 @@
 package ch.supsi.fscli.backend.application;
 
 import ch.supsi.fscli.backend.business.IPreferenceBusiness;
-import javafx.scene.text.Font;
+
 
 import java.nio.file.Path;
 import java.util.Locale;
@@ -55,17 +55,17 @@ public class PreferenceApplication implements IPreferenceApplication{
     }
 
     @Override
-    public Font getCommandLineFont() {
+    public String getCommandLineFont() {
         return preferenceBusiness.getCommandLineFont();
     }
 
     @Override
-    public Font getLogAreaFont() {
+    public String getLogAreaFont() {
         return preferenceBusiness.getLogAreaFont();
     }
 
     @Override
-    public Font getOutputAreaFont() {
+    public String getOutputAreaFont() {
         return preferenceBusiness.getOutputAreaFont();
     }
 

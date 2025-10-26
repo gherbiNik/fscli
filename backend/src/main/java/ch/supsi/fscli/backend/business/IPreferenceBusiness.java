@@ -1,6 +1,6 @@
 package ch.supsi.fscli.backend.business;
 
-import javafx.scene.text.Font;
+
 
 import java.nio.file.Path;
 
@@ -12,9 +12,9 @@ public interface IPreferenceBusiness {
     void setPreference(String key, String value);
     Path getUserPreferencesDirectoryPath();
 
-    Font getCommandLineFont();
-    Font getOutputAreaFont();
-    Font getLogAreaFont();
+    String getCommandLineFont();
+    String getOutputAreaFont();
+    String getLogAreaFont();
 
     int getOutputAreaRow();
     int getLogAreaRow();

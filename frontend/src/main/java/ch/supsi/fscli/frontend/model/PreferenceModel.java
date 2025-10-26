@@ -10,6 +10,8 @@ public class PreferenceModel implements IPreferenceModel{
     private static PreferenceModel instance;
     private IPreferenceApplication preferenceApplication;
 
+    private static final double DEFAULT_FONT_SIZE = Font.getDefault().getSize();
+
     private PreferenceModel() {}
 
     public static PreferenceModel getInstance(IPreferenceApplication preferenceApplication) {
@@ -41,17 +43,17 @@ public class PreferenceModel implements IPreferenceModel{
 
     @Override
     public Font getCommandLineFont() {
-        return preferenceApplication.getCommandLineFont();
+        return new Font(preferenceApplication.getCommandLineFont(), DEFAULT_FONT_SIZE);
     }
 
     @Override
     public Font getLogAreaFont() {
-        return preferenceApplication.getLogAreaFont();
+        return new Font(preferenceApplication.getLogAreaFont(), DEFAULT_FONT_SIZE);
     }
 
     @Override
     public Font getOutputAreaFont() {
-        return preferenceApplication.getOutputAreaFont();
+        return new Font(preferenceApplication.getOutputAreaFont(), DEFAULT_FONT_SIZE);
     }
 
     @Override

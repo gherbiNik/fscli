@@ -4,14 +4,19 @@ import java.util.Locale;
 import java.util.ResourceBundle;
 
 public class I18nManager {
-    private static final I18nManager instance = new I18nManager();
+    private static I18nManager instance;
     private static final String BUNDLE_BASE_NAME = "i18n.labels";
 
     private ResourceBundle resourceBundle;
 
     private I18nManager(){}
 
-    public static I18nManager getInstance() { return instance;}
+    public static I18nManager getInstance() {
+        if(instance == null)
+            instance = new I18nManager();
+
+        return instance;
+    }
 
     public void setLocale(Locale locale) {
         try {

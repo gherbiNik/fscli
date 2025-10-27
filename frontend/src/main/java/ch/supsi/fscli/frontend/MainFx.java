@@ -7,10 +7,7 @@ import ch.supsi.fscli.frontend.controller.ExitController;
 import ch.supsi.fscli.frontend.controller.PreferenceController;
 import ch.supsi.fscli.frontend.model.PreferenceModel;
 import ch.supsi.fscli.frontend.util.I18nManager;
-import ch.supsi.fscli.frontend.view.CreditsView;
-import ch.supsi.fscli.frontend.view.ExitView;
-import ch.supsi.fscli.frontend.view.HelpView;
-import ch.supsi.fscli.frontend.view.PreferenceView;
+import ch.supsi.fscli.frontend.view.*;
 import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -32,10 +29,7 @@ public class MainFx extends Application {
     private static final int PREF_LOG_VIEW_ROW_COUNT = 5;
 
     private final String applicationTitle;
-    private final MenuBar menuBar;
-    private final Menu fileMenu;
-    private final Menu editMenu;
-    private final Menu helpMenu;
+    private final MenuBarView menuBarView;
     private final Label commandLineLabel;
     private final Button enter;
     private final TextField commandLine;
@@ -81,6 +75,7 @@ public class MainFx extends Application {
         this.helpView = HelpView.getInstance(i18n);
         this.creditsView = CreditsView.getInstance(i18n);
         this.exitView = ExitView.getInstance(exitController, i18n);
+        this.menuBarView = MenuBarView.getInstance(i18n, exitView, creditsView, helpView, preferenceView);
 
 
 

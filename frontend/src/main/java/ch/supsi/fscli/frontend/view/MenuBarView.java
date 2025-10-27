@@ -25,11 +25,6 @@ public class MenuBarView implements ControlledFxView {
     private MenuItem helpMenuItem;
     private MenuItem aboutMenuItem;
 
-    private ExitView exitView;
-    private CreditsView creditsView;
-    private HelpView helpView;
-    private PreferenceView preferenceView;
-
     private I18nManager i18n;
 
     public static MenuBarView getInstance(I18nManager i18n, ExitView exitView, CreditsView creditsView,

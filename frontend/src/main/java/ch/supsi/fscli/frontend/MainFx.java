@@ -26,14 +26,13 @@ public class MainFx extends Application {
     private static final int PREF_COMMAND_SPACER_WIDTH = 11;
 
     private final String applicationTitle;
-    private final MenuBarView menuBarView;
-    private final Label commandLineLabel;
-    private final Button enter;
-    private final TextField commandLine;
-    private final TextArea outputView;
-    private final TextArea logView;
     private static Stage stageToClose;
 
+
+    private final MenuBarView menuBarView;
+    private final CommandLineView commandLineView;
+    private final OutputView outputView;
+    private final LogView logView;
     private final PreferenceView preferenceView;
     private final PreferenceController preferenceController;
     private final PreferenceModel preferenceModel;
@@ -46,6 +45,7 @@ public class MainFx extends Application {
     private final ExitController exitController;
 
     public MainFx() {
+
         // DAO
         this.preferenceDAO = PreferenceDAO.getInstance();
 
@@ -82,35 +82,16 @@ public class MainFx extends Application {
 
 
         // COMMAND LINE
-        this.enter = new Button(i18n.getString("commandLine.enter"));
-        this.enter.setId("enter");
-
-        this.commandLineLabel = new Label(i18n.getString("commandLine.command"));
-        this.commandLine = new TextField();
-        this.commandLine.setFont(this.preferenceController.getCommandLineFont());
-        this.commandLine.setPrefColumnCount(this.preferenceController.getColumn());
+        this.commandLineView = CommandLineView.getInstance(preferenceController, i18n);
 
 
         // OUTPUT VIEW (to be encapsulated properly)
-        this.outputView = new TextArea();
-        this.outputView.setId("outputView");
-        this.outputView.appendText("1This is an example output text...\n");
-        this.outputView.appendText("2This is an example output text...\n");
-        this.outputView.appendText("3This is an example output text...\n");
-        this.outputView.appendText("4This is an example output text...\n");
-        this.outputView.setPrefRowCount(this.preferenceController.getOutputAreaRow());
-        outputView.setFont(this.preferenceController.getOutputAreaFont());
+        this.outputView = OutputView.getInstance(preferenceController, i18n);
 
 
         // LOG VIEW (to be encapsulated properly)
-        this.logView = new TextArea();
-        this.logView.setId("logView");
-        this.logView.appendText("1This is an example log text...\n");
-        this.logView.appendText("2This is an example log text...\n");
-        this.logView.appendText("3This is an example log text...\n");
-        this.logView.appendText("4This is an example log text...\n");
-        logView.setFont(this.preferenceController.getLogAreaFont());
-        logView.setPrefRowCount(this.preferenceController.getLogAreaRow());
+        this.logView = LogView.getInstance(preferenceController, i18n);
+
     }
 
     public static Stage getStageToClose() {
@@ -136,11 +117,11 @@ public class MainFx extends Application {
         Region spacer2 = new Region();
         spacer2.setPrefWidth(PREF_COMMAND_SPACER_WIDTH);
 
-        commandLinePane.getChildren().add(this.commandLineLabel);
+        commandLinePane.getChildren().add(this.commandLineView.getLabel());
         commandLinePane.getChildren().add(spacer1);
-        commandLinePane.getChildren().add(this.commandLine);
+        commandLinePane.getChildren().add(this.commandLineView.getNode());
         commandLinePane.getChildren().add(spacer2);
-        commandLinePane.getChildren().add(this.enter);
+        commandLinePane.getChildren().add(this.commandLineView.getButton());
 
         // vertical pane to hold the menu bar and the command line
         VBox top = new VBox(
@@ -150,25 +131,25 @@ public class MainFx extends Application {
 
         // output view
         //this.outputView.setPrefRowCount(PREF_OUTPUT_VIEW_ROW_COUNT);
-        this.outputView.setEditable(false);
+        //this.outputView.setEditable(false);
 
         // scroll pane to hold the output view
         ScrollPane centerPane = new ScrollPane();
         centerPane.setFitToHeight(true);
         centerPane.setFitToWidth(true);
         centerPane.setPadding(new Insets(PREF_INSETS_SIZE));
-        centerPane.setContent(this.outputView);
+        centerPane.setContent(this.outputView.getNode());
 
         // log view
         //this.logView.setPrefRowCount(PREF_LOG_VIEW_ROW_COUNT);
-        this.logView.setEditable(false);
+        //this.logView.setEditable(false);
 
         // scroll pane to hold log view
         ScrollPane bottomPane = new ScrollPane();
         bottomPane.setFitToHeight(true);
         bottomPane.setFitToWidth(true);
         bottomPane.setPadding(new Insets(PREF_INSETS_SIZE));
-        bottomPane.setContent(this.logView);
+        bottomPane.setContent(this.logView.getNode());
 
         // root pane
         BorderPane rootPane = new BorderPane();

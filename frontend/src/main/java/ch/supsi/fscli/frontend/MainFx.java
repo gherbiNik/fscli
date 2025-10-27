@@ -24,9 +24,6 @@ import java.util.Locale;
 public class MainFx extends Application {
     private static final int PREF_INSETS_SIZE = 7;
     private static final int PREF_COMMAND_SPACER_WIDTH = 11;
-    private static final int COMMAND_LINE_PREF_COLUMN_COUNT = 72;
-    private static final int PREF_OUTPUT_VIEW_ROW_COUNT = 25;
-    private static final int PREF_LOG_VIEW_ROW_COUNT = 5;
 
     private final String applicationTitle;
     private final MenuBarView menuBarView;
@@ -83,66 +80,6 @@ public class MainFx extends Application {
 
         this.applicationTitle = i18n.getString("app.title");
 
-        // FILE MENU
-        MenuItem newMenuItem = new MenuItem(i18n.getString("menu.file.new"));
-        newMenuItem.setId("newMenuItem");
-
-        MenuItem openMenuItem = new MenuItem(i18n.getString("menu.file.open"));
-        openMenuItem.setId("openMenuItem");
-
-        //FIXME: if there is no filesystem created, saving should be disabled:
-        //****************************
-        MenuItem saveMenuItem = new MenuItem(i18n.getString("menu.file.save"));
-        saveMenuItem.setId("saveMenuItem");
-        //saveMenuItem.setDisable(true);
-        MenuItem saveAsMenuItem = new MenuItem(i18n.getString("menu.file.save_as"));
-        saveAsMenuItem.setId("saveAsMenuItem");
-        //****************************
-
-
-        // EXIT MENU
-        MenuItem exitMenuItem = new MenuItem(i18n.getString("menu.file.exit"));
-        exitMenuItem.setId("exitMenuItem");
-        exitMenuItem.setOnAction(event -> exitView.showView());
-
-
-        this.fileMenu = new Menu(i18n.getString("menu.file"));
-        this.fileMenu.setId("fileMenu");
-        this.fileMenu.getItems().add(newMenuItem);
-        this.fileMenu.getItems().add(new SeparatorMenuItem());
-        this.fileMenu.getItems().add(openMenuItem);
-        this.fileMenu.getItems().add(saveMenuItem);
-        this.fileMenu.getItems().add(saveAsMenuItem);
-        this.fileMenu.getItems().add(new SeparatorMenuItem());
-        this.fileMenu.getItems().add(exitMenuItem);
-
-        // EDIT MENU
-        MenuItem preferencesMenuItem = new MenuItem(i18n.getString("menu.edit.preferences"));
-        preferencesMenuItem.setId("preferencesMenuItem");
-        preferencesMenuItem.setOnAction(event -> preferenceView.showView());
-
-        this.editMenu = new Menu(i18n.getString("menu.edit"));
-        this.editMenu.setId("editMenu");
-        this.editMenu.getItems().add(preferencesMenuItem);
-
-        // HELP MENU
-        MenuItem helpMenuItem = new MenuItem(i18n.getString("menu.help.help"));
-        helpMenuItem.setId("helpMenuItem");
-        helpMenuItem.setOnAction(event -> helpView.showView());
-
-        // CREDITS MENU
-        MenuItem aboutMenuItem = new MenuItem(i18n.getString("menu.help.about"));
-        aboutMenuItem.setId("aboutMenuItem");
-        aboutMenuItem.setOnAction(event -> creditsView.showView());
-
-        this.helpMenu = new Menu(i18n.getString("menu.help"));
-        this.helpMenu.setId("helpMenu");
-        this.helpMenu.getItems().add(helpMenuItem);
-        this.helpMenu.getItems().add(aboutMenuItem);
-
-        // MENU BAR
-        this.menuBar = new MenuBar();
-        this.menuBar.getMenus().addAll(fileMenu, editMenu, helpMenu);
 
         // COMMAND LINE
         this.enter = new Button(i18n.getString("commandLine.enter"));
@@ -153,6 +90,7 @@ public class MainFx extends Application {
         this.commandLine.setFont(this.preferenceController.getCommandLineFont());
         this.commandLine.setPrefColumnCount(this.preferenceController.getColumn());
 
+
         // OUTPUT VIEW (to be encapsulated properly)
         this.outputView = new TextArea();
         this.outputView.setId("outputView");
@@ -162,6 +100,7 @@ public class MainFx extends Application {
         this.outputView.appendText("4This is an example output text...\n");
         this.outputView.setPrefRowCount(this.preferenceController.getOutputAreaRow());
         outputView.setFont(this.preferenceController.getOutputAreaFont());
+
 
         // LOG VIEW (to be encapsulated properly)
         this.logView = new TextArea();
@@ -205,7 +144,7 @@ public class MainFx extends Application {
 
         // vertical pane to hold the menu bar and the command line
         VBox top = new VBox(
-                this.menuBar,
+                this.menuBarView.getNode(),
                 commandLinePane
         );
 

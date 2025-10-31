@@ -1,11 +1,14 @@
 package ch.supsi.fscli.frontend;
 
 import ch.supsi.fscli.backend.application.PreferenceApplication;
+import ch.supsi.fscli.backend.application.filesystem.FileSystemApplication;
 import ch.supsi.fscli.backend.business.PreferenceBusiness;
 import ch.supsi.fscli.backend.dataAccess.PreferenceDAO;
 import ch.supsi.fscli.frontend.controller.ExitController;
 import ch.supsi.fscli.frontend.controller.PreferenceController;
+import ch.supsi.fscli.frontend.controller.filesystem.FileSystemController;
 import ch.supsi.fscli.frontend.model.PreferenceModel;
+import ch.supsi.fscli.frontend.model.filesystem.FileSystemModel;
 import ch.supsi.fscli.frontend.util.I18nManager;
 import ch.supsi.fscli.frontend.view.*;
 import javafx.application.Application;
@@ -43,6 +46,9 @@ public class MainFx extends Application {
     private final CreditsView creditsView;
     private final ExitView exitView;
     private final ExitController exitController;
+    private final FileSystemController fileSystemController;
+    private final FileSystemModel  fileSystemModel;
+    private final FileSystemApplication fileSystemApplication;
 
     public MainFx() {
 
@@ -54,12 +60,15 @@ public class MainFx extends Application {
 
         // APPLICATION
         this.preferenceApplication = PreferenceApplication.getInstance(preferenceBusiness);
+        this.fileSystemApplication = FileSystemApplication.getInstance();
 
         // MODEL
         this.preferenceModel = PreferenceModel.getInstance(preferenceApplication);
+        this.fileSystemModel = FileSystemModel.getInstance(fileSystemApplication);
 
         // CONTROLLER
         this.preferenceController = PreferenceController.getInstance(preferenceModel);
+        this.fileSystemController = FileSystemController.getInstance(fileSystemModel);
         this.exitController = ExitController.getInstance();
 
         // --- I18N INITIALIZATION ---
@@ -72,7 +81,7 @@ public class MainFx extends Application {
         this.helpView = HelpView.getInstance(i18n);
         this.creditsView = CreditsView.getInstance(i18n);
         this.exitView = ExitView.getInstance(exitController, i18n);
-        this.menuBarView = MenuBarView.getInstance(i18n, exitView, creditsView, helpView, preferenceView);
+        this.menuBarView = MenuBarView.getInstance(i18n, exitView, creditsView, helpView, preferenceView, fileSystemController);
 
 
 

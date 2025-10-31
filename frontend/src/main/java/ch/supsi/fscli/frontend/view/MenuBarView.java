@@ -1,5 +1,6 @@
 package ch.supsi.fscli.frontend.view;
 
+import ch.supsi.fscli.frontend.controller.filesystem.IFileSystemController;
 import ch.supsi.fscli.frontend.util.I18nManager;
 import javafx.scene.Node;
 import javafx.scene.control.Menu;
@@ -26,21 +27,24 @@ public class MenuBarView implements ControlledFxView {
     private MenuItem aboutMenuItem;
 
     private I18nManager i18n;
+    private IFileSystemController fileSystemController;
 
     public static MenuBarView getInstance(I18nManager i18n, ExitView exitView, CreditsView creditsView,
-    HelpView helpView, PreferenceView preferenceView) {
+    HelpView helpView, PreferenceView preferenceView, IFileSystemController fileSystemController) {
         if(instance == null) {
             instance = new MenuBarView();
-            instance.initialize(i18n, exitView, creditsView, helpView, preferenceView);
+            instance.initialize(i18n, exitView, creditsView, helpView, preferenceView, fileSystemController);
         }
         return instance;
     }
 
      public void initialize(I18nManager i18n, ExitView exitView, CreditsView creditsView,
-            HelpView helpView, PreferenceView preferenceView) {
+            HelpView helpView, PreferenceView preferenceView, IFileSystemController fileSystemController) {
 
         this.i18n = i18n;
+        this.fileSystemController = fileSystemController;
         this.menuBar = new MenuBar();
+
         initFileMenu(exitView);
         initEditMenu(preferenceView);
         initHelpMenu(helpView, creditsView);
@@ -71,6 +75,7 @@ public class MenuBarView implements ControlledFxView {
     private void initFileMenu(ExitView exitView) {
         newMenuItem = new MenuItem();
         newMenuItem.setId("newMenuItem");
+        newMenuItem.setOnAction(event -> fileSystemController.createFileSystem());
 
         openMenuItem = new MenuItem();
         openMenuItem.setId("openMenuItem");

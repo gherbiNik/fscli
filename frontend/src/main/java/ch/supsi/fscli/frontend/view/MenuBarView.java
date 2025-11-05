@@ -111,7 +111,7 @@ public class MenuBarView implements ControlledFxView {
     }
 
     @Override
-    public void update() {
+    public void update(String message) {
         /* FIXME
             if (this.gameService.isStarted()) {
                 newMenuItem.disableProperty().setValue(false);

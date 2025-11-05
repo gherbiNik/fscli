@@ -49,8 +49,9 @@ public class LogView implements UncontrolledFxView{
     }
 
     @Override
-    public void update() {
-        // TODO
+    public void update(String message) {
+        logView.appendText(message);
+
     }
 
     @Override

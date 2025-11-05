@@ -47,8 +47,8 @@ public class OutputView implements UncontrolledFxView{
     }
 
     @Override
-    public void update() {
-        // TODO
+    public void update(String message) {
+        outputView.appendText(message);
     }
 
     @Override

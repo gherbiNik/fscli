@@ -57,7 +57,7 @@ public class CommandLineView implements ControlledFxView{
     }
 
     @Override
-    public void update() {
+    public void update(String message) {
         //TODO
     }
 

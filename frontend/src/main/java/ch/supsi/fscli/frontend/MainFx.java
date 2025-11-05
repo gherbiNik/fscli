@@ -62,19 +62,23 @@ public class MainFx extends Application {
         this.preferenceApplication = PreferenceApplication.getInstance(preferenceBusiness);
         this.fileSystemApplication = FileSystemApplication.getInstance();
 
+        // --- I18N INITIALIZATION ---
+        Locale loadedLocale = this.preferenceApplication.loadLanguagePreference();
+        I18nManager i18n = I18nManager.getInstance();
+        i18n.setLocale(loadedLocale);
+
         // MODEL
         this.preferenceModel = PreferenceModel.getInstance(preferenceApplication);
         this.fileSystemModel = FileSystemModel.getInstance(fileSystemApplication);
 
         // CONTROLLER
         this.preferenceController = PreferenceController.getInstance(preferenceModel);
-        this.fileSystemController = FileSystemController.getInstance(fileSystemModel);
+        // LOG VIEW (to be encapsulated properly)
+        this.logView = LogView.getInstance(preferenceController, i18n);
+        this.fileSystemController = FileSystemController.getInstance(fileSystemModel,logView, i18n);
         this.exitController = ExitController.getInstance();
 
-        // --- I18N INITIALIZATION ---
-        Locale loadedLocale = this.preferenceApplication.loadLanguagePreference();
-        I18nManager i18n = I18nManager.getInstance();
-        i18n.setLocale(loadedLocale);
+
 
         // VIEW
         this.preferenceView = PreferenceView.getInstance(preferenceController, i18n);
@@ -98,8 +102,7 @@ public class MainFx extends Application {
         this.outputView = OutputView.getInstance(preferenceController, i18n);
 
 
-        // LOG VIEW (to be encapsulated properly)
-        this.logView = LogView.getInstance(preferenceController, i18n);
+
 
     }
 

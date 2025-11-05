@@ -1,7 +1,7 @@
 package ch.supsi.fscli.frontend.view;
 
-public interface DataView {
-    void update();
+public interface    DataView {
+    void update(String message);
     /*
     *  default void newFileCreated(){}; ??
     *  void fileOpened() ?? ti da i messaggi

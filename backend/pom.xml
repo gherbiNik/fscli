@@ -1,33 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-
     <groupId>ch.supsi.fscli</groupId>
     <artifactId>backend</artifactId>
     <version>1.0-SNAPSHOT</version>
     <!-- Application Name -->
     <name>Filesystem Command-line Simulator</name>
-
-
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
-        <maven.build.timestamp.format>dd MMMM yyyy</maven.build.timestamp.format>
+        <maven.build.timestamp.format>dd/MM/yyyy</maven.build.timestamp.format>
         <build.timestamp>${maven.build.timestamp}</build.timestamp>
     </properties>
-
     <dependencies>
-        <!-- TEST SCOPE  -->
+        <!-- TEST SCOPE -->
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-engine</artifactId>
             <version>5.13.4</version>
             <scope>test</scope>
         </dependency>
-
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-junit-jupiter</artifactId>
@@ -35,8 +29,26 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
-
     <build>
+        <resources>
+            <!-- Filter build.properties and i18n properties files -->
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+                <includes>
+                    <include>build.properties</include>
+                    <include>i18n/responses*.properties</include>
+                </includes>
+            </resource>
+            <!-- Do not filter other resources -->
+            <resource>
+                <directory>src/main/resources</directory>
+                <excludes>
+                    <exclude>build.properties</exclude>
+                    <exclude>i18n/responses*.properties</exclude>
+                </excludes>
+            </resource>
+        </resources>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -45,5 +57,4 @@
             </plugin>
         </plugins>
     </build>
-
 </project>

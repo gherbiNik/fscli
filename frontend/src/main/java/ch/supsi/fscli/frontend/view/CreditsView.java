@@ -1,9 +1,9 @@
 package ch.supsi.fscli.frontend.view;
 
-
 import ch.supsi.fscli.frontend.util.I18nManager;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
+import javafx.scene.control.Separator;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.stage.Modality;
@@ -15,6 +15,15 @@ public class CreditsView implements ShowView {
     private Stage stage;
     private I18nManager i18nManager;
 
+    // Declare labels as instance variables for setter access
+    private Label titleLabel;
+    private Label frontendVersionLabel;
+    private Label frontendBuildDateLabel;
+    private Label backendHeader;
+    private Label backendVersionLabel;
+    private Label backendBuildDateLabel;
+    private Label authorLabel;
+
     public static CreditsView getInstance(I18nManager i18nManager) {
         if (instance == null) {
             instance = new CreditsView();
@@ -23,19 +32,17 @@ public class CreditsView implements ShowView {
         return instance;
     }
 
-    private void initialize(I18nManager i18nManager){
+    private void initialize(I18nManager i18nManager) {
         this.i18nManager = i18nManager;
         initializeUI();
     }
 
     private CreditsView() {
-
     }
 
     private void initializeUI() {
         stage = new Stage();
-
-        stage.setTitle(i18nManager.getString("credits.name"));
+        stage.setTitle(""); // Initially empty; set by controller
         stage.initModality(Modality.APPLICATION_MODAL);
         stage.setResizable(false);
 
@@ -43,31 +50,78 @@ public class CreditsView implements ShowView {
         root.setPadding(new Insets(30));
         root.setAlignment(Pos.CENTER);
 
-        Label titleLabel = new Label(i18nManager.getString("credits.appname"));
+        titleLabel = new Label(""); // Initially empty; set by controller
         titleLabel.setStyle("-fx-font-size: 18px; -fx-font-weight: bold;");
 
-        Label appNameLabel = new Label(i18nManager.getString("credits.version"));
-        appNameLabel.setStyle("-fx-font-size: 14px;");
+        // Frontend Info
+        Label frontendHeader = new Label("Frontend");
+        frontendHeader.setStyle("-fx-font-size: 16px; -fx-font-weight: bold;");
 
-        Label versionLabel = new Label(i18nManager.getString("app.buildDate"));
+        frontendVersionLabel = new Label(""); // Initially empty; set by controller
+        frontendBuildDateLabel = new Label(""); // Initially empty; set by controller
 
-        Label authorLabel = new Label(i18nManager.getString("credits.devteam"));
+        Separator separator = new Separator();
+        separator.setPrefWidth(500);
 
+        // Backend Info (initially set to empty; updated by controller)
+        backendHeader = new Label("Backend");
+        backendHeader.setStyle("-fx-font-size: 16px; -fx-font-weight: bold;");
+
+        backendVersionLabel = new Label("");
+        backendBuildDateLabel = new Label("");
+
+        Separator separator2 = new Separator();
+        separator2.setPrefWidth(500);
+
+        authorLabel = new Label(""); // Initially empty; set by controller
 
         root.getChildren().addAll(
                 titleLabel,
-                appNameLabel,
-                versionLabel,
+                frontendHeader,
+                frontendVersionLabel,
+                frontendBuildDateLabel,
+                separator,
+                backendHeader,
+                backendVersionLabel,
+                backendBuildDateLabel,
+                separator2,
                 authorLabel
         );
 
-        Scene scene = new Scene(root, 600, 300);
+        Scene scene = new Scene(root, 600, 400);
         stage.setScene(scene);
+    }
+
+    public void setStageTitle(String title) {
+        stage.setTitle(title);
+    }
+
+    public void setAppName(String appName) {
+        titleLabel.setText(appName);
+    }
+
+    public void setFrontendVersion(String version) {
+        frontendVersionLabel.setText(version);
+    }
+
+    public void setFrontendBuildDate(String buildDate) {
+        frontendBuildDateLabel.setText(buildDate);
+    }
+
+    public void setBackendVersion(String version) {
+        backendVersionLabel.setText(version);
+    }
+
+    public void setBackendBuildDate(String buildDate) {
+        backendBuildDateLabel.setText(buildDate);
+    }
+
+    public void setAuthorLabel(String authors) {
+        authorLabel.setText(authors);
     }
 
     @Override
     public void showView() {
         stage.show();
     }
-
 }

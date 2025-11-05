@@ -3,7 +3,7 @@ package ch.supsi.fscli.frontend.model;
 
 import ch.supsi.fscli.backend.application.TranslationApplication;
 
-public class TranslationModel {
+public class TranslationModel implements ITranslationModel {
     private TranslationApplication translation;
     private static TranslationModel instance;
 

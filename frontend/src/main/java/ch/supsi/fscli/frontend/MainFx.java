@@ -73,15 +73,13 @@ public class MainFx extends Application {
 
         // --- I18N INITIALIZATION ---
         Locale loadedLocale = this.preferenceApplication.loadLanguagePreference();
-        I18nManager i18n = I18nManager.getInstance();
-        i18n.setLocale(loadedLocale);
+        
 
         // MODEL
         this.preferenceModel = PreferenceModel.getInstance(preferenceApplication);
         this.fileSystemModel = FileSystemModel.getInstance(fileSystemApplication);
 
-        // --- I18N INITIALIZATION ---
-        Locale loadedLocale = this.preferenceApplication.loadLanguagePreference();
+
 
         // TRANSLATOR - Backend
         this.backendTranslator = BackendTranslator.getInstance();

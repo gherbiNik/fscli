@@ -27,7 +27,7 @@ public class FileSystemController implements IFileSystemController {
     @Override
     public void createFileSystem() {
         fileSystemModel.createFileSystem();
-        logView.update(i18n.getString("filesystem.created"));
+        logView.update(i18n.getString("log.fsCreated"));
     }
 
 }

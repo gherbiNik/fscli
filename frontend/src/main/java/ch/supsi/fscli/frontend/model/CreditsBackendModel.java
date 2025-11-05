@@ -23,9 +23,6 @@ public class CreditsBackendModel {
         this.creditsFacade = creditsFacade;
     }
 
-    public String getBackendName(Locale locale) {
-        return creditsFacade.getBackendName(locale);
-    }
 
     public String getBackendVersion(Locale locale) {
         return creditsFacade.getVersionInfo(locale);

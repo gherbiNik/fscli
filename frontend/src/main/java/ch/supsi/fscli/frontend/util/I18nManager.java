@@ -8,6 +8,7 @@ public class I18nManager {
     private static final String BUNDLE_BASE_NAME = "i18n.labels";
 
     private ResourceBundle resourceBundle;
+    private Locale currentLocale;
 
     private I18nManager(){}
 
@@ -21,10 +22,16 @@ public class I18nManager {
     public void setLocale(Locale locale) {
         try {
             resourceBundle = ResourceBundle.getBundle(BUNDLE_BASE_NAME, locale);
+            this.currentLocale = locale;
         } catch (Exception e) {
             System.err.println("Could not load resource bundle for locale: " + locale + ". Falling back to default.");
             resourceBundle = ResourceBundle.getBundle(BUNDLE_BASE_NAME, Locale.ROOT);
+            this.currentLocale = Locale.ROOT;
         }
+    }
+
+    public Locale getCurrentLocale() {
+        return currentLocale != null ? currentLocale : Locale.getDefault();
     }
 
     public String getString(String key) {

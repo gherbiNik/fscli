@@ -1,10 +1,14 @@
 package ch.supsi.fscli.frontend;
 
+import ch.supsi.fscli.backend.application.CreditsFacade;
 import ch.supsi.fscli.backend.application.PreferenceApplication;
+import ch.supsi.fscli.backend.business.CreditsService;
 import ch.supsi.fscli.backend.business.PreferenceBusiness;
 import ch.supsi.fscli.backend.dataAccess.PreferenceDAO;
+import ch.supsi.fscli.frontend.controller.CreditsController;
 import ch.supsi.fscli.frontend.controller.ExitController;
 import ch.supsi.fscli.frontend.controller.PreferenceController;
+import ch.supsi.fscli.frontend.model.CreditsBackendModel;
 import ch.supsi.fscli.frontend.model.PreferenceModel;
 import ch.supsi.fscli.frontend.util.I18nManager;
 import ch.supsi.fscli.frontend.view.*;
@@ -43,6 +47,10 @@ public class MainFx extends Application {
     private final CreditsView creditsView;
     private final ExitView exitView;
     private final ExitController exitController;
+    private final CreditsBackendModel creditsBackendModel;
+    private final CreditsFacade creditsFacade;
+    private final CreditsService creditsService;
+    private final CreditsController creditsController;
 
     public MainFx() {
 
@@ -57,15 +65,18 @@ public class MainFx extends Application {
 
         // MODEL
         this.preferenceModel = PreferenceModel.getInstance(preferenceApplication);
-
-        // CONTROLLER
-        this.preferenceController = PreferenceController.getInstance(preferenceModel);
-        this.exitController = ExitController.getInstance();
+        this.creditsService = CreditsService.getInstance();
+        this.creditsFacade = CreditsFacade.getInstance(creditsService);
+        this.creditsBackendModel = CreditsBackendModel.getInstance(creditsFacade);
 
         // --- I18N INITIALIZATION ---
         Locale loadedLocale = this.preferenceApplication.loadLanguagePreference();
         I18nManager i18n = I18nManager.getInstance();
         i18n.setLocale(loadedLocale);
+
+        // CONTROLLER
+        this.preferenceController = PreferenceController.getInstance(preferenceModel);
+        this.exitController = ExitController.getInstance();
 
         // VIEW
         this.preferenceView = PreferenceView.getInstance(preferenceController, i18n);
@@ -74,6 +85,8 @@ public class MainFx extends Application {
         this.exitView = ExitView.getInstance(exitController, i18n);
         this.menuBarView = MenuBarView.getInstance(i18n, exitView, creditsView, helpView, preferenceView);
 
+        // CONTROLLER
+        this.creditsController = CreditsController.getInstance(i18n, creditsFacade, creditsBackendModel, creditsView);
 
 
         System.out.println("Application started with language: " + loadedLocale.getLanguage());

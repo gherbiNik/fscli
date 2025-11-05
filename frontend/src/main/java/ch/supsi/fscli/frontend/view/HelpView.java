@@ -49,7 +49,10 @@ public class HelpView implements ShowView{
         root.getChildren().add(titleLabel);
 
         // Command descriptions
-        root.getChildren().addAll(
+        root.getChildren().addAll(  //TODO comandi e descrizioni vanno nel backend
+                            //frontend gestisce interpretazione comandi. poi prende info dal backend.
+                //es: sintassi sbagliata? : backend mi invia l'help di quel comando
+                //******************************************************
                 createCommandLabel("pwd", "help.pwd"),
                 createCommandLabel("touch FILE...", "help.touch"),
                 createCommandLabel("mkdir DIRECTORY...", "help.mkdir"),
@@ -61,7 +64,7 @@ public class HelpView implements ShowView{
                 createCommandLabel("ls [-i] FILE...", "help.ls"),
                 createCommandLabel("clear", "help.clear"),
                 createCommandLabel("help", "help.help")
-        );
+        );      //FIXME: questi vanno spostati nel backend
 
         Scene scene = new Scene(root, 600, 400);
         stage.setScene(scene);

@@ -33,7 +33,6 @@ public class BackendTranslator {
 
     public String getString(String key) {
         try {
-            System.out.println(resourceBundle.getString(key));
             return resourceBundle.getString(key);
         } catch (Exception e) {
             System.err.println("Key not found inside the frontend bundle: " + key);

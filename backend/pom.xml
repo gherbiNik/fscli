@@ -31,20 +31,21 @@
     </dependencies>
     <build>
         <resources>
-            <!-- Filter only build.properties -->
+            <!-- Filter build.properties and i18n properties files -->
             <resource>
                 <directory>src/main/resources</directory>
                 <filtering>true</filtering>
                 <includes>
                     <include>build.properties</include>
+                    <include>i18n/responses*.properties</include>
                 </includes>
             </resource>
-            <!-- Do not filter other resources (e.g., i18n files) -->
+            <!-- Do not filter other resources -->
             <resource>
                 <directory>src/main/resources</directory>
-                <filtering>false</filtering>
                 <excludes>
                     <exclude>build.properties</exclude>
+                    <exclude>i18n/responses*.properties</exclude>
                 </excludes>
             </resource>
         </resources>

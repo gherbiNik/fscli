@@ -6,19 +6,38 @@ import java.util.ResourceBundle;
 
 public class BackendTranslator {
     private static final String BUNDLE_BASE_NAME = "i18n.responses";
+    private static BackendTranslator instance;
 
-    public static String getString(String key, Locale locale, Object... args) {
+    private ResourceBundle resourceBundle;
+    private Locale currentLocale;
+
+    private BackendTranslator(){}
+
+    public static BackendTranslator getInstance(){
+        if(instance == null) {
+            instance = new BackendTranslator();
+        }
+        return instance;
+    }
+
+    public void setLocale(Locale locale) {
         try {
-            ResourceBundle bundle = ResourceBundle.getBundle(BUNDLE_BASE_NAME, locale);
-            String pattern = bundle.getString(key);
-
-            if (args.length > 0) {
-                return MessageFormat.format(pattern, args);
-            } else {
-                return pattern;
-            }
+            resourceBundle = ResourceBundle.getBundle(BUNDLE_BASE_NAME, locale);
+            this.currentLocale = locale;
         } catch (Exception e) {
-            System.err.println("Key not found inside the backend bundle: " + key);
+            System.err.println("Could not load resource bundle for locale: " + locale + ". Falling back to default.");
+            resourceBundle = ResourceBundle.getBundle(BUNDLE_BASE_NAME, Locale.ROOT);
+            this.currentLocale = Locale.ROOT;
+        }
+    }
+
+    public String getString(String key) {
+        try {
+            System.out.println(resourceBundle.getString(key));
+            return resourceBundle.getString(key);
+        } catch (Exception e) {
+            System.err.println("Key not found inside the frontend bundle: " + key);
+
             return "!" + key + "!";
         }
     }

@@ -7,7 +7,7 @@ public class TranslationModel implements ITranslationModel {
     private TranslationApplication translation;
     private static TranslationModel instance;
 
-    public TranslationModel() {
+    private TranslationModel() {
     }
 
     public static TranslationModel getInstance(TranslationApplication translation){

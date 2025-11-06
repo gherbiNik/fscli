@@ -10,4 +10,9 @@ public class CommandContext {
     private List<String> arguments;
     private Map<String, String> options; // for example: "-s" / "-i"
 
+    public CommandContext(Inode currentWorkingDirectory, List<String> arguments, Map<String, String> options) {
+        this.currentWorkingDirectory = currentWorkingDirectory;
+        this.arguments = arguments;
+        this.options = options;
+    }
 }

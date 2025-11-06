@@ -7,6 +7,20 @@ import java.util.Map;
 
 public class CommandParser {
 
+    private static CommandParser instance;
+
+    private CommandParser(){}
+
+    public static CommandParser getInstance(){
+        if(instance == null){
+            instance = new CommandParser();
+            instance.initialize();
+        }
+        return instance;
+    }
+
+    private void initialize(){}
+
     // Takes in input a String and tries to convert it into a command
     //FIXME does not supporte all commands. this is a basic initial version
     public ParsedCommand parse(String input) throws InvalidCommandException {

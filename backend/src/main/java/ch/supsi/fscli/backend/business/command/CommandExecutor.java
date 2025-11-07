@@ -1,6 +1,7 @@
 package ch.supsi.fscli.backend.business.command;
 
-import javax.swing.*;
+import ch.supsi.fscli.backend.business.service.FileSystemService;
+
 import java.util.List;
 import java.util.Map;
 
@@ -8,18 +9,22 @@ public class CommandExecutor {
     private Map<String, ICommand> commandList;
     private CommandParser commandParser;
     private static CommandExecutor instance;
+    private FileSystemService fileSystemService; // FIXME: maybe to remove from here
 
     private CommandExecutor() {}
 
-    public static CommandExecutor getInstance(CommandParser commandParser, List<ICommand> commandList){
+    public static CommandExecutor getInstance(FileSystemService fileSystemService,
+                          CommandParser commandParser, List<ICommand> commandList){
         if(instance == null){
             instance = new CommandExecutor();
-            instance.initialize(commandParser, commandList);
+            instance.initialize(fileSystemService, commandParser, commandList);
         }
         return instance;
     }
 
-    private void initialize(CommandParser commandParser, List<ICommand> commands){
+    private void initialize(FileSystemService fileSystemService, CommandParser commandParser,
+                            List<ICommand> commands){
+        this.fileSystemService = fileSystemService;
         this.commandParser = commandParser;
         if (commands != null) {
             for (ICommand c : commands) {
@@ -39,7 +44,7 @@ public class CommandExecutor {
             }
 
             CommandContext commandContext = new CommandContext(
-                null, // FIXME : get the curr working directory
+                    fileSystemService.getCurrentDirectory(),
                     parsed.getArguments(),
                 parsed.getOptions()
             );

@@ -24,7 +24,6 @@ public abstract class Inode implements FileSystemComponent{
         return "Inode{" +
                 "uid=" + uid +
                 ", creationDate=" + creationDate +
-                ", parent=" + parent +
                 ", linkCount=" + linkCount +
                 ", type=" + type +
                 '}';

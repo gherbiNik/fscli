@@ -2,7 +2,7 @@ package ch.supsi.fscli.backend.business.command;
 
 import ch.supsi.fscli.backend.business.service.FileSystemService;
 
-public class MkdirCommand implements ICommand{
+public class MkdirCommand implements ICommand {
 
     private FileSystemService fileSystemService; // used to create a dir
 
@@ -12,21 +12,38 @@ public class MkdirCommand implements ICommand{
 
     @Override
     public CommandResult execute(CommandContext context) {
-        return null;
+        // Check if dir name is present
+        if (context.getArguments() == null || context.getArguments().isEmpty()) {
+            return CommandResult.error("mkdir: missing name");
+        }
+
+        String directoryName = context.getArguments().get(0);
+
+        if (directoryName == null || directoryName.trim().isEmpty()) {
+            return CommandResult.error("mkdir: invalid directory name");
+        }
+
+        try {
+            fileSystemService.createDirectory(directoryName);
+            return CommandResult.success("Directory '" + directoryName + "' created successfully");
+        } catch (Exception e) {
+            return CommandResult.error("mkdir: cannot create directory '" + directoryName + "': " + e.getMessage());
+        }
     }
 
+    //FIXME: insert this infos in a proper location
     @Override
     public String getName() {
-        return "";
+        return "mkdir";
     }
 
     @Override
     public String getSynopsis() {
-        return "";
+        return "mkdir DIRECTORY";
     }
 
     @Override
     public String getDescription() {
-        return "";
+        return "Create the DIRECTORY, if it does not already exist.";
     }
 }

@@ -27,10 +27,23 @@ public class FileSystemService {
         return fileSystem.getCurrentDirectory();
     }
 
-    // METODI ad esempio
-    // createDirectory
-    // remove directory
-    // interazione con il filesystem
 
+
+    public void createDirectory(String directoryName) {
+        if (directoryName == null || directoryName.trim().isEmpty()) {
+            throw new IllegalArgumentException("Directory name cannot be empty");
+        }
+
+        DirectoryNode currentDir = fileSystem.getCurrentDirectory();
+
+        // Directory already exists
+        if (currentDir.getChild(directoryName) != null) {
+            throw new IllegalArgumentException("Directory already exists");
+        }
+
+        // Creates new directory
+        DirectoryNode newDirectory = new DirectoryNode(currentDir);
+        currentDir.addChild(directoryName, newDirectory);
+    }
 
 }

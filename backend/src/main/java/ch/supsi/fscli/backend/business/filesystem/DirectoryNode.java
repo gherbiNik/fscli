@@ -17,6 +17,16 @@ public class DirectoryNode extends Inode implements IDirectoryNode {
     }
 
     @Override
+    public Inode getChild(String directoryName) {
+        return children.get(directoryName);
+    }
+
+    @Override
+    public void addChild(String directoryName, Inode newNode) {
+        children.put(directoryName, newNode);
+    }
+
+    @Override
     public String toString() {
         return "DirectoryNode{" +
                 "children=" + children +

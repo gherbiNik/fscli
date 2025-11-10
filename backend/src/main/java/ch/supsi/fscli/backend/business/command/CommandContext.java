@@ -15,4 +15,8 @@ public class CommandContext {
         this.arguments = arguments;
         this.options = options;
     }
+
+    public List<String> getArguments() {
+        return arguments;
+    }
 }

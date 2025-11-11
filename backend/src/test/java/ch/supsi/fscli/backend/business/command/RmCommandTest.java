@@ -14,8 +14,8 @@ import java.util.Map;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-public class TouchCommandTest {
-    private TouchCommand touchCommand;
+public class RmCommandTest {
+    private RmCommand rmCommand;
     private FileSystemService fileSystemService;
     private FileSystem fileSystem;
 
@@ -23,23 +23,23 @@ public class TouchCommandTest {
     void setUp() {
         fileSystem = FileSystem.getInstance();
         fileSystemService = FileSystemService.getInstance(fileSystem);
-        touchCommand = new TouchCommand(fileSystemService);
+        rmCommand = new RmCommand(fileSystemService);
     }
 
     @Test
     void testGetName() {
-        assertEquals("touch", touchCommand.getName());
+        assertEquals("rm", rmCommand.getName());
     }
 
     @Test
     void testGetSynopsis() {
-        assertEquals("touch FILE", touchCommand.getSynopsis());
+        assertEquals("rm FILE", rmCommand.getSynopsis());
     }
 
     @Test
     void testGetDescription() {
-        assertNotNull(touchCommand.getDescription());
-        assertFalse(touchCommand.getDescription().isEmpty());
+        assertNotNull(rmCommand.getDescription());
+        assertFalse(rmCommand.getDescription().isEmpty());
     }
 
     @Test
@@ -49,17 +49,20 @@ public class TouchCommandTest {
         Map<String, String> options = new HashMap<>();
 
         DirectoryNode currentDir = fileSystemService.getCurrentDirectory();
+
+        fileSystemService.createFile("testFile");
+
         CommandContext context = new CommandContext(currentDir, arguments, options);
 
-        CommandResult result = touchCommand.execute(context);
+        CommandResult result = rmCommand.execute(context);
 
         assertTrue(result.isSuccess());
         assertNotNull(result.getOutput());
         assertTrue(result.getOutput().contains("testFile"));
-        assertTrue(result.getOutput().contains("created successfully"));
+        assertTrue(result.getOutput().contains("removed successfully"));
 
-        // Verifica che il file sia stato effettivamente creato
-        assertNotNull(currentDir.getChild("testFile"));
+        // Verifica che il file sia stata effettivamente rimosso
+        assertNull(currentDir.getChild("testFile"));
     }
 
     @Test
@@ -70,7 +73,7 @@ public class TouchCommandTest {
         DirectoryNode currentDir = fileSystemService.getCurrentDirectory();
         CommandContext context = new CommandContext(currentDir, arguments, options);
 
-        CommandResult result = touchCommand.execute(context);
+        CommandResult result = rmCommand.execute(context);
 
         assertFalse(result.isSuccess());
         assertNotNull(result.getError());
@@ -83,7 +86,7 @@ public class TouchCommandTest {
         DirectoryNode currentDir = fileSystemService.getCurrentDirectory();
         CommandContext context = new CommandContext(currentDir, null, options);
 
-        CommandResult result = touchCommand.execute(context);
+        CommandResult result = rmCommand.execute(context);
 
         assertFalse(result.isSuccess());
         assertNotNull(result.getError());
@@ -98,7 +101,7 @@ public class TouchCommandTest {
         DirectoryNode currentDir = fileSystemService.getCurrentDirectory();
         CommandContext context = new CommandContext(currentDir, arguments, options);
 
-        CommandResult result = touchCommand.execute(context);
+        CommandResult result = rmCommand.execute(context);
 
         assertFalse(result.isSuccess());
         assertNotNull(result.getError());
@@ -114,30 +117,28 @@ public class TouchCommandTest {
         DirectoryNode currentDir = fileSystemService.getCurrentDirectory();
         CommandContext context = new CommandContext(currentDir, arguments, options);
 
-        CommandResult result = touchCommand.execute(context);
+        CommandResult result = rmCommand.execute(context);
 
         assertFalse(result.isSuccess());
         assertNotNull(result.getError());
     }
 
     @Test
-    void testExecute_FileAlreadyExists() {
+    void testExecute_FileDoesNotExists() {
         List<String> arguments = new ArrayList<>();
         arguments.add("existingFile");
         Map<String, String> options = new HashMap<>();
 
         DirectoryNode currentDir = fileSystemService.getCurrentDirectory();
 
-        fileSystemService.createDirectory("existingFile");
-
         CommandContext context = new CommandContext(currentDir, arguments, options);
 
-        CommandResult result = touchCommand.execute(context);
+        CommandResult result = rmCommand.execute(context);
 
         assertFalse(result.isSuccess());
         assertNotNull(result.getError());
-        assertTrue(result.getError().contains("cannot create") ||
-                result.getError().contains("already exists"));
+        assertTrue(result.getError().contains("cannot remove") ||
+                result.getError().contains("does not exists"));
     }
 
     @Test
@@ -145,28 +146,32 @@ public class TouchCommandTest {
         DirectoryNode currentDir = fileSystemService.getCurrentDirectory();
         Map<String, String> options = new HashMap<>();
 
+        fileSystemService.createFile("file1");
+        fileSystemService.createFile("file2");
+        fileSystemService.createFile("file3");
+
         List<String> args1 = new ArrayList<>();
         args1.add("file1");
         CommandContext context1 = new CommandContext(currentDir, args1, options);
-        CommandResult result1 = touchCommand.execute(context1);
+        CommandResult result1 = rmCommand.execute(context1);
 
         List<String> args2 = new ArrayList<>();
         args2.add("file2");
         CommandContext context2 = new CommandContext(currentDir, args2, options);
-        CommandResult result2 = touchCommand.execute(context2);
+        CommandResult result2 = rmCommand.execute(context2);
 
         List<String> args3 = new ArrayList<>();
         args3.add("file3");
         CommandContext context3 = new CommandContext(currentDir, args3, options);
-        CommandResult result3 = touchCommand.execute(context3);
+        CommandResult result3 = rmCommand.execute(context3);
 
         assertTrue(result1.isSuccess());
         assertTrue(result2.isSuccess());
         assertTrue(result3.isSuccess());
 
-        assertNotNull(currentDir.getChild("file1"));
-        assertNotNull(currentDir.getChild("file2"));
-        assertNotNull(currentDir.getChild("file3"));
+        assertNull(currentDir.getChild("file1"));
+        assertNull(currentDir.getChild("file2"));
+        assertNull(currentDir.getChild("file3"));
     }
 
     @Test
@@ -177,12 +182,14 @@ public class TouchCommandTest {
         Map<String, String> options = new HashMap<>();
 
         DirectoryNode currentDir = fileSystemService.getCurrentDirectory();
+        fileSystemService.createFile("my-file_123");
+
         CommandContext context = new CommandContext(currentDir, arguments, options);
 
-        CommandResult result = touchCommand.execute(context);
+        CommandResult result = rmCommand.execute(context);
 
         assertTrue(result.isSuccess());
-        assertNotNull(currentDir.getChild("my-file_123"));
+        assertNull(currentDir.getChild("my-file_123"));
     }
 
     @Test
@@ -195,7 +202,7 @@ public class TouchCommandTest {
         DirectoryNode currentDir = fileSystemService.getCurrentDirectory();
         CommandContext context = new CommandContext(currentDir, arguments, options);
 
-        CommandResult result = touchCommand.execute(context);
+        CommandResult result = rmCommand.execute(context);
 
         assertFalse(result.isSuccess());
         assertNotNull(result.getError());

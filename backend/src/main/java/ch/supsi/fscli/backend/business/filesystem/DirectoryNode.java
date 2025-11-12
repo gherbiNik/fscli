@@ -38,7 +38,7 @@ public class DirectoryNode extends Inode implements IDirectoryNode {
 
     @Override
     public String toString() {
-        return "DirectoryNode{" +
+        return super.toString()+"DirectoryNode{" +
                 "children=" + children +
                 '}';
     }

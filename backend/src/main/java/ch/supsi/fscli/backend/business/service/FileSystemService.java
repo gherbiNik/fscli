@@ -1,6 +1,7 @@
 package ch.supsi.fscli.backend.business.service;
 
 import ch.supsi.fscli.backend.business.filesystem.DirectoryNode;
+import ch.supsi.fscli.backend.business.filesystem.FileNode;
 import ch.supsi.fscli.backend.business.filesystem.FileSystem;
 import ch.supsi.fscli.backend.business.filesystem.IDirectoryNode;
 
@@ -28,7 +29,39 @@ public class FileSystemService {
         return fileSystem.getCurrentDirectory();
     }
 
+    public void createFile(String fileName) {
+        if (fileName == null || fileName.trim().isEmpty()) {
+            throw new IllegalArgumentException("File name cannot be empty");
+        }
 
+        DirectoryNode currentDir = fileSystem.getCurrentDirectory();
+
+        // File already exists
+        if (currentDir.getChild(fileName) != null) {
+            throw new IllegalArgumentException("File already exists");
+        }
+
+        // Creates new File
+        FileNode newFile = new FileNode(currentDir);
+        currentDir.addChild(fileName, newFile);
+    }
+
+    public void removeFile(String fileName) {
+        if (fileName == null || fileName.trim().isEmpty()) {
+            throw new IllegalArgumentException("File name cannot be empty");
+        }
+
+        DirectoryNode currentDir = fileSystem.getCurrentDirectory();
+
+        // File does not exists
+        if (currentDir.getChild(fileName) == null) {
+            throw new IllegalArgumentException("File does not exists");
+        }
+
+        // Remove file
+        FileNode nodeToRemove = (FileNode) currentDir.getChild(fileName);
+        currentDir.removeChild(fileName, nodeToRemove);
+    }
 
     public void createDirectory(String directoryName) {
         if (directoryName == null || directoryName.trim().isEmpty()) {

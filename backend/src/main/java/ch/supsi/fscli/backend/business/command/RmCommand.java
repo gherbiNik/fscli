@@ -1,0 +1,46 @@
+package ch.supsi.fscli.backend.business.command;
+
+import ch.supsi.fscli.backend.business.service.FileSystemService;
+
+public class RmCommand implements ICommand{
+    private final FileSystemService fileSystemService;
+
+    public RmCommand(FileSystemService fileSystemService) {
+        this.fileSystemService = fileSystemService;
+    }
+
+    @Override
+    public CommandResult execute(CommandContext context) {
+        if (context.getArguments() == null || context.getArguments().isEmpty()) {
+            return CommandResult.error("rm: missing file name");
+        }
+
+        String fileName = context.getArguments().get(0);
+
+        if (fileName == null || fileName.trim().isEmpty()) {
+            return CommandResult.error("rm: invalid file name");
+        }
+
+        try {
+            fileSystemService.removeFile(fileName);
+            return CommandResult.success("File '" + fileName + "' removed successfully");
+        } catch (Exception e) {
+            return CommandResult.error("rm cannot remove file '" + fileName + "': " + e.getMessage());
+        }
+    }
+
+    @Override
+    public String getName() {
+        return "rm";
+    }
+
+    @Override
+    public String getSynopsis() {
+        return "rm FILE";
+    }
+
+    @Override
+    public String getDescription() {
+        return "Remove a file, if it exists.";
+    }
+}

@@ -4,4 +4,8 @@ public interface IDirectoryNode {
     Inode getChild(String directoryName);
 
     void addChild(String directoryName, Inode newNode);
+
+    boolean removeChild(String directoryName, Inode nodeToRemove);
+
+    int getNumChild();
 }

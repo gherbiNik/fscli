@@ -12,8 +12,16 @@ public class DirectoryNode extends Inode implements IDirectoryNode {
         this.children = new HashMap<>();
     }
 
-    public void addChildren(String name, Inode child){
-        this.children.put(name, child);
+
+    @Override
+    public boolean removeChild(String childName, Inode nodeToRemove) {
+        return children.remove(childName, nodeToRemove);
+    }
+
+
+    @Override
+    public int getNumChild() {
+        return children.size();
     }
 
     @Override

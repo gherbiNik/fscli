@@ -2,6 +2,7 @@ package ch.supsi.fscli.backend.business.service;
 
 import ch.supsi.fscli.backend.business.filesystem.DirectoryNode;
 import ch.supsi.fscli.backend.business.filesystem.FileSystem;
+import ch.supsi.fscli.backend.business.filesystem.IDirectoryNode;
 
 public class FileSystemService {
 
@@ -46,4 +47,18 @@ public class FileSystemService {
         currentDir.addChild(directoryName, newDirectory);
     }
 
+    public boolean removeDirectory(String directoryName) {
+        DirectoryNode currentDir = fileSystem.getCurrentDirectory();
+
+        if(currentDir.getChild(directoryName) == null) {
+            throw new IllegalArgumentException("Directory does not exists");
+        }
+
+        DirectoryNode childDir = (DirectoryNode) currentDir.getChild(directoryName);
+        if(childDir.getNumChild() > 0) {
+            return false;  // Directory not empty
+        }
+        currentDir.removeChild(directoryName,childDir);
+        return true;
+    }
 }

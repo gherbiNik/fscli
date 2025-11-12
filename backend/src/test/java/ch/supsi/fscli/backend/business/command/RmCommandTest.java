@@ -21,6 +21,13 @@ public class RmCommandTest {
 
     @BeforeEach
     void setUp() {
+        try {
+            java.lang.reflect.Field instance = FileSystem.class.getDeclaredField("instance");
+            instance.setAccessible(true);
+            instance.set(null, null);
+        } catch (Exception e) {
+            fail("Could not reset singleton");
+        }
         fileSystem = FileSystem.getInstance();
         fileSystemService = FileSystemService.getInstance(fileSystem);
         rmCommand = new RmCommand(fileSystemService);
@@ -45,12 +52,12 @@ public class RmCommandTest {
     @Test
     void testExecute_Success() {
         List<String> arguments = new ArrayList<>();
-        arguments.add("testFile");
+        arguments.add("testRmFile");
         Map<String, String> options = new HashMap<>();
 
         DirectoryNode currentDir = fileSystemService.getCurrentDirectory();
 
-        fileSystemService.createFile("testFile");
+        fileSystemService.createFile("testRmFile");
 
         CommandContext context = new CommandContext(currentDir, arguments, options);
 
@@ -58,11 +65,11 @@ public class RmCommandTest {
 
         assertTrue(result.isSuccess());
         assertNotNull(result.getOutput());
-        assertTrue(result.getOutput().contains("testFile"));
+        assertTrue(result.getOutput().contains("testRmFile"));
         assertTrue(result.getOutput().contains("removed successfully"));
 
         // Verifica che il file sia stata effettivamente rimosso
-        assertNull(currentDir.getChild("testFile"));
+        assertNull(currentDir.getChild("testRmFile"));
     }
 
     @Test
@@ -146,22 +153,22 @@ public class RmCommandTest {
         DirectoryNode currentDir = fileSystemService.getCurrentDirectory();
         Map<String, String> options = new HashMap<>();
 
-        fileSystemService.createFile("file1");
-        fileSystemService.createFile("file2");
-        fileSystemService.createFile("file3");
+        fileSystemService.createFile("f1");
+        fileSystemService.createFile("f2");
+        fileSystemService.createFile("f3");
 
         List<String> args1 = new ArrayList<>();
-        args1.add("file1");
+        args1.add("f1");
         CommandContext context1 = new CommandContext(currentDir, args1, options);
         CommandResult result1 = rmCommand.execute(context1);
 
         List<String> args2 = new ArrayList<>();
-        args2.add("file2");
+        args2.add("f2");
         CommandContext context2 = new CommandContext(currentDir, args2, options);
         CommandResult result2 = rmCommand.execute(context2);
 
         List<String> args3 = new ArrayList<>();
-        args3.add("file3");
+        args3.add("f3");
         CommandContext context3 = new CommandContext(currentDir, args3, options);
         CommandResult result3 = rmCommand.execute(context3);
 
@@ -169,27 +176,27 @@ public class RmCommandTest {
         assertTrue(result2.isSuccess());
         assertTrue(result3.isSuccess());
 
-        assertNull(currentDir.getChild("file1"));
-        assertNull(currentDir.getChild("file2"));
-        assertNull(currentDir.getChild("file3"));
+        assertNull(currentDir.getChild("f1"));
+        assertNull(currentDir.getChild("f2"));
+        assertNull(currentDir.getChild("f3"));
     }
 
     @Test
     void testExecute_FileNameWithSpecialCharacters() {
         // valid chars
         List<String> arguments = new ArrayList<>();
-        arguments.add("my-file_123");
+        arguments.add("my-file_1234");
         Map<String, String> options = new HashMap<>();
 
         DirectoryNode currentDir = fileSystemService.getCurrentDirectory();
-        fileSystemService.createFile("my-file_123");
+        fileSystemService.createFile("my-file_1234");
 
         CommandContext context = new CommandContext(currentDir, arguments, options);
 
         CommandResult result = rmCommand.execute(context);
 
         assertTrue(result.isSuccess());
-        assertNull(currentDir.getChild("my-file_123"));
+        assertNull(currentDir.getChild("my-file_1234"));
     }
 
     @Test

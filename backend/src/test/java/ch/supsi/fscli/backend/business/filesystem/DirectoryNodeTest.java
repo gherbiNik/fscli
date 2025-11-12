@@ -16,14 +16,14 @@ public class DirectoryNodeTest {
     void setUp() {
         root = new DirectoryNode(null);
         subDir = new DirectoryNode(root);
-        root.addChildren("subDir",subDir);
+        root.addChild("subDir",subDir);
     }
 
     @Test
     @DisplayName("Should add child to directory")
     void testAddChildren() {
         FileNode file = new FileNode(subDir);
-        subDir.addChildren("test.txt", file);
+        subDir.addChild("test.txt", file);
         assertTrue(root.toString().contains("test.txt"));
     }
 
@@ -34,13 +34,13 @@ public class DirectoryNodeTest {
         FileNode file2 = new FileNode(subDir);
         DirectoryNode childDir = new DirectoryNode(subDir);
 
-        subDir.addChildren("file1.txt", file1);
-        subDir.addChildren("file2.txt", file2);
-        subDir.addChildren("documents", childDir);
+        subDir.addChild("f1.txt", file1);
+        subDir.addChild("f2.txt", file2);
+        subDir.addChild("documents", childDir);
 
         String dirString = subDir.toString();
-        assertTrue(dirString.contains("file1.txt"));
-        assertTrue(dirString.contains("file2.txt"));
+        assertTrue(dirString.contains("f1.txt"));
+        assertTrue(dirString.contains("f2.txt"));
         assertTrue(dirString.contains("documents"));
     }
 

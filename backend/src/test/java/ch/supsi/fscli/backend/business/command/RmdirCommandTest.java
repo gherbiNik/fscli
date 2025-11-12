@@ -21,6 +21,13 @@ class RmdirCommandTest {
 
     @BeforeEach
     void setUp() {
+        try {
+            java.lang.reflect.Field instance = FileSystem.class.getDeclaredField("instance");
+            instance.setAccessible(true);
+            instance.set(null, null);
+        } catch (Exception e) {
+            fail("Could not reset singleton");
+        }
         fileSystem = FileSystem.getInstance();
         fileSystemService = FileSystemService.getInstance(fileSystem);
         rmdirCommand = new RmdirCommand(fileSystemService);

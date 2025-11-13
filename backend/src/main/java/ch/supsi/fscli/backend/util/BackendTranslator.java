@@ -16,6 +16,7 @@ public class BackendTranslator {
     public static BackendTranslator getInstance(){
         if(instance == null) {
             instance = new BackendTranslator();
+
         }
         return instance;
     }
@@ -40,5 +41,13 @@ public class BackendTranslator {
 
             return "!" + key + "!";
         }
+    }
+
+    public Locale getCurrentLocale() {
+        return currentLocale;
+    }
+
+    public ResourceBundle getResourceBundle() {
+        return resourceBundle;
     }
 }

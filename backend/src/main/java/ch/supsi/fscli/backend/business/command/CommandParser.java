@@ -1,9 +1,6 @@
 package ch.supsi.fscli.backend.business.command;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class CommandParser {
 
@@ -23,25 +20,32 @@ public class CommandParser {
 
     // Takes in input a String and tries to convert it into a command
     //FIXME does not supporte all commands. this is a basic initial version
+
     public ParsedCommand parse(String input) throws InvalidCommandException {
         if (input == null || input.trim().isEmpty()) {
             throw new InvalidCommandException("Empty command");
         }
 
-        String[] tokens = input.trim().split("\\s+");
-        String commandName = tokens[0];
+        StringTokenizer tokenizer = new StringTokenizer(input.trim());
 
+        if (!tokenizer.hasMoreTokens()) {
+            throw new InvalidCommandException("Empty command");
+        }
+
+        String commandName = tokenizer.nextToken();
         ParsedCommand parsed = new ParsedCommand();
         parsed.setCommandName(commandName);
 
         List<String> args = new ArrayList<>();
         Map<String, String> options = new HashMap<>();
 
-        for (int i = 1; i < tokens.length; i++) {
-            if (tokens[i].startsWith("-")) {
-                options.put(tokens[i], "");
+        while (tokenizer.hasMoreTokens()) {
+            String token = tokenizer.nextToken();
+
+            if (token.startsWith("-")) {
+                options.put(token, "");
             } else {
-                args.add(tokens[i]);
+                args.add(token);
             }
         }
 

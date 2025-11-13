@@ -7,7 +7,13 @@ import java.util.*;
 public class CommandHelpContainer {
     private static CommandHelpContainer instance;
     private BackendTranslator translator;
-    private Map<Locale, Map<String, String>> cachedDescriptions = new HashMap<>();
+
+    private Map<Locale, List<String>> cachedDescriptions = new HashMap<>();
+
+    // Structure:
+    // Map: {command name -> ( synopsis , description ) }
+    // so, each command is associated with its synopsis and description
+    private Map<String, CommandDetails> commandDetailsMap = new HashMap<>();
 
     private CommandHelpContainer() {}
 
@@ -23,17 +29,19 @@ public class CommandHelpContainer {
         this.translator = translator;
     }
 
-    public Map<String, String> getCommandDescriptions(Locale locale) {
+    public Map<String, CommandDetails> getCommandDetailsMap() {
+        getCommandDescriptions();
+        return commandDetailsMap;
+    }
+
+    public List<String> getCommandDescriptions() {
+        Locale locale = translator.getCurrentLocale();
+        System.out.println(locale);
         if (cachedDescriptions.containsKey(locale)) {
             return cachedDescriptions.get(locale);
         }
 
-        ResourceBundle rb;
-        try {
-            rb = ResourceBundle.getBundle("i18n.responses", locale);
-        } catch (Exception e) {
-            rb = ResourceBundle.getBundle("i18n.responses", Locale.ROOT);
-        }
+        ResourceBundle rb = translator.getResourceBundle();
 
         Set<String> allKeys = new HashSet<>();
         Enumeration<String> keysEnum = rb.getKeys();
@@ -48,17 +56,23 @@ public class CommandHelpContainer {
             }
         }
 
-        Map<String, String> descriptions = new HashMap<>();
+        List<String> descriptions = new ArrayList<>();
+        commandDetailsMap.clear();
+
         for (String id : commandIds) {
             try {
                 String commandName = rb.getString("c." + id);
                 String synopsis = rb.getString("c." + id + ".synopsis");
                 String desc = rb.getString("d." + id);
+
+                // Full info map
+                CommandDetails details = new CommandDetails(synopsis,desc);
+                commandDetailsMap.put(commandName, details);
+
+                // Frontend Description
                 String fullInfo = synopsis + " : " + desc;
-                descriptions.put(commandName, fullInfo);
-            } catch (MissingResourceException e) {
-                // Skip if any part is missing
-            }
+                descriptions.add(fullInfo);
+            } catch (MissingResourceException e) {}
         }
 
         cachedDescriptions.put(locale, descriptions);

@@ -10,6 +10,7 @@ public class RmdirCommand extends AbstractCommand{
     public RmdirCommand(FileSystemService fileSystemService, String name, String synopsis, String description) {
         super(fileSystemService, name, synopsis, description);
     }
+    // FIXME: Maybe template pattern? some commands are very similar
 
     @Override
     public CommandResult execute(CommandContext context) {
@@ -48,18 +49,5 @@ public class RmdirCommand extends AbstractCommand{
         return CommandResult.success(output.toString().trim());
     }
 
-    @Override
-    public String getName() {
-        return "rmdir";
-    }
 
-    @Override
-    public String getSynopsis() {
-        return "rmdir DIRECTORY";
-    }
-
-    @Override
-    public String getDescription() {
-        return "";
-    }
 }

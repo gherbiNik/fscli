@@ -15,18 +15,29 @@ public class MkdirCommand extends AbstractCommand {
             return CommandResult.error("mkdir: missing name");
         }
 
-        String directoryName = context.getArguments().get(0);
+        StringBuilder output = new StringBuilder();
+        StringBuilder errors = new StringBuilder();
+        boolean hasErrors = false;
 
-        if (directoryName == null || directoryName.trim().isEmpty()) {
-            return CommandResult.error("mkdir: invalid directory name");
-        }
+        for (String directoryName : context.getArguments()) {
+            if (directoryName == null || directoryName.trim().isEmpty()) {
+                errors.append("mkdir: invalid directory name");
+                hasErrors = true;
+                continue;
+            }
 
-        try {
-            fileSystemService.createDirectory(directoryName);
-            return CommandResult.success("Directory '" + directoryName + "' created successfully");
-        } catch (Exception e) {
-            return CommandResult.error("mkdir: cannot create directory '" + directoryName + "': " + e.getMessage());
+            try {
+                fileSystemService.createDirectory(directoryName);
+                output.append("Directory '").append(directoryName).append("' created successfully");
+            } catch (Exception e) {
+                hasErrors = true;
+                errors.append("mkdir: cannot create directory '").append(directoryName).append("': ").append(e.getMessage());
+            }
+
         }
+        if(hasErrors){
+            return CommandResult.error(errors.toString().trim());
+        }
+        return CommandResult.success(output.toString().trim());
     }
-
 }

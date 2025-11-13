@@ -2,6 +2,7 @@ package ch.supsi.fscli.backend.application;
 
 import ch.supsi.fscli.backend.business.command.CommandHelpContainer;
 
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -25,7 +26,7 @@ public class CommandHelpApplication implements ICommandHelpApplication {
     }
 
     @Override
-    public Map<String, String> getCommandDescriptions(Locale locale) {
-        return container.getCommandDescriptions(locale);
+    public List<String> getCommandDescriptions(Locale locale) {
+        return container.getCommandDescriptions();
     }
 }

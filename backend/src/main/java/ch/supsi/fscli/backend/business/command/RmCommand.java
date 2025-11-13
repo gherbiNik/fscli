@@ -28,18 +28,5 @@ public class RmCommand extends AbstractCommand{
         }
     }
 
-    @Override
-    public String getName() {
-        return "rm";
-    }
 
-    @Override
-    public String getSynopsis() {
-        return "rm FILE";
-    }
-
-    @Override
-    public String getDescription() {
-        return "Remove a file, if it exists.";
-    }
 }

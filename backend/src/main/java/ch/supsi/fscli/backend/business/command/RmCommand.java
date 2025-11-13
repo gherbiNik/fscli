@@ -2,11 +2,10 @@ package ch.supsi.fscli.backend.business.command;
 
 import ch.supsi.fscli.backend.business.service.FileSystemService;
 
-public class RmCommand implements ICommand{
-    private final FileSystemService fileSystemService;
+public class RmCommand extends AbstractCommand{
 
-    public RmCommand(FileSystemService fileSystemService) {
-        this.fileSystemService = fileSystemService;
+    public RmCommand(FileSystemService fileSystemService, String name, String synopsis, String description) {
+        super(fileSystemService, name, synopsis, description);
     }
 
     @Override

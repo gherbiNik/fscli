@@ -2,12 +2,10 @@ package ch.supsi.fscli.backend.business.command;
 
 import ch.supsi.fscli.backend.business.service.FileSystemService;
 
-public class MkdirCommand implements ICommand {
+public class MkdirCommand extends AbstractCommand {
 
-    private FileSystemService fileSystemService; // used to create a dir
-
-    public MkdirCommand(FileSystemService fileSystemService) { // FIXME maybe to change position
-        this.fileSystemService = fileSystemService;
+    public MkdirCommand(FileSystemService fileSystemService, String name, String synopsis, String description) {
+        super(fileSystemService, name, synopsis, description);
     }
 
     @Override
@@ -31,19 +29,4 @@ public class MkdirCommand implements ICommand {
         }
     }
 
-    //FIXME: insert this infos in a proper location
-    @Override
-    public String getName() {
-        return "mkdir";
-    }
-
-    @Override
-    public String getSynopsis() {
-        return "mkdir DIRECTORY";
-    }
-
-    @Override
-    public String getDescription() {
-        return "Create the DIRECTORY, if it does not already exist.";
-    }
 }

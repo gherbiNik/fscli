@@ -2,11 +2,10 @@ package ch.supsi.fscli.backend.business.command;
 
 import ch.supsi.fscli.backend.business.service.FileSystemService;
 
-public class TouchCommand implements ICommand{
-    private final FileSystemService fileSystemService;
+public class TouchCommand extends AbstractCommand{
 
-    public TouchCommand(FileSystemService fileSystemService) {
-        this.fileSystemService = fileSystemService;
+    public TouchCommand(FileSystemService fileSystemService, String name, String synopsis, String description) {
+        super(fileSystemService, name, synopsis, description);
     }
 
     @Override
@@ -29,18 +28,4 @@ public class TouchCommand implements ICommand{
         }
     }
 
-    @Override
-    public String getName() {
-        return "touch";
-    }
-
-    @Override
-    public String getSynopsis() {
-        return "touch FILE";
-    }
-
-    @Override
-    public String getDescription() {
-        return "Create an empty text file, if it does not already exist.";
-    }
 }

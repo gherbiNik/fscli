@@ -7,6 +7,8 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
+import javafx.scene.text.Text;
+import javafx.scene.text.TextFlow;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
@@ -18,6 +20,7 @@ public class HelpView implements ShowView{
     private I18nManager i18nManager;
     private Map<String, String> commandDescriptions;
     private Stage stage = new Stage();
+    private VBox root;
 
     public static HelpView getInstance(I18nManager i18nManager){
         if(instance == null){
@@ -44,21 +47,12 @@ public class HelpView implements ShowView{
         stage.initModality(Modality.APPLICATION_MODAL);
         stage.setResizable(false);
 
-        VBox root = new VBox(10);
+        root = new VBox(10);
         root.setPadding(new Insets(20));
 
         Label titleLabel = new Label(i18nManager.getString("help.title"));
         titleLabel.setFont(Font.font("System", FontWeight.BOLD, 14));
         root.getChildren().add(titleLabel);
-
-        // Command descriptions
-        if(commandDescriptions != null ){
-            for(Map.Entry<String, String> row : commandDescriptions){
-                createCommandLabel(row.getKey(), row.getValue())
-            }
-
-               //TODO sintassi sbagliata? : backend mi invia l'help di quel comando
-        }
 
         Scene scene = new Scene(root, 600, 400);
         stage.setScene(scene);
@@ -66,15 +60,37 @@ public class HelpView implements ShowView{
 
     public void setCommandDescriptions(Map<String, String> commandDescriptions) {
         this.commandDescriptions = commandDescriptions;
+        populateCommands();
     }
 
-    private Label createCommandLabel(String command, String description) {
-        Label label = new Label("• '" + command + "'  " + description);
-        label.setWrapText(true);
-        label.setFont(Font.font("Monospaced", 12));
-        return label;
+    private void populateCommands() {
+        // Clear existing command labels (skip the title: index 0)
+        if (root.getChildren().size() > 1) {
+            root.getChildren().remove(1, root.getChildren().size());
+        }
+
+        if (commandDescriptions != null) {
+            for (Map.Entry<String, String> row : commandDescriptions.entrySet()) {
+                TextFlow tf = createCommandLabel(row.getKey(), row.getValue());
+                root.getChildren().add(tf);
+            }
+        }
     }
 
+    private TextFlow createCommandLabel(String command, String description) {
+        Text bullet = new Text("• ");
+        bullet.setFont(Font.font("Monospaced", 12));
+
+        Text cmd = new Text(command);
+        cmd.setFont(Font.font("Monospaced", FontWeight.BOLD, 12));
+
+        Text rest = new Text("  " + description);
+        rest.setFont(Font.font("Monospaced", 12));
+
+        TextFlow tf = new TextFlow(bullet, cmd, rest);
+        tf.setPrefWidth(580);
+        return tf;
+    }
     @Override
     public void showView() {
         stage.show();

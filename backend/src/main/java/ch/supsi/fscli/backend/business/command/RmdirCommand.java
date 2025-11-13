@@ -3,11 +3,12 @@ package ch.supsi.fscli.backend.business.command;
 import ch.supsi.fscli.backend.business.service.FileSystemService;
 
 // Removes an empty dir
-public class RmdirCommand implements ICommand{
-    private FileSystemService fileSystemService; // used to create a dir
+public class RmdirCommand extends AbstractCommand{
+     // used to create a dir
 
-    public RmdirCommand(FileSystemService fileSystemService) { // FIXME maybe to change position
-        this.fileSystemService = fileSystemService;
+
+    public RmdirCommand(FileSystemService fileSystemService, String name, String synopsis, String description) {
+        super(fileSystemService, name, synopsis, description);
     }
 
     @Override

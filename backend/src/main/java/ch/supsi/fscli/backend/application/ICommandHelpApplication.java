@@ -1,4 +1,9 @@
 package ch.supsi.fscli.backend.application;
 
-public class ICommandHelpApplication {
+import java.util.Locale;
+import java.util.Map;
+
+public interface ICommandHelpApplication {
+    Map<String, String> getCommandDescriptions(Locale locale);
+
 }

@@ -1,4 +1,31 @@
 package ch.supsi.fscli.backend.application;
 
-public class CommandHelpApplication {
+import ch.supsi.fscli.backend.business.command.CommandHelpContainer;
+
+import java.util.Locale;
+import java.util.Map;
+
+public class CommandHelpApplication implements ICommandHelpApplication {
+    private static CommandHelpApplication instance;
+    private CommandHelpContainer container;
+
+    private CommandHelpApplication() {
+    }
+
+    public static CommandHelpApplication getInstance(CommandHelpContainer container) {
+        if (instance == null) {
+            instance = new CommandHelpApplication();
+            instance.initialize(container);
+        }
+        return instance;
+    }
+
+    private void initialize(CommandHelpContainer container){
+        this.container = container;
+    }
+
+    @Override
+    public Map<String, String> getCommandDescriptions(Locale locale) {
+        return container.getCommandDescriptions(locale);
+    }
 }

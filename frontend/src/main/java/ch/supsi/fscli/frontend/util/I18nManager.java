@@ -11,6 +11,7 @@ public class I18nManager {
     private TranslationModel translationModel;
 
     private ResourceBundle resourceBundle;
+    private Locale locale;
 
     private I18nManager(){}
 
@@ -30,13 +31,16 @@ public class I18nManager {
     public void setLocale(Locale locale) {
         try {
             resourceBundle = ResourceBundle.getBundle(BUNDLE_BASE_NAME, locale);
+            this.locale = locale;
         } catch (Exception e) {
             System.err.println("Could not load resource bundle for locale: " + locale + ". Falling back to default.");
             resourceBundle = ResourceBundle.getBundle(BUNDLE_BASE_NAME, Locale.ROOT);
         }
     }
 
-
+    public Locale getLocale() {
+        return locale;
+    }
 
     public String getString(String key) {
         try {

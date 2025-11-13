@@ -109,7 +109,7 @@ public class MainFx extends Application {
         this.menuBarView = MenuBarView.getInstance(i18n, exitView, creditsView, helpView, preferenceView, fileSystemController);
 
         // CONTROLLER
-        this.creditsController = CreditsController.getInstance(i18n, creditsFacade, creditsView);
+        this.creditsController = CreditsController.getInstance(i18n, creditsView);
 
 
         System.out.println("Application started with language: " + loadedLocale.getLanguage());

@@ -15,15 +15,15 @@ public class CreditsController {
     private CreditsController() {
     }
 
-    public static CreditsController getInstance(I18nManager i18nManager, TranslationApplication creditsFacade, CreditsView view) {
+    public static CreditsController getInstance(I18nManager i18nManager, CreditsView view) {
         if (instance == null) {
             instance = new CreditsController();
-            instance.initialize(i18nManager, creditsFacade, view);
+            instance.initialize(i18nManager, view);
         }
         return instance;
     }
 
-    private void initialize(I18nManager i18nManager, TranslationApplication creditsFacade, CreditsView view) {
+    private void initialize(I18nManager i18nManager, CreditsView view) {
         this.i18nManager = i18nManager;
         this.view = view;
         updateView();

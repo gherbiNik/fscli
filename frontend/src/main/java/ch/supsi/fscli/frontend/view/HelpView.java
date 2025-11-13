@@ -10,10 +10,13 @@ import javafx.scene.text.FontWeight;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
+import java.util.List;
+import java.util.Map;
+
 public class HelpView implements ShowView{
     private static HelpView instance;
     private I18nManager i18nManager;
-
+    private Map<String, String> commandDescriptions;
     private Stage stage = new Stage();
 
     public static HelpView getInstance(I18nManager i18nManager){
@@ -49,30 +52,23 @@ public class HelpView implements ShowView{
         root.getChildren().add(titleLabel);
 
         // Command descriptions
-        root.getChildren().addAll(  //TODO comandi e descrizioni vanno nel backend
-                            //frontend gestisce interpretazione comandi. poi prende info dal backend.
-                //es: sintassi sbagliata? : backend mi invia l'help di quel comando
-                //******************************************************
-                createCommandLabel("pwd", "help.pwd"),
-                createCommandLabel("touch FILE...", "help.touch"),
-                createCommandLabel("mkdir DIRECTORY...", "help.mkdir"),
-                createCommandLabel("cd [DIRECTORY]", "help.cd"),
-                createCommandLabel("rm FILE...", "help.rm"),
-                createCommandLabel("rmdir DIRECTORY...", "help.rmdir"),
-                createCommandLabel("mv SOURCE DESTINATION", "help.mv"),
-                createCommandLabel("ln [-s] TARGET LINK_NAME", "help.ln"),
-                createCommandLabel("ls [-i] FILE...", "help.ls"),
-                createCommandLabel("clear", "help.clear"),
-                createCommandLabel("help", "help.help")
-        );      //FIXME: questi vanno spostati nel backend
+        if(commandDescriptions != null ){
+            for(Map.Entry<String, String> row : commandDescriptions){
+                createCommandLabel(row.getKey(), row.getValue())
+            }
+
+               //TODO sintassi sbagliata? : backend mi invia l'help di quel comando
+        }
 
         Scene scene = new Scene(root, 600, 400);
         stage.setScene(scene);
     }
 
-    private Label createCommandLabel(String command, String descriptionKey) {
-        String description = i18nManager.getString(descriptionKey);
+    public void setCommandDescriptions(Map<String, String> commandDescriptions) {
+        this.commandDescriptions = commandDescriptions;
+    }
 
+    private Label createCommandLabel(String command, String description) {
         Label label = new Label("• '" + command + "'  " + description);
         label.setWrapText(true);
         label.setFont(Font.font("Monospaced", 12));

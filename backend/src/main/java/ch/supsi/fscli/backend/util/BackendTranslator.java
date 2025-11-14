@@ -6,6 +6,7 @@ import java.util.ResourceBundle;
 
 public class BackendTranslator {
     private static final String BUNDLE_BASE_NAME = "i18n.responses";
+    private static final String BUNDLE_BASE_NAME_TEST = "i18n.test";
     private static BackendTranslator instance;
 
     private ResourceBundle resourceBundle;
@@ -19,6 +20,25 @@ public class BackendTranslator {
 
         }
         return instance;
+    }
+
+    /* Testing purpose */
+
+    public void setLocaleDefault(Locale locale){
+        try {
+            resourceBundle = ResourceBundle.getBundle(BUNDLE_BASE_NAME_TEST, locale);
+            if (!resourceBundle.getLocale().getLanguage().equals(locale.getLanguage())) {
+                System.err.println("No matching language bundle for: " + locale + ". Falling back to root.");
+                resourceBundle = ResourceBundle.getBundle(BUNDLE_BASE_NAME_TEST, Locale.ROOT);
+                this.currentLocale = Locale.ROOT;
+            } else {
+                this.currentLocale = locale;
+            }
+        } catch (Exception e) {
+            System.err.println("Could not load resource bundle for locale: " + locale + ". Falling back to default.");
+            resourceBundle = ResourceBundle.getBundle(BUNDLE_BASE_NAME_TEST, Locale.ROOT);
+            this.currentLocale = Locale.ROOT;
+        }
     }
 
     public void setLocale(Locale locale) {

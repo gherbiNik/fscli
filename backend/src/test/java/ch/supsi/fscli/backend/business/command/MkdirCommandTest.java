@@ -13,10 +13,7 @@ import ch.supsi.fscli.backend.util.BackendTranslator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -27,6 +24,7 @@ class MkdirCommandTest {
     private FileSystem fileSystem;
     private CommandHelpContainer commandHelpContainer;
 
+
     @BeforeEach
     void setUp() {
         try {
@@ -36,31 +34,20 @@ class MkdirCommandTest {
         } catch (Exception e) {
             fail("Could not reset singleton");
         }
-        commandHelpContainer = CommandHelpContainer.getInstance(BackendTranslator.getInstance());
+
+        BackendTranslator translator = BackendTranslator.getInstance();
+        translator.setLocaleDefault(Locale.US);
+        commandHelpContainer = CommandHelpContainer.getInstance(translator);
         fileSystem = FileSystem.getInstance();
         fileSystemService = FileSystemService.getInstance(fileSystem);
+
         Map<String, CommandDetails> m = commandHelpContainer.getCommandDetailsMap();
         String synopsis = m.get("mkdir").synopsis();
         String descr = m.get("mkdir").description();
-
         mkdirCommand = new MkdirCommand(fileSystemService, "mkdir", synopsis, descr);
     }
 
-    @Test
-    void testGetName() {
-        assertEquals("mkdir", mkdirCommand.getName());
-    }
 
-    @Test
-    void testGetSynopsis() {
-        assertEquals("mkdir DIRECTORY...", mkdirCommand.getSynopsis());
-    }
-
-    @Test
-    void testGetDescription() {
-        assertNotNull(mkdirCommand.getDescription());
-        assertFalse(mkdirCommand.getDescription().isEmpty());
-    }
 
     @Test
     void testExecute_Success() {

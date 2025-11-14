@@ -1,5 +1,6 @@
 package ch.supsi.fscli.backend.business.command;
 
+import ch.supsi.fscli.backend.business.command.commands.CommandResult;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;

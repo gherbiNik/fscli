@@ -1,4 +1,4 @@
-package ch.supsi.fscli.backend.business.command;
+package ch.supsi.fscli.backend.business.command.business;
 
 public class InvalidCommandException extends RuntimeException {
     public InvalidCommandException(String message) {

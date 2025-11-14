@@ -1,4 +1,4 @@
-package ch.supsi.fscli.backend.business.command;
+package ch.supsi.fscli.backend.business.command.commands;
 
 public class CommandResult {
     private final boolean success;

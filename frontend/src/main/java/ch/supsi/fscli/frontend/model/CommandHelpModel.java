@@ -5,6 +5,7 @@ import ch.supsi.fscli.backend.application.ICommandHelpApplication;
 import ch.supsi.fscli.frontend.util.I18nManager;
 
 
+import java.util.List;
 import java.util.Map;
 
 public class CommandHelpModel implements ICommandHelpModel {
@@ -29,7 +30,7 @@ public class CommandHelpModel implements ICommandHelpModel {
     }
 
     @Override
-    public Map<String, String> getCommandDescriptions() {
-        return commandHelpApplication.getCommandDescriptions(i18n.getLocale());
+    public List<String> getCommandDescriptions() {
+        return commandHelpApplication.getCommandDescriptions();
     }
 }

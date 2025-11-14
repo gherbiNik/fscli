@@ -1,4 +1,4 @@
-package ch.supsi.fscli.backend.business.command;
+package ch.supsi.fscli.backend.business.command.business;
 
 public record CommandDetails(String synopsis, String description) {}
 

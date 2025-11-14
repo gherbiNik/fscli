@@ -1,5 +1,8 @@
-package ch.supsi.fscli.backend.business.command;
+package ch.supsi.fscli.backend.business.command.business;
 
+import ch.supsi.fscli.backend.business.command.commands.CommandContext;
+import ch.supsi.fscli.backend.business.command.commands.CommandResult;
+import ch.supsi.fscli.backend.business.command.commands.ICommand;
 import ch.supsi.fscli.backend.business.service.FileSystemService;
 
 import java.util.List;

@@ -1,4 +1,4 @@
-package ch.supsi.fscli.backend.business.command;
+package ch.supsi.fscli.backend.business.command.commands;
 
 import ch.supsi.fscli.backend.business.service.FileSystemService;
 

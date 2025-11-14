@@ -1,6 +1,7 @@
 package ch.supsi.fscli.backend.business.command;
 
-import org.junit.jupiter.api.BeforeAll;
+import ch.supsi.fscli.backend.business.command.business.InvalidCommandException;
+import ch.supsi.fscli.backend.business.command.business.ParsedCommand;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

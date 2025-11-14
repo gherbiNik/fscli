@@ -6,7 +6,7 @@ import ch.supsi.fscli.backend.application.TranslationApplication;
 import ch.supsi.fscli.backend.application.PreferenceApplication;
 import ch.supsi.fscli.backend.application.filesystem.FileSystemApplication;
 import ch.supsi.fscli.backend.business.PreferenceBusiness;
-import ch.supsi.fscli.backend.business.command.CommandHelpContainer;
+import ch.supsi.fscli.backend.business.command.business.CommandHelpContainer;
 import ch.supsi.fscli.backend.dataAccess.PreferenceDAO;
 import ch.supsi.fscli.backend.util.BackendTranslator;
 import ch.supsi.fscli.frontend.controller.CreditsController;

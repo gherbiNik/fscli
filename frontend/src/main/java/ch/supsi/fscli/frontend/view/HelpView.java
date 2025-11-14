@@ -18,7 +18,7 @@ import java.util.Map;
 public class HelpView implements ShowView{
     private static HelpView instance;
     private I18nManager i18nManager;
-    private Map<String, String> commandDescriptions;
+    private List<String> commandDescriptions;
     private Stage stage = new Stage();
     private VBox root;
 
@@ -58,7 +58,7 @@ public class HelpView implements ShowView{
         stage.setScene(scene);
     }
 
-    public void setCommandDescriptions(Map<String, String> commandDescriptions) {
+    public void setCommandDescriptions(List<String> commandDescriptions) {
         this.commandDescriptions = commandDescriptions;
         populateCommands();
     }
@@ -70,24 +70,22 @@ public class HelpView implements ShowView{
         }
 
         if (commandDescriptions != null) {
-            for (Map.Entry<String, String> row : commandDescriptions.entrySet()) {
-                TextFlow tf = createCommandLabel(row.getKey(), row.getValue());
+            for (String cmd : commandDescriptions) {
+                TextFlow tf = createCommandLabel(cmd);
                 root.getChildren().add(tf);
             }
         }
     }
 
-    private TextFlow createCommandLabel(String command, String description) {
+    private TextFlow createCommandLabel(String description) {
         Text bullet = new Text("• ");
-        bullet.setFont(Font.font("Monospaced", 12));
+        bullet.setFont(Font.font("Monospaced", FontWeight.BOLD, 12));
 
-        Text cmd = new Text(command);
-        cmd.setFont(Font.font("Monospaced", FontWeight.BOLD, 12));
 
-        Text rest = new Text("  " + description);
+        Text rest = new Text(description);
         rest.setFont(Font.font("Monospaced", 12));
 
-        TextFlow tf = new TextFlow(bullet, cmd, rest);
+        TextFlow tf = new TextFlow(bullet, rest);
         tf.setPrefWidth(580);
         return tf;
     }

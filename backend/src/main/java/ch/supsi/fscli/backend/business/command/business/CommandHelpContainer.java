@@ -1,4 +1,4 @@
-package ch.supsi.fscli.backend.business.command;
+package ch.supsi.fscli.backend.business.command.business;
 
 import ch.supsi.fscli.backend.util.BackendTranslator;
 
@@ -36,12 +36,14 @@ public class CommandHelpContainer {
 
     public List<String> getCommandDescriptions() {
         Locale locale = translator.getCurrentLocale();
-        System.out.println(locale);
+        System.out.println(locale); // Stampa US
+
         if (cachedDescriptions.containsKey(locale)) {
             return cachedDescriptions.get(locale);
         }
 
         ResourceBundle rb = translator.getResourceBundle();
+        System.out.println(rb.getLocale()); // Stampa IT
 
         Set<String> allKeys = new HashSet<>();
         Enumeration<String> keysEnum = rb.getKeys();

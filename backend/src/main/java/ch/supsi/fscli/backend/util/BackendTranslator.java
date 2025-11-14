@@ -24,7 +24,13 @@ public class BackendTranslator {
     public void setLocale(Locale locale) {
         try {
             resourceBundle = ResourceBundle.getBundle(BUNDLE_BASE_NAME, locale);
-            this.currentLocale = locale;
+            if (!resourceBundle.getLocale().getLanguage().equals(locale.getLanguage())) {
+                System.err.println("No matching language bundle for: " + locale + ". Falling back to root.");
+                resourceBundle = ResourceBundle.getBundle(BUNDLE_BASE_NAME, Locale.ROOT);
+                this.currentLocale = Locale.ROOT;
+            } else {
+                this.currentLocale = locale;
+            }
         } catch (Exception e) {
             System.err.println("Could not load resource bundle for locale: " + locale + ". Falling back to default.");
             resourceBundle = ResourceBundle.getBundle(BUNDLE_BASE_NAME, Locale.ROOT);

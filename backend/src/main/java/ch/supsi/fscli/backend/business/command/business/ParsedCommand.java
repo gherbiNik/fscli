@@ -1,4 +1,4 @@
-package ch.supsi.fscli.backend.business.command;
+package ch.supsi.fscli.backend.business.command.business;
 
 // Represents a command meaningful for the filesystem
 // so it can be executed

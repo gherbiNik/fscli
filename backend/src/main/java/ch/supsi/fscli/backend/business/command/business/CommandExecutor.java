@@ -7,6 +7,7 @@ import ch.supsi.fscli.backend.business.filesystem.DirectoryNode;
 import ch.supsi.fscli.backend.business.service.FileSystemService;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -31,6 +32,9 @@ public class CommandExecutor {
                             List<ICommand> commands){
         this.fileSystemService = fileSystemService;
         this.commandParser = commandParser;
+
+        this.commandList = new HashMap<>();
+
         if (commands != null) {
             for (ICommand c : commands) {
                 if (c != null && c.getName() != null) {
@@ -71,6 +75,7 @@ public class CommandExecutor {
                     parsed.getOptions()
             );
 
+            return command.execute(commandContext);
         } catch (InvalidCommandException e){
             return CommandResult.error(e.getMessage());
         }

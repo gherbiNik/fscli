@@ -2,48 +2,62 @@ package ch.supsi.fscli.backend.business.command;
 
 import ch.supsi.fscli.backend.business.filesystem.DirectoryNode;
 import ch.supsi.fscli.backend.business.filesystem.FileSystem;
+import ch.supsi.fscli.backend.business.filesystem.Inode;
 import ch.supsi.fscli.backend.business.service.FileSystemService;
+import ch.supsi.fscli.backend.business.command.commands.RmdirCommand;
+import ch.supsi.fscli.backend.business.command.business.CommandDetails;
+import ch.supsi.fscli.backend.business.command.business.CommandHelpContainer;
+import ch.supsi.fscli.backend.business.command.commands.CommandContext;
+import ch.supsi.fscli.backend.business.command.commands.CommandResult;
+import ch.supsi.fscli.backend.util.BackendTranslator;
+import ch.supsi.fscli.backend.business.command.business.CommandExecutor;
+import ch.supsi.fscli.backend.business.command.business.CommandParser;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
-/*
+
 class RmdirCommandTest {
 
     private RmdirCommand rmdirCommand;
     private FileSystemService fileSystemService;
     private FileSystem fileSystem;
+    private CommandHelpContainer commandHelpContainer;
 
     @BeforeEach
     void setUp() {
+        resetSingleton(CommandExecutor.class);
+        resetSingleton(CommandHelpContainer.class);
+        resetSingleton(FileSystemService.class);
+        resetSingleton(BackendTranslator.class);
+        resetSingleton(CommandParser.class);
+        resetSingleton(FileSystem.class);
+
+        BackendTranslator translator = BackendTranslator.getInstance();
+        translator.setLocaleDefault(Locale.US);
+        commandHelpContainer = CommandHelpContainer.getInstance(translator);
+        fileSystem = FileSystem.getInstance();
+        fileSystemService = FileSystemService.getInstance(fileSystem);
+
+        Map<String, CommandDetails> m = commandHelpContainer.getCommandDetailsMap();
+        rmdirCommand = new RmdirCommand(fileSystemService, "rmdir", m.get("rmdir").synopsis(), m.get("rmdir").description());
+    }
+
+    private void resetSingleton(Class<?> aClass) {
         try {
-            java.lang.reflect.Field instance = FileSystem.class.getDeclaredField("instance");
+            java.lang.reflect.Field instance = aClass.getDeclaredField("instance");
             instance.setAccessible(true);
             instance.set(null, null);
         } catch (Exception e) {
-            fail("Could not reset singleton");
+            fail("Could not reset singleton for: " + aClass.getName());
         }
-        fileSystem = FileSystem.getInstance();
-        fileSystemService = FileSystemService.getInstance(fileSystem);
-        rmdirCommand = new RmdirCommand(fileSystemService);
     }
-
-    @Test
-    void testGetName() {
-        assertEquals("rmdir", rmdirCommand.getName());
-    }
-
-    @Test
-    void testGetSynopsis() {
-        assertEquals("rmdir DIRECTORY", rmdirCommand.getSynopsis());
-    }
-
-
 
     @Test
     void testExecute_Success() {
@@ -51,7 +65,7 @@ class RmdirCommandTest {
 
         List<String> arguments = new ArrayList<>();
         arguments.add("testDir");
-        Map<String, String> options = new HashMap<>();
+        List<String> options = new ArrayList<>(); // Corretto: da Map a List
 
         DirectoryNode currentDir = fileSystemService.getCurrentDirectory();
         CommandContext context = new CommandContext(currentDir, arguments, options);
@@ -59,206 +73,91 @@ class RmdirCommandTest {
         CommandResult result = rmdirCommand.execute(context);
 
         assertTrue(result.isSuccess());
-        assertNotNull(result.getOutput());
-        assertTrue(result.getOutput().contains("testDir"));
-        assertTrue(result.getOutput().contains("deleted successfully"));
-
-        // Verifica che la directory sia stata effettivamente rimossa
         assertNull(currentDir.getChild("testDir"));
     }
 
     @Test
     void testExecute_MissingArguments() {
         List<String> arguments = new ArrayList<>();
-        Map<String, String> options = new HashMap<>();
-
-        DirectoryNode currentDir = fileSystemService.getCurrentDirectory();
-        CommandContext context = new CommandContext(currentDir, arguments, options);
-
+        List<String> options = new ArrayList<>(); // Corretto: da Map a List
+        CommandContext context = new CommandContext(fileSystemService.getCurrentDirectory(), arguments, options);
         CommandResult result = rmdirCommand.execute(context);
-
         assertFalse(result.isSuccess());
-        assertNotNull(result.getError());
-        assertTrue(result.getError().contains("missing"));
     }
 
     @Test
     void testExecute_NullArguments() {
-        Map<String, String> options = new HashMap<>();
-        DirectoryNode currentDir = fileSystemService.getCurrentDirectory();
-        CommandContext context = new CommandContext(currentDir, null, options);
-
+        List<String> options = new ArrayList<>(); // Corretto: da Map a List
+        CommandContext context = new CommandContext(fileSystemService.getCurrentDirectory(), null, options);
         CommandResult result = rmdirCommand.execute(context);
-
         assertFalse(result.isSuccess());
-        assertNotNull(result.getError());
-    }
-
-    @Test
-    void testExecute_EmptyDirectoryName() {
-        List<String> arguments = new ArrayList<>();
-        arguments.add("");
-        Map<String, String> options = new HashMap<>();
-
-        DirectoryNode currentDir = fileSystemService.getCurrentDirectory();
-        CommandContext context = new CommandContext(currentDir, arguments, options);
-
-        CommandResult result = rmdirCommand.execute(context);
-
-        assertFalse(result.isSuccess());
-        assertNotNull(result.getError());
-        assertTrue(result.getError().contains("invalid"));
-    }
-
-    @Test
-    void testExecute_WhitespaceDirectoryName() {
-        List<String> arguments = new ArrayList<>();
-        arguments.add("   ");
-        Map<String, String> options = new HashMap<>();
-
-        DirectoryNode currentDir = fileSystemService.getCurrentDirectory();
-        CommandContext context = new CommandContext(currentDir, arguments, options);
-
-        CommandResult result = rmdirCommand.execute(context);
-
-        assertFalse(result.isSuccess());
-        assertNotNull(result.getError());
     }
 
     @Test
     void testExecute_DirectoryDoesNotExist() {
         List<String> arguments = new ArrayList<>();
         arguments.add("nonExistentDir");
-        Map<String, String> options = new HashMap<>();
-
-        DirectoryNode currentDir = fileSystemService.getCurrentDirectory();
-        CommandContext context = new CommandContext(currentDir, arguments, options);
-
+        List<String> options = new ArrayList<>(); // Corretto: da Map a List
+        CommandContext context = new CommandContext(fileSystemService.getCurrentDirectory(), arguments, options);
         CommandResult result = rmdirCommand.execute(context);
-
         assertFalse(result.isSuccess());
-        assertNotNull(result.getError());
-        assertTrue(result.getError().contains("cannot remove") ||
-                result.getError().contains("does not exist"));
     }
 
     @Test
     void testExecute_DirectoryNotEmpty() {
         fileSystemService.createDirectory("parentDir");
-
-        DirectoryNode currentDir = fileSystemService.getCurrentDirectory();
-        DirectoryNode parentDir = (DirectoryNode) currentDir.getChild("parentDir");
-        DirectoryNode childDir = new DirectoryNode(parentDir);
-        parentDir.addChild("childDir", childDir);
+        fileSystemService.createFile("/parentDir/file.txt");
 
         List<String> arguments = new ArrayList<>();
         arguments.add("parentDir");
-        Map<String, String> options = new HashMap<>();
+        List<String> options = new ArrayList<>(); // Corretto: da Map a List
 
+        DirectoryNode currentDir = fileSystemService.getCurrentDirectory();
         CommandContext context = new CommandContext(currentDir, arguments, options);
-
         CommandResult result = rmdirCommand.execute(context);
 
-        assertTrue(result.isSuccess());
-        assertNotNull(result.getOutput());
-        assertTrue(result.getOutput().contains("cannot be deleted") ||
-                result.getOutput().contains("not empty"));
-
+        assertTrue(result.isSuccess()); // Il comando rmdir ha successo ma stampa un output
+        assertTrue(result.getOutput().contains("not empty"));
         assertNotNull(currentDir.getChild("parentDir"));
     }
 
     @Test
-    void testExecute_MultipleDirectories() {
-        DirectoryNode currentDir = fileSystemService.getCurrentDirectory();
-        Map<String, String> options = new HashMap<>();
+    @DisplayName("Testa rimozione dir con path assoluto")
+    void testExecute_PathResolution_Absolute() {
+        fileSystemService.createDirectory("docs");
+        fileSystemService.createDirectory("/docs/dirB");
 
-        fileSystemService.createDirectory("dir1");
-        fileSystemService.createDirectory("dir2");
-        fileSystemService.createDirectory("dir3");
-
-        List<String> args1 = new ArrayList<>();
-        args1.add("dir1");
-        CommandContext context1 = new CommandContext(currentDir, args1, options);
-        CommandResult result1 = rmdirCommand.execute(context1);
-
-        List<String> args2 = new ArrayList<>();
-        args2.add("dir2");
-        CommandContext context2 = new CommandContext(currentDir, args2, options);
-        CommandResult result2 = rmdirCommand.execute(context2);
-
-        List<String> args3 = new ArrayList<>();
-        args3.add("dir3");
-        CommandContext context3 = new CommandContext(currentDir, args3, options);
-        CommandResult result3 = rmdirCommand.execute(context3);
-
-        assertTrue(result1.isSuccess());
-        assertTrue(result2.isSuccess());
-        assertTrue(result3.isSuccess());
-
-        assertNull(currentDir.getChild("dir1"));
-        assertNull(currentDir.getChild("dir2"));
-        assertNull(currentDir.getChild("dir3"));
-    }
-
-    @Test
-    void testExecute_DirectoryNameWithSpecialCharacters() {
-        fileSystemService.createDirectory("my-directory_123");
+        Inode docsNode = fileSystem.resolveNode("/docs");
+        assertNotNull(((DirectoryNode) docsNode).getChild("dirB"));
 
         List<String> arguments = new ArrayList<>();
-        arguments.add("my-directory_123");
-        Map<String, String> options = new HashMap<>();
+        arguments.add("/docs/dirB");
+        List<String> options = new ArrayList<>();
 
-        DirectoryNode currentDir = fileSystemService.getCurrentDirectory();
-        CommandContext context = new CommandContext(currentDir, arguments, options);
-
+        CommandContext context = new CommandContext(fileSystemService.getCurrentDirectory(), arguments, options);
         CommandResult result = rmdirCommand.execute(context);
 
         assertTrue(result.isSuccess());
-        assertNull(currentDir.getChild("my-directory_123"));
+        assertNull(((DirectoryNode) docsNode).getChild("dirB"));
     }
 
     @Test
-    void testExecute_NullDirectoryName() {
-        List<String> arguments = new ArrayList<>();
-        arguments.add(null);
-        Map<String, String> options = new HashMap<>();
+    @DisplayName("Testa rimozione dir con path relativo '..'")
+    void testExecute_PathResolution_DotDot() {
+        fileSystemService.createDirectory("dirA");
+        fileSystemService.createDirectory("docs");
+        fileSystem.changeDirectory("/docs");
 
-        DirectoryNode currentDir = fileSystemService.getCurrentDirectory();
-        CommandContext context = new CommandContext(currentDir, arguments, options);
-
-        CommandResult result = rmdirCommand.execute(context);
-
-        assertFalse(result.isSuccess());
-        assertNotNull(result.getError());
-    }
-    @Test
-    void testExecute_MultipleArgumentsAtOnce() {
-        // Crea 3 directory
-        fileSystemService.createDirectory("dir1");
-        fileSystemService.createDirectory("dir2");
-        fileSystemService.createDirectory("dir3");
+        assertNotNull(fileSystem.resolveNode("/dirA"));
 
         List<String> arguments = new ArrayList<>();
-        arguments.add("dir1");
-        arguments.add("dir2");
-        arguments.add("dir3");
-        Map<String, String> options = new HashMap<>();
+        arguments.add("../dirA");
+        List<String> options = new ArrayList<>();
 
-        DirectoryNode currentDir = fileSystemService.getCurrentDirectory();
-        CommandContext context = new CommandContext(currentDir, arguments, options);
-
+        CommandContext context = new CommandContext(fileSystemService.getCurrentDirectory(), arguments, options);
         CommandResult result = rmdirCommand.execute(context);
 
         assertTrue(result.isSuccess());
-        assertNotNull(result.getOutput());
-        assertTrue(result.getOutput().contains("dir1"));
-        assertTrue(result.getOutput().contains("dir2"));
-        assertTrue(result.getOutput().contains("dir3"));
-
-        assertNull(currentDir.getChild("dir1"));
-        assertNull(currentDir.getChild("dir2"));
-        assertNull(currentDir.getChild("dir3"));
+        assertNull(fileSystem.resolveNode("/dirA"));
     }
 }
-
- */

@@ -4,8 +4,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class DirectoryNodeTest {
 
@@ -14,6 +13,15 @@ public class DirectoryNodeTest {
 
     @BeforeEach
     void setUp() {
+        // Aggiunto reset per sicurezza, anche se i test non usano getInstance()
+        try {
+            java.lang.reflect.Field instance = FileSystem.class.getDeclaredField("instance");
+            instance.setAccessible(true);
+            instance.set(null, null);
+        } catch (Exception e) {
+            fail("Could not reset singleton");
+        }
+
         root = new DirectoryNode(null);
         subDir = new DirectoryNode(root);
         root.addChild("subDir",subDir);
@@ -24,7 +32,7 @@ public class DirectoryNodeTest {
     void testAddChildren() {
         FileNode file = new FileNode(subDir);
         subDir.addChild("test.txt", file);
-        assertTrue(root.toString().contains("test.txt"));
+        assertNotNull(subDir.getChild("test.txt"));
     }
 
     @Test
@@ -38,16 +46,30 @@ public class DirectoryNodeTest {
         subDir.addChild("f2.txt", file2);
         subDir.addChild("documents", childDir);
 
-        String dirString = subDir.toString();
-        assertTrue(dirString.contains("f1.txt"));
-        assertTrue(dirString.contains("f2.txt"));
-        assertTrue(dirString.contains("documents"));
+        assertNotNull(subDir.getChild("f1.txt"));
+        assertNotNull(subDir.getChild("f2.txt"));
+        assertNotNull(subDir.getChild("documents"));
+        assertEquals(3, subDir.getNumChild());
     }
 
     @Test
     @DisplayName("Root directory should have null parent")
     void testRootParent() {
-        DirectoryNode root = new DirectoryNode(null);
-        assertNotNull(root);
+        DirectoryNode localRoot = new DirectoryNode(null);
+        assertNull(localRoot.getParent());
+    }
+
+    @Test
+    @DisplayName("Get child names returns correct set")
+    void testGetChildNames() {
+        FileNode file1 = new FileNode(subDir);
+        DirectoryNode childDir = new DirectoryNode(subDir);
+        subDir.addChild("f1.txt", file1);
+        subDir.addChild("documents", childDir);
+
+        var names = subDir.getChildNames();
+        assertEquals(2, names.size());
+        assertTrue(names.contains("f1.txt"));
+        assertTrue(names.contains("documents"));
     }
 }

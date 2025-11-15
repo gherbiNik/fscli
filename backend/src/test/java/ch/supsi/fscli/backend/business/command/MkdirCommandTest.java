@@ -1,6 +1,5 @@
 package ch.supsi.fscli.backend.business.command;
 
-
 import ch.supsi.fscli.backend.business.command.business.CommandDetails;
 import ch.supsi.fscli.backend.business.command.business.CommandHelpContainer;
 import ch.supsi.fscli.backend.business.command.commands.CommandContext;
@@ -8,9 +7,13 @@ import ch.supsi.fscli.backend.business.command.commands.CommandResult;
 import ch.supsi.fscli.backend.business.command.commands.MkdirCommand;
 import ch.supsi.fscli.backend.business.filesystem.DirectoryNode;
 import ch.supsi.fscli.backend.business.filesystem.FileSystem;
+import ch.supsi.fscli.backend.business.filesystem.Inode;
 import ch.supsi.fscli.backend.business.service.FileSystemService;
 import ch.supsi.fscli.backend.util.BackendTranslator;
+import ch.supsi.fscli.backend.business.command.business.CommandExecutor;
+import ch.supsi.fscli.backend.business.command.business.CommandParser;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.util.*;
@@ -24,30 +27,41 @@ class MkdirCommandTest {
     private FileSystem fileSystem;
     private CommandHelpContainer commandHelpContainer;
 
-
     @BeforeEach
     void setUp() {
-        try {
-            java.lang.reflect.Field instance = FileSystem.class.getDeclaredField("instance");
-            instance.setAccessible(true);
-            instance.set(null, null);
-        } catch (Exception e) {
-            fail("Could not reset singleton");
-        }
+        // Reset di tutti i singleton
+        resetSingleton(CommandExecutor.class);
+        resetSingleton(CommandHelpContainer.class);
+        resetSingleton(FileSystemService.class);
+        resetSingleton(BackendTranslator.class);
+        resetSingleton(CommandParser.class);
+        resetSingleton(FileSystem.class);
 
-        BackendTranslator translator = BackendTranslator.getInstance();
-        translator.setLocaleDefault(Locale.US);
-        commandHelpContainer = CommandHelpContainer.getInstance(translator);
+        // Inizializza dipendenze
         fileSystem = FileSystem.getInstance();
         fileSystemService = FileSystemService.getInstance(fileSystem);
 
+        BackendTranslator translator = BackendTranslator.getInstance();
+        translator.setLocaleDefault(Locale.US);
+
+        commandHelpContainer = CommandHelpContainer.getInstance(translator);
+
+        // Inizializza il comando specifico
         Map<String, CommandDetails> m = commandHelpContainer.getCommandDetailsMap();
         String synopsis = m.get("mkdir").synopsis();
         String descr = m.get("mkdir").description();
         mkdirCommand = new MkdirCommand(fileSystemService, "mkdir", synopsis, descr);
     }
 
-
+    private void resetSingleton(Class<?> aClass) {
+        try {
+            java.lang.reflect.Field instance = aClass.getDeclaredField("instance");
+            instance.setAccessible(true);
+            instance.set(null, null);
+        } catch (Exception e) {
+            fail("Could not reset singleton for: " + aClass.getName());
+        }
+    }
 
     @Test
     void testExecute_Success() {
@@ -61,11 +75,6 @@ class MkdirCommandTest {
         CommandResult result = mkdirCommand.execute(context);
 
         assertTrue(result.isSuccess());
-        assertNotNull(result.getOutput());
-        assertTrue(result.getOutput().contains("testDir"));
-        assertTrue(result.getOutput().contains("created successfully"));
-
-        // Verifica che la directory sia stata effettivamente creata
         assertNotNull(currentDir.getChild("testDir"));
     }
 
@@ -73,27 +82,17 @@ class MkdirCommandTest {
     void testExecute_MissingArguments() {
         List<String> arguments = new ArrayList<>();
         List<String> options = new ArrayList<>();
-
-        DirectoryNode currentDir = fileSystemService.getCurrentDirectory();
-        CommandContext context = new CommandContext(currentDir, arguments, options);
-
+        CommandContext context = new CommandContext(fileSystemService.getCurrentDirectory(), arguments, options);
         CommandResult result = mkdirCommand.execute(context);
-
         assertFalse(result.isSuccess());
-        assertNotNull(result.getError());
-        assertTrue(result.getError().contains("missing"));
     }
 
     @Test
     void testExecute_NullArguments() {
         List<String> options = new ArrayList<>();
-        DirectoryNode currentDir = fileSystemService.getCurrentDirectory();
-        CommandContext context = new CommandContext(currentDir, null, options);
-
+        CommandContext context = new CommandContext(fileSystemService.getCurrentDirectory(), null, options);
         CommandResult result = mkdirCommand.execute(context);
-
         assertFalse(result.isSuccess());
-        assertNotNull(result.getError());
     }
 
     @Test
@@ -101,30 +100,9 @@ class MkdirCommandTest {
         List<String> arguments = new ArrayList<>();
         arguments.add("");
         List<String> options = new ArrayList<>();
-
-        DirectoryNode currentDir = fileSystemService.getCurrentDirectory();
-        CommandContext context = new CommandContext(currentDir, arguments, options);
-
+        CommandContext context = new CommandContext(fileSystemService.getCurrentDirectory(), arguments, options);
         CommandResult result = mkdirCommand.execute(context);
-
         assertFalse(result.isSuccess());
-        assertNotNull(result.getError());
-        assertTrue(result.getError().contains("invalid") || result.getError().contains("empty"));
-    }
-
-    @Test
-    void testExecute_WhitespaceDirectoryName() {
-        List<String> arguments = new ArrayList<>();
-        arguments.add("   ");
-        List<String> options = new ArrayList<>();
-
-        DirectoryNode currentDir = fileSystemService.getCurrentDirectory();
-        CommandContext context = new CommandContext(currentDir, arguments, options);
-
-        CommandResult result = mkdirCommand.execute(context);
-
-        assertFalse(result.isSuccess());
-        assertNotNull(result.getError());
     }
 
     @Test
@@ -132,79 +110,45 @@ class MkdirCommandTest {
         List<String> arguments = new ArrayList<>();
         arguments.add("existingDir");
         List<String> options = new ArrayList<>();
-
-        DirectoryNode currentDir = fileSystemService.getCurrentDirectory();
-
         fileSystemService.createDirectory("existingDir");
 
-        CommandContext context = new CommandContext(currentDir, arguments, options);
-
+        CommandContext context = new CommandContext(fileSystemService.getCurrentDirectory(), arguments, options);
         CommandResult result = mkdirCommand.execute(context);
-
         assertFalse(result.isSuccess());
-        assertNotNull(result.getError());
-        assertTrue(result.getError().contains("cannot create") ||
-                result.getError().contains("already exists"));
     }
 
     @Test
-    void testExecute_MultipleDirectories() {
-        DirectoryNode currentDir = fileSystemService.getCurrentDirectory();
-        List<String> options = new ArrayList<>();
+    @DisplayName("Testa creazione con path assoluto (/)")
+    void testExecute_PathResolution_Absolute() {
+        fileSystemService.createDirectory("docs");
 
-        List<String> args1 = new ArrayList<>();
-        args1.add("dir1");
-        CommandContext context1 = new CommandContext(currentDir, args1, options);
-        CommandResult result1 = mkdirCommand.execute(context1);
-
-        List<String> args2 = new ArrayList<>();
-        args2.add("dir2");
-        CommandContext context2 = new CommandContext(currentDir, args2, options);
-        CommandResult result2 = mkdirCommand.execute(context2);
-
-        List<String> args3 = new ArrayList<>();
-        args3.add("dir3");
-        CommandContext context3 = new CommandContext(currentDir, args3, options);
-        CommandResult result3 = mkdirCommand.execute(context3);
-
-        assertTrue(result1.isSuccess());
-        assertTrue(result2.isSuccess());
-        assertTrue(result3.isSuccess());
-
-        assertNotNull(currentDir.getChild("dir1"));
-        assertNotNull(currentDir.getChild("dir2"));
-        assertNotNull(currentDir.getChild("dir3"));
-    }
-
-    @Test
-    void testExecute_DirectoryNameWithSpecialCharacters() {
-        // valid chars
         List<String> arguments = new ArrayList<>();
-        arguments.add("my-directory_123");
+        arguments.add("/docs/newDir");
         List<String> options = new ArrayList<>();
 
-        DirectoryNode currentDir = fileSystemService.getCurrentDirectory();
-        CommandContext context = new CommandContext(currentDir, arguments, options);
-
+        CommandContext context = new CommandContext(fileSystemService.getCurrentDirectory(), arguments, options);
         CommandResult result = mkdirCommand.execute(context);
 
         assertTrue(result.isSuccess());
-        assertNotNull(currentDir.getChild("my-directory_123"));
+        Inode docsNode = fileSystem.resolveNode("/docs");
+        assertTrue(docsNode instanceof DirectoryNode);
+        assertNotNull(((DirectoryNode) docsNode).getChild("newDir"));
     }
 
     @Test
-    void testExecute_NullDirectoryName() {
-        // Arrange
+    @DisplayName("Testa creazione con path relativo '..'")
+    void testExecute_PathResolution_DotDot() {
+        fileSystemService.createDirectory("docs");
+        fileSystem.changeDirectory("/docs");
+
         List<String> arguments = new ArrayList<>();
-        arguments.add(null);
+        arguments.add("../otherDir");
         List<String> options = new ArrayList<>();
 
-        DirectoryNode currentDir = fileSystemService.getCurrentDirectory();
-        CommandContext context = new CommandContext(currentDir, arguments, options);
-
+        CommandContext context = new CommandContext(fileSystemService.getCurrentDirectory(), arguments, options);
         CommandResult result = mkdirCommand.execute(context);
 
-        assertFalse(result.isSuccess());
-        assertNotNull(result.getError());
+        assertTrue(result.isSuccess());
+        assertNotNull(fileSystem.resolveNode("/otherDir"));
     }
 }

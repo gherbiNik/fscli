@@ -39,6 +39,12 @@ public class PreferenceDAOTest {
     }
 
     private void resetSingletonState() throws Exception {
+        // Resetta l'istanza del DAO
+        Field instanceField = PreferenceDAO.class.getDeclaredField("instance");
+        instanceField.setAccessible(true);
+        instanceField.set(null, null);
+
+        // Resetta le preferenze caricate
         Field preferencesField = PreferenceDAO.class.getDeclaredField("preferences");
         preferencesField.setAccessible(true);
         preferencesField.set(preferenceDAO, null);
@@ -67,6 +73,7 @@ public class PreferenceDAOTest {
     void getPreferencesAndSetPreferencesTest() {
 
         Properties newPreferences = preferenceDAO.getPreferences();
+        // Cloniamo per sicurezza, anche se getPreferences() dovrebbe caricare
         Properties originalPreferences = (Properties) newPreferences.clone();
 
 
@@ -76,14 +83,13 @@ public class PreferenceDAOTest {
         try (FileInputStream fis = new FileInputStream(preferenceDAO.getUserPreferencesFilePath().toFile())) {
             Properties preferences = new Properties();
             preferences.load(fis);
-            assertEquals(newPreferences, preferences);
+
+            // Verifichiamo che le proprietà nel file siano quelle modificate
+            assertEquals("en-US", preferences.getProperty("language-tag"));
+            assertEquals("100", preferences.getProperty("column"));
 
         } catch (IOException e) {
-
-            System.err.println("Failed to save preferences: " + e.getMessage());
+            fail("Failed to read preferences file: " + e.getMessage());
         }
-
     }
-
-
 }

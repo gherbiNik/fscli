@@ -28,6 +28,9 @@ public class FileSystem implements FileSystemComponent, IFileSystem
     }
 
     public void changeDirectory(String path) {
+        if(findDirectoryByPath(path) == null)
+            throw new IllegalArgumentException();
+
         this.currentDirectory = findDirectoryByPath(path);
     }
 

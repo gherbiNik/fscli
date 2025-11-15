@@ -1,9 +1,6 @@
 package ch.supsi.fscli.backend.business.service;
 
-import ch.supsi.fscli.backend.business.filesystem.DirectoryNode;
-import ch.supsi.fscli.backend.business.filesystem.FileNode;
-import ch.supsi.fscli.backend.business.filesystem.FileSystem;
-import ch.supsi.fscli.backend.business.filesystem.IDirectoryNode;
+import ch.supsi.fscli.backend.business.filesystem.*;
 
 public class FileSystemService {
 
@@ -29,71 +26,121 @@ public class FileSystemService {
         return fileSystem.getCurrentDirectory();
     }
 
-    public void createFile(String fileName) {
-        if (fileName == null || fileName.trim().isEmpty()) {
-            throw new IllegalArgumentException("File name cannot be empty");
+    private record PathParts(DirectoryNode parentDir, String name) {}
+
+    private PathParts resolveParentDirectoryAndName(String path) {
+        if (path == null || path.trim().isEmpty()) {
+            throw new IllegalArgumentException("Path cannot be empty");
         }
 
-        DirectoryNode currentDir = fileSystem.getCurrentDirectory();
+        String name;
+        DirectoryNode parentDir;
 
-        // File already exists
-        if (currentDir.getChild(fileName) != null) {
-            throw new IllegalArgumentException("File already exists");
+        if (path.contains("/")) {
+            // È un percorso complesso (es. "docs/file.txt" o "/file.txt")
+            String parentPath = path.substring(0, path.lastIndexOf('/'));
+            name = path.substring(path.lastIndexOf('/') + 1);
+
+            if (parentPath.isEmpty()) {
+                parentPath = "/";
+            }
+
+            Inode parentNode = fileSystem.resolveNode(parentPath);
+
+            if (parentNode == null) {
+                throw new IllegalArgumentException("Directory not found: " + parentPath);
+            }
+            if (!(parentNode instanceof DirectoryNode)) {
+                throw new IllegalArgumentException("Path is not a directory: " + parentPath);
+            }
+            parentDir = (DirectoryNode) parentNode;
+
+        } else {
+            // È un percorso semplice (es. "file.txt")
+            name = path;
+            parentDir = fileSystem.getCurrentDirectory();
         }
 
-        // Creates new File
-        FileNode newFile = new FileNode(currentDir);
-        currentDir.addChild(fileName, newFile);
+        // Il nome non può essere vuoto o un operatore di navigazione
+        if (name.isEmpty() || name.equals(".") || name.equals("..")) {
+            throw new IllegalArgumentException("Invalid name: " + name);
+        }
+
+        return new PathParts(parentDir, name);
     }
 
-    public void  removeFile(String fileName) {
-        if (fileName == null || fileName.trim().isEmpty()) {
-            throw new IllegalArgumentException("File name cannot be empty");
+    public void createFile(String path) {
+        // 1. Risolvi percorso genitore e nome
+        PathParts parts = resolveParentDirectoryAndName(path);
+        DirectoryNode targetDir = parts.parentDir();
+        String fileName = parts.name();
+
+        // 2. Esegui la logica (ora sulla directory corretta)
+        if (targetDir.getChild(fileName) != null) {
+            throw new IllegalArgumentException("File already exists: " + fileName);
         }
 
-        DirectoryNode currentDir = fileSystem.getCurrentDirectory();
+        FileNode newFile = new FileNode(targetDir);
+        targetDir.addChild(fileName, newFile);
+    }
 
-        if (currentDir.getChild(fileName) == null) {
-            throw new IllegalArgumentException("File does not exists");
+    public void  removeFile(String path) {
+        // 1. Risolvi percorso genitore e nome
+        PathParts parts = resolveParentDirectoryAndName(path);
+        DirectoryNode targetDir = parts.parentDir();
+        String fileName = parts.name();
+
+        // 2. Esegui la logica (ora sulla directory corretta)
+        Inode nodeToRemove = targetDir.getChild(fileName);
+
+        if (nodeToRemove == null) {
+            throw new IllegalArgumentException("File does not exist: " + fileName);
         }
 
-        if(currentDir.getChild(fileName) instanceof DirectoryNode) {
+        if (nodeToRemove instanceof DirectoryNode) {
             throw new IllegalArgumentException("Specified item is a directory");
         }
 
-        FileNode nodeToRemove = (FileNode) currentDir.getChild(fileName);
-        currentDir.removeChild(fileName, nodeToRemove);
+        targetDir.removeChild(fileName, nodeToRemove);
     }
 
-    public void createDirectory(String directoryName) {
-        if (directoryName == null || directoryName.trim().isEmpty()) {
-            throw new IllegalArgumentException("Directory name cannot be empty");
+    public void createDirectory(String path) {
+        // 1. Risolvi percorso genitore e nome
+        PathParts parts = resolveParentDirectoryAndName(path);
+        DirectoryNode targetDir = parts.parentDir();
+        String directoryName = parts.name();
+
+        // 2. Esegui la logica (ora sulla directory corretta)
+        if (targetDir.getChild(directoryName) != null) {
+            throw new IllegalArgumentException("Directory already exists: " + directoryName);
         }
 
-        DirectoryNode currentDir = fileSystem.getCurrentDirectory();
-
-        // Directory already exists
-        if (currentDir.getChild(directoryName) != null) {
-            throw new IllegalArgumentException("Directory already exists");
-        }
-
-        // Creates new directory
-        DirectoryNode newDirectory = new DirectoryNode(currentDir);
-        currentDir.addChild(directoryName, newDirectory);
+        DirectoryNode newDirectory = new DirectoryNode(targetDir);
+        targetDir.addChild(directoryName, newDirectory);
     }
 
-    public boolean removeDirectory(String directoryName) {
-        DirectoryNode currentDir = fileSystem.getCurrentDirectory();
+    public boolean removeDirectory(String path) {
+        // 1. Risolvi percorso genitore e nome
+        PathParts parts = resolveParentDirectoryAndName(path);
+        DirectoryNode targetDir = parts.parentDir();
+        String directoryName = parts.name();
 
-        if(currentDir.getChild(directoryName) == null) {
-            throw new IllegalArgumentException("Directory does not exists");
+        // 2. Esegui la logica (ora sulla directory corretta)
+        Inode nodeToRemove = targetDir.getChild(directoryName);
+
+        if(nodeToRemove == null) {
+            throw new IllegalArgumentException("Directory does not exist: " + directoryName);
         }
 
-        DirectoryNode childDir = (DirectoryNode) currentDir.getChild(directoryName);
+        if (!(nodeToRemove instanceof DirectoryNode)) {
+            throw new IllegalArgumentException("Specified item is a file: " + directoryName);
+        }
+
+        DirectoryNode childDir = (DirectoryNode) nodeToRemove;
         if(childDir.getNumChild() > 0) {
             return false;  // Directory not empty
         }
-        currentDir.removeChild(directoryName,childDir);
+        targetDir.removeChild(directoryName, childDir);
         return true;
     }
 }

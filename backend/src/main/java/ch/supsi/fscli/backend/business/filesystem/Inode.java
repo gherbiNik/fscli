@@ -19,6 +19,10 @@ public abstract class Inode implements FileSystemComponent{
         System.out.println(creationDate);
     }
 
+    public DirectoryNode getParent() {
+        return parent;
+    }
+
     @Override
     public String toString() {
         return "Inode{" +

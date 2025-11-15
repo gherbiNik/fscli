@@ -31,8 +31,67 @@ public class FileSystem implements FileSystemComponent, IFileSystem
         this.currentDirectory = findDirectoryByPath(path);
     }
 
+    public Inode resolveNode(String path) {
+        if (path == null || path.trim().isEmpty()) {
+            return null;
+        }
+
+        DirectoryNode startNode;
+        String effectivePath;
+
+        if (path.startsWith("/")) {
+            startNode = this.root;
+            effectivePath = path.length() > 1 ? path.substring(1) : "";
+        } else {
+            startNode = this.currentDirectory;
+            effectivePath = path;
+        }
+
+        if (effectivePath.isEmpty()) {
+            return startNode;
+        }
+
+        String[] parts = effectivePath.split("/");
+        Inode currentNode = startNode;
+
+        for (String part : parts) {
+            if (part.isEmpty() || part.equals(".")) {
+                continue;
+            }
+
+            if (!(currentNode instanceof DirectoryNode)) {
+                return null; // Percorso non valido (es. /file.txt/qualcosa)
+            }
+
+            DirectoryNode currentDir = (DirectoryNode) currentNode;
+
+            if (part.equals("..")) {
+                DirectoryNode parent = currentDir.getParent();
+                if (parent == null) {
+                    // Sei alla root, il genitore della root è la root stessa
+                    currentNode = this.root;
+                } else {
+                    currentNode = parent;
+                }
+            } else {
+                currentNode = currentDir.getChild(part);
+
+                if (currentNode == null) {
+                    return null;
+                }
+            }
+        }
+
+        return currentNode;
+    }
+
     private DirectoryNode findDirectoryByPath(String path) {
-        // TODO
+        Inode node = resolveNode(path);
+
+        if (node instanceof DirectoryNode) {
+            return (DirectoryNode) node;
+        }
+
         return null;
     }
 

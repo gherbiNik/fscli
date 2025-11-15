@@ -1,23 +1,29 @@
 package ch.supsi.fscli.backend.business.command;
 
+import ch.supsi.fscli.backend.business.command.commands.TouchCommand;
+
+import ch.supsi.fscli.backend.business.command.business.CommandDetails;
+import ch.supsi.fscli.backend.business.command.business.CommandHelpContainer;
+import ch.supsi.fscli.backend.business.command.commands.CommandContext;
+import ch.supsi.fscli.backend.business.command.commands.CommandResult;
 import ch.supsi.fscli.backend.business.filesystem.DirectoryNode;
 import ch.supsi.fscli.backend.business.filesystem.FileSystem;
 import ch.supsi.fscli.backend.business.service.FileSystemService;
+import ch.supsi.fscli.backend.util.BackendTranslator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-/*
-public class TouchCommandTest {
+
+class TouchCommandTest {
+
     private TouchCommand touchCommand;
     private FileSystemService fileSystemService;
     private FileSystem fileSystem;
+    private CommandHelpContainer commandHelpContainer;
+
 
     @BeforeEach
     void setUp() {
@@ -28,32 +34,27 @@ public class TouchCommandTest {
         } catch (Exception e) {
             fail("Could not reset singleton");
         }
+
+        BackendTranslator translator = BackendTranslator.getInstance();
+        translator.setLocaleDefault(Locale.US);
+        commandHelpContainer = CommandHelpContainer.getInstance(translator);
         fileSystem = FileSystem.getInstance();
         fileSystemService = FileSystemService.getInstance(fileSystem);
-        touchCommand = new TouchCommand(fileSystemService);
+
+        Map<String, CommandDetails> m = commandHelpContainer.getCommandDetailsMap();
+
+        String synopsis = m.get("touch").synopsis();
+        String descr = m.get("touch").description();
+        touchCommand = new TouchCommand(fileSystemService, "touch", synopsis, descr);
     }
 
-    @Test
-    void testGetName() {
-        assertEquals("touch", touchCommand.getName());
-    }
 
-    @Test
-    void testGetSynopsis() {
-        assertEquals("touch FILE", touchCommand.getSynopsis());
-    }
-
-    @Test
-    void testGetDescription() {
-        assertNotNull(touchCommand.getDescription());
-        assertFalse(touchCommand.getDescription().isEmpty());
-    }
 
     @Test
     void testExecute_Success() {
         List<String> arguments = new ArrayList<>();
-        arguments.add("testFile");
-        Map<String, String> options = new HashMap<>();
+        arguments.add("testFile.txt");
+        List<String> options = new ArrayList<>();
 
         DirectoryNode currentDir = fileSystemService.getCurrentDirectory();
         CommandContext context = new CommandContext(currentDir, arguments, options);
@@ -62,17 +63,16 @@ public class TouchCommandTest {
 
         assertTrue(result.isSuccess());
         assertNotNull(result.getOutput());
-        assertTrue(result.getOutput().contains("testFile"));
+        assertTrue(result.getOutput().contains("testFile.txt"));
         assertTrue(result.getOutput().contains("created successfully"));
 
-        // Verifica che il file sia stato effettivamente creato
-        assertNotNull(currentDir.getChild("testFile"));
+        assertNotNull(currentDir.getChild("testFile.txt"));
     }
 
     @Test
     void testExecute_MissingArguments() {
         List<String> arguments = new ArrayList<>();
-        Map<String, String> options = new HashMap<>();
+        List<String> options = new ArrayList<>();
 
         DirectoryNode currentDir = fileSystemService.getCurrentDirectory();
         CommandContext context = new CommandContext(currentDir, arguments, options);
@@ -86,7 +86,7 @@ public class TouchCommandTest {
 
     @Test
     void testExecute_NullArguments() {
-        Map<String, String> options = new HashMap<>();
+        List<String> options = new ArrayList<>();
         DirectoryNode currentDir = fileSystemService.getCurrentDirectory();
         CommandContext context = new CommandContext(currentDir, null, options);
 
@@ -97,10 +97,10 @@ public class TouchCommandTest {
     }
 
     @Test
-    void testExecute_EmptyFileName() {
+    void testExecute_EmptyDirectoryName() {
         List<String> arguments = new ArrayList<>();
         arguments.add("");
-        Map<String, String> options = new HashMap<>();
+        List<String> options = new ArrayList<>();
 
         DirectoryNode currentDir = fileSystemService.getCurrentDirectory();
         CommandContext context = new CommandContext(currentDir, arguments, options);
@@ -113,10 +113,10 @@ public class TouchCommandTest {
     }
 
     @Test
-    void testExecute_WhitespaceFileName() {
+    void testExecute_WhitespaceDirectoryName() {
         List<String> arguments = new ArrayList<>();
         arguments.add("   ");
-        Map<String, String> options = new HashMap<>();
+        List<String> options = new ArrayList<>();
 
         DirectoryNode currentDir = fileSystemService.getCurrentDirectory();
         CommandContext context = new CommandContext(currentDir, arguments, options);
@@ -128,14 +128,14 @@ public class TouchCommandTest {
     }
 
     @Test
-    void testExecute_FileAlreadyExists() {
+    void testExecute_DirectoryAlreadyExists() {
         List<String> arguments = new ArrayList<>();
-        arguments.add("existingFile");
-        Map<String, String> options = new HashMap<>();
+        arguments.add("existingDir"); // Nome che andrà in conflitto
+        List<String> options = new ArrayList<>();
 
         DirectoryNode currentDir = fileSystemService.getCurrentDirectory();
 
-        fileSystemService.createDirectory("existingFile");
+        fileSystemService.createDirectory("existingDir");
 
         CommandContext context = new CommandContext(currentDir, arguments, options);
 
@@ -148,22 +148,22 @@ public class TouchCommandTest {
     }
 
     @Test
-    void testExecute_MultipleFiles() {
+    void testExecute_MultipleDirectories() {
         DirectoryNode currentDir = fileSystemService.getCurrentDirectory();
-        Map<String, String> options = new HashMap<>();
+        List<String> options = new ArrayList<>();
 
         List<String> args1 = new ArrayList<>();
-        args1.add("file1");
+        args1.add("file1.txt");
         CommandContext context1 = new CommandContext(currentDir, args1, options);
         CommandResult result1 = touchCommand.execute(context1);
 
         List<String> args2 = new ArrayList<>();
-        args2.add("file2");
+        args2.add("file2.txt");
         CommandContext context2 = new CommandContext(currentDir, args2, options);
         CommandResult result2 = touchCommand.execute(context2);
 
         List<String> args3 = new ArrayList<>();
-        args3.add("file3");
+        args3.add("file3.txt");
         CommandContext context3 = new CommandContext(currentDir, args3, options);
         CommandResult result3 = touchCommand.execute(context3);
 
@@ -171,17 +171,16 @@ public class TouchCommandTest {
         assertTrue(result2.isSuccess());
         assertTrue(result3.isSuccess());
 
-        assertNotNull(currentDir.getChild("file1"));
-        assertNotNull(currentDir.getChild("file2"));
-        assertNotNull(currentDir.getChild("file3"));
+        assertNotNull(currentDir.getChild("file1.txt"));
+        assertNotNull(currentDir.getChild("file2.txt"));
+        assertNotNull(currentDir.getChild("file3.txt"));
     }
 
     @Test
-    void testExecute_FileNameWithSpecialCharacters() {
-        // valid chars
+    void testExecute_DirectoryNameWithSpecialCharacters() {
         List<String> arguments = new ArrayList<>();
-        arguments.add("my-file_123");
-        Map<String, String> options = new HashMap<>();
+        arguments.add("my-file_123.txt");
+        List<String> options = new ArrayList<>();
 
         DirectoryNode currentDir = fileSystemService.getCurrentDirectory();
         CommandContext context = new CommandContext(currentDir, arguments, options);
@@ -189,15 +188,14 @@ public class TouchCommandTest {
         CommandResult result = touchCommand.execute(context);
 
         assertTrue(result.isSuccess());
-        assertNotNull(currentDir.getChild("my-file_123"));
+        assertNotNull(currentDir.getChild("my-file_123.txt"));
     }
 
     @Test
-    void testExecute_NullFileName() {
-        // Arrange
+    void testExecute_NullDirectoryName() {
         List<String> arguments = new ArrayList<>();
         arguments.add(null);
-        Map<String, String> options = new HashMap<>();
+        List<String> options = new ArrayList<>();
 
         DirectoryNode currentDir = fileSystemService.getCurrentDirectory();
         CommandContext context = new CommandContext(currentDir, arguments, options);
@@ -208,5 +206,3 @@ public class TouchCommandTest {
         assertNotNull(result.getError());
     }
 }
-
- */

@@ -11,21 +11,33 @@ public class TouchCommand extends AbstractCommand{
     @Override
     public CommandResult execute(CommandContext context) {
         if (context.getArguments() == null || context.getArguments().isEmpty()) {
-            return CommandResult.error("touch: missing file name");
+            return CommandResult.error("touch: missing arguments");
         }
 
-        String fileName = context.getArguments().get(0);
+        StringBuilder output = new StringBuilder();
+        StringBuilder errors = new StringBuilder();
+        boolean hasErrors = false;
 
-        if (fileName == null || fileName.trim().isEmpty()) {
-            return CommandResult.error("touch: invalid file name");
-        }
+        for (String fileName : context.getArguments()) {
+            if (fileName == null || fileName.trim().isEmpty()) {
+                errors.append("touch: invalid file name");
+                hasErrors = true;
+                continue;
+            }
 
-        try {
-            fileSystemService.createFile(fileName);
-            return CommandResult.success("File '" + fileName + "' created successfully");
-        } catch (Exception e) {
-            return CommandResult.error("touch cannot create file '" + fileName + "': " + e.getMessage());
+            try {
+                fileSystemService.createFile(fileName);
+                output.append("File '").append(fileName).append("' created successfully");
+            } catch (Exception e) {
+                hasErrors = true;
+                errors.append("touch: cannot create file '").append(fileName).append("': ").append(e.getMessage());
+            }
+
         }
+        if(hasErrors){
+            return CommandResult.error(errors.toString().trim());
+        }
+        return CommandResult.success(output.toString().trim());
     }
 
 }

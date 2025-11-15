@@ -46,9 +46,9 @@ public class ParsedCommandTest {
 
     @Test
     void testSetAndGetOptions() {
-        Map<String, String> opts = new HashMap<>();
-        opts.put("-l", "");
-        opts.put("-a", "");
+        List<String> opts = new ArrayList<>();
+        opts.add("-l");
+        opts.add("-a");
         parsed.setOptions(opts);
         assertEquals(opts, parsed.getOptions());
         assertEquals(2, parsed.getOptions().size());

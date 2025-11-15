@@ -53,7 +53,7 @@ class MkdirCommandTest {
     void testExecute_Success() {
         List<String> arguments = new ArrayList<>();
         arguments.add("testDir");
-        Map<String, String> options = new HashMap<>();
+        List<String> options = new ArrayList<>();
 
         DirectoryNode currentDir = fileSystemService.getCurrentDirectory();
         CommandContext context = new CommandContext(currentDir, arguments, options);
@@ -72,7 +72,7 @@ class MkdirCommandTest {
     @Test
     void testExecute_MissingArguments() {
         List<String> arguments = new ArrayList<>();
-        Map<String, String> options = new HashMap<>();
+        List<String> options = new ArrayList<>();
 
         DirectoryNode currentDir = fileSystemService.getCurrentDirectory();
         CommandContext context = new CommandContext(currentDir, arguments, options);
@@ -86,7 +86,7 @@ class MkdirCommandTest {
 
     @Test
     void testExecute_NullArguments() {
-        Map<String, String> options = new HashMap<>();
+        List<String> options = new ArrayList<>();
         DirectoryNode currentDir = fileSystemService.getCurrentDirectory();
         CommandContext context = new CommandContext(currentDir, null, options);
 
@@ -100,7 +100,7 @@ class MkdirCommandTest {
     void testExecute_EmptyDirectoryName() {
         List<String> arguments = new ArrayList<>();
         arguments.add("");
-        Map<String, String> options = new HashMap<>();
+        List<String> options = new ArrayList<>();
 
         DirectoryNode currentDir = fileSystemService.getCurrentDirectory();
         CommandContext context = new CommandContext(currentDir, arguments, options);
@@ -116,7 +116,7 @@ class MkdirCommandTest {
     void testExecute_WhitespaceDirectoryName() {
         List<String> arguments = new ArrayList<>();
         arguments.add("   ");
-        Map<String, String> options = new HashMap<>();
+        List<String> options = new ArrayList<>();
 
         DirectoryNode currentDir = fileSystemService.getCurrentDirectory();
         CommandContext context = new CommandContext(currentDir, arguments, options);
@@ -131,7 +131,7 @@ class MkdirCommandTest {
     void testExecute_DirectoryAlreadyExists() {
         List<String> arguments = new ArrayList<>();
         arguments.add("existingDir");
-        Map<String, String> options = new HashMap<>();
+        List<String> options = new ArrayList<>();
 
         DirectoryNode currentDir = fileSystemService.getCurrentDirectory();
 
@@ -150,7 +150,7 @@ class MkdirCommandTest {
     @Test
     void testExecute_MultipleDirectories() {
         DirectoryNode currentDir = fileSystemService.getCurrentDirectory();
-        Map<String, String> options = new HashMap<>();
+        List<String> options = new ArrayList<>();
 
         List<String> args1 = new ArrayList<>();
         args1.add("dir1");
@@ -181,7 +181,7 @@ class MkdirCommandTest {
         // valid chars
         List<String> arguments = new ArrayList<>();
         arguments.add("my-directory_123");
-        Map<String, String> options = new HashMap<>();
+        List<String> options = new ArrayList<>();
 
         DirectoryNode currentDir = fileSystemService.getCurrentDirectory();
         CommandContext context = new CommandContext(currentDir, arguments, options);
@@ -197,7 +197,7 @@ class MkdirCommandTest {
         // Arrange
         List<String> arguments = new ArrayList<>();
         arguments.add(null);
-        Map<String, String> options = new HashMap<>();
+        List<String> options = new ArrayList<>();
 
         DirectoryNode currentDir = fileSystemService.getCurrentDirectory();
         CommandContext context = new CommandContext(currentDir, arguments, options);

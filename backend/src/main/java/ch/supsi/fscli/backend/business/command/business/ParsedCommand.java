@@ -11,11 +11,11 @@ import java.util.Map;
 public class ParsedCommand {
     private String commandName;
     private List<String> arguments;
-    private Map<String, String> options;
+    private List<String> options;
 
     public ParsedCommand() {
         this.arguments = new ArrayList<>();
-        this.options = new HashMap<>();
+        this.options = new ArrayList<>();
     }
 
     public String getCommandName() { return commandName; }
@@ -24,6 +24,6 @@ public class ParsedCommand {
     public List<String> getArguments() { return arguments; }
     public void setArguments(List<String> args) { this.arguments = args; }
 
-    public Map<String, String> getOptions() { return options; }
-    public void setOptions(Map<String, String> opts) { this.options = opts; }
+    public List<String> getOptions() { return options; }
+    public void setOptions(List<String> opts) { this.options = opts; }
 }

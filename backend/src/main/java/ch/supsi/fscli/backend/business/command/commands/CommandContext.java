@@ -8,9 +8,9 @@ import java.util.Map;
 public class CommandContext {
     private Inode currentWorkingDirectory;
     private List<String> arguments;
-    private Map<String, String> options; // for example: "-s" / "-i"
+    private List<String> options; // for example: "-s" / "-i"
 
-    public CommandContext(Inode currentWorkingDirectory, List<String> arguments, Map<String, String> options) {
+    public CommandContext(Inode currentWorkingDirectory, List<String> arguments, List<String> options) {
         this.currentWorkingDirectory = currentWorkingDirectory;
         this.arguments = arguments;
         this.options = options;
@@ -18,5 +18,9 @@ public class CommandContext {
 
     public List<String> getArguments() {
         return arguments;
+    }
+
+    public List<String> getOptions() {
+        return options;
     }
 }

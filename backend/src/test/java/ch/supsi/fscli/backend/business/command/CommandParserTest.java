@@ -55,9 +55,8 @@ public class CommandParserTest {
         assertEquals("ls", parsed.getCommandName());
         assertTrue(parsed.getArguments().isEmpty());
         assertEquals(2, parsed.getOptions().size());
-        assertTrue(parsed.getOptions().containsKey("-l"));
-        assertTrue(parsed.getOptions().containsKey("-a"));
-        assertEquals("", parsed.getOptions().get("-l"));
+        assertTrue(parsed.getOptions().contains("-l"));
+        assertTrue(parsed.getOptions().contains("-a"));
     }
 
     @Test
@@ -69,8 +68,8 @@ public class CommandParserTest {
         assertEquals("file1", parsed.getArguments().get(0));
         assertEquals("file2", parsed.getArguments().get(1));
         assertEquals(2, parsed.getOptions().size());
-        assertTrue(parsed.getOptions().containsKey("-a"));
-        assertTrue(parsed.getOptions().containsKey("-b"));
+        assertTrue(parsed.getOptions().contains("-a"));
+        assertTrue(parsed.getOptions().contains("-b"));
     }
 
     @Test

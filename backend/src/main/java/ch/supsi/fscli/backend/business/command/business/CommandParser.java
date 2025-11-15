@@ -18,9 +18,6 @@ public class CommandParser {
 
     private void initialize(){}
 
-    // Takes in input a String and tries to convert it into a command
-    //FIXME does not supporte all commands. this is a basic initial version
-
     public ParsedCommand parse(String input) throws InvalidCommandException {
         if (input == null || input.trim().isEmpty()) {
             throw new InvalidCommandException("Empty command");
@@ -37,13 +34,13 @@ public class CommandParser {
         parsed.setCommandName(commandName);
 
         List<String> args = new ArrayList<>();
-        Map<String, String> options = new HashMap<>();
+        List<String> options = new ArrayList<>();
 
         while (tokenizer.hasMoreTokens()) {
             String token = tokenizer.nextToken();
 
             if (token.startsWith("-")) {
-                options.put(token, "");
+                options.add(token);
             } else {
                 args.add(token);
             }

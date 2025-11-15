@@ -46,19 +46,21 @@ public class FileSystemService {
         currentDir.addChild(fileName, newFile);
     }
 
-    public void removeFile(String fileName) {
+    public void  removeFile(String fileName) {
         if (fileName == null || fileName.trim().isEmpty()) {
             throw new IllegalArgumentException("File name cannot be empty");
         }
 
         DirectoryNode currentDir = fileSystem.getCurrentDirectory();
 
-        // File does not exists
         if (currentDir.getChild(fileName) == null) {
             throw new IllegalArgumentException("File does not exists");
         }
 
-        // Remove file
+        if(currentDir.getChild(fileName) instanceof DirectoryNode) {
+            throw new IllegalArgumentException("Specified item is a directory");
+        }
+
         FileNode nodeToRemove = (FileNode) currentDir.getChild(fileName);
         currentDir.removeChild(fileName, nodeToRemove);
     }

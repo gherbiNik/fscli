@@ -3,8 +3,10 @@ package ch.supsi.fscli.backend.business.command.business;
 import ch.supsi.fscli.backend.business.command.commands.CommandContext;
 import ch.supsi.fscli.backend.business.command.commands.CommandResult;
 import ch.supsi.fscli.backend.business.command.commands.ICommand;
+import ch.supsi.fscli.backend.business.filesystem.DirectoryNode;
 import ch.supsi.fscli.backend.business.service.FileSystemService;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -12,7 +14,7 @@ public class CommandExecutor {
     private Map<String, ICommand> commandList;
     private CommandParser commandParser;
     private static CommandExecutor instance;
-    private FileSystemService fileSystemService; // FIXME: maybe to remove from here
+    private FileSystemService fileSystemService;
 
     private CommandExecutor() {}
 
@@ -38,6 +40,19 @@ public class CommandExecutor {
         }
     }
 
+    private List<String> expandArguments(DirectoryNode cwd, List<String> rawArguments) {
+        List<String> expandedArgs = new ArrayList<>();
+
+        for (String arg : rawArguments) {
+            if (arg.equals("*")) {
+                expandedArgs.addAll(cwd.getChildNames());
+            } else {
+                expandedArgs.add(arg);
+            }
+        }
+        return expandedArgs;
+    }
+
     public CommandResult execute(String input){
         try {
             ParsedCommand parsed = commandParser.parse(input);
@@ -46,12 +61,15 @@ public class CommandExecutor {
                 return CommandResult.error("Command not found: " + parsed.getCommandName());
             }
 
+            DirectoryNode cwd = fileSystemService.getCurrentDirectory();
+
+            List<String> expandedArguments = expandArguments(cwd, parsed.getArguments());
+
             CommandContext commandContext = new CommandContext(
-                    fileSystemService.getCurrentDirectory(),
-                    parsed.getArguments(),
-                parsed.getOptions()
+                    cwd,
+                    expandedArguments,
+                    parsed.getOptions()
             );
-            return command.execute(commandContext);
 
         } catch (InvalidCommandException e){
             return CommandResult.error(e.getMessage());

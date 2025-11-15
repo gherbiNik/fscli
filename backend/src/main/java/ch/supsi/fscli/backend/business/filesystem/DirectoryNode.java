@@ -2,6 +2,7 @@ package ch.supsi.fscli.backend.business.filesystem;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 public class DirectoryNode extends Inode implements IDirectoryNode {
 
@@ -12,12 +13,14 @@ public class DirectoryNode extends Inode implements IDirectoryNode {
         this.children = new HashMap<>();
     }
 
+    public Set<String> getChildNames() {
+        return children.keySet();
+    }
 
     @Override
     public boolean removeChild(String childName, Inode nodeToRemove) {
         return children.remove(childName, nodeToRemove);
     }
-
 
     @Override
     public int getNumChild() {

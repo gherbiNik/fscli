@@ -143,4 +143,9 @@ public class FileSystemService {
         targetDir.removeChild(directoryName, childDir);
         return true;
     }
+
+    public String getCurrentDirectoryAbsolutePath(){
+        return fileSystem.getCurrentDirectoryAbsolutePath();
+    }
+
 }

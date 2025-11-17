@@ -23,4 +23,8 @@ public class CommandContext {
     public List<String> getOptions() {
         return options;
     }
+
+    public Inode getCurrentWorkingDirectory() {
+        return currentWorkingDirectory;
+    }
 }

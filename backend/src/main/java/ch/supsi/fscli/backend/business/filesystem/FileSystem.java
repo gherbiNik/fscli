@@ -27,6 +27,23 @@ public class FileSystem implements FileSystemComponent, IFileSystem
         return currentDirectory;
     }
 
+    public String getCurrentDirectoryAbsolutePath(){
+        StringBuilder result = new StringBuilder();
+        DirectoryNode currentDirectoryForString = getCurrentDirectory();
+        DirectoryNode parent = currentDirectoryForString.getParent();
+
+        if (parent == null) {
+            return "/";
+        }
+
+        while(parent != null){
+            result.insert(0, "/"+parent.getINodeName(currentDirectoryForString));
+            currentDirectoryForString = parent;
+            parent = currentDirectoryForString.getParent();
+        }
+        return result.toString();
+    }
+
     public void changeDirectory(String path) {
         if(findDirectoryByPath(path) == null)
             throw new IllegalArgumentException();

@@ -37,11 +37,27 @@ public class DirectoryNode extends Inode implements IDirectoryNode {
         children.put(childName, newNode);
     }
 
+    public String getINodeName(Inode inode) { // <<< NOTE: Return type changed from 'void'
+        // Iterate over all entries (name, node) in the children map
+        for (Map.Entry<String, Inode> entry : children.entrySet()) {
+
+            // Check if the value (the Inode) matches the one we're looking for
+            if (entry.getValue().equals(inode)) {
+
+                // If it matches, return the corresponding key (the name)
+                return entry.getKey();
+            }
+        }
+
+        // If no match is found after checking all children, return null
+        return null;
+    }
+
 
 
     @Override
     public String toString() {
-        return super.toString()+"DirectoryNode{" +
+        return super.toString()+"{" +
                 "children=" + children +
                 '}';
     }

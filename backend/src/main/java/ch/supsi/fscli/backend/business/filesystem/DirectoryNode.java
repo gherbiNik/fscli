@@ -53,7 +53,9 @@ public class DirectoryNode extends Inode implements IDirectoryNode {
         return null;
     }
 
-
+    public Map<String, Inode> getChildren() {
+        return children;
+    }
 
     @Override
     public String toString() {

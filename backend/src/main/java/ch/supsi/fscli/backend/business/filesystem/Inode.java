@@ -23,6 +23,10 @@ public abstract class Inode implements FileSystemComponent{
         return parent;
     }
 
+    public int getUid() {
+        return uid;
+    }
+
     @Override
     public String toString() {
         return "Inode{" +

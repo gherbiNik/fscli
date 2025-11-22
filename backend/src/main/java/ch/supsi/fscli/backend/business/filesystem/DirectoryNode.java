@@ -14,6 +14,7 @@ public class DirectoryNode extends Inode implements IDirectoryNode {
     }
 
     public Set<String> getChildNames() {
+        System.out.println(children.keySet());
         return children.keySet();
     }
 

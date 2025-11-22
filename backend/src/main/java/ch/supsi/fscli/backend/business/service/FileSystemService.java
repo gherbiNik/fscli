@@ -38,6 +38,14 @@ public class FileSystemService {
         return fileSystem.getChildInodeTable(path);
     }
 
+    public Inode getCurrentDirInode() {
+        return fileSystem.getCurrentDirectory();
+    }
+
+    public Inode getInode(String targetPath) {
+        return fileSystem.resolveNode(targetPath);
+    }
+
 
     private record PathParts(DirectoryNode parentDir, String name) {}
 

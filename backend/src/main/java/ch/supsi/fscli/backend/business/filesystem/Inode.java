@@ -36,4 +36,8 @@ public abstract class Inode implements FileSystemComponent{
                 ", type=" + type +
                 '}';
     }
+
+    public boolean isDirectory() {
+        return type == InodeType.DIRECTORY;
+    }
 }

@@ -19,7 +19,13 @@ public class CommandResult {
         return new CommandResult(false, null, error);
     }
 
+    public static CommandResult partialError(String output, String error) {
+        return new CommandResult(false, output, error);
+    }
+
     public boolean isSuccess() { return success; }
     public String getOutput() { return output; }
     public String getError() { return error; }
 }
+
+

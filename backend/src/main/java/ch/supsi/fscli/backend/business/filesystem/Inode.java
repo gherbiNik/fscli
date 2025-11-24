@@ -23,6 +23,10 @@ public abstract class Inode implements FileSystemComponent{
         return parent;
     }
 
+    public int getUid() {
+        return uid;
+    }
+
     @Override
     public String toString() {
         return "Inode{" +
@@ -31,5 +35,9 @@ public abstract class Inode implements FileSystemComponent{
                 ", linkCount=" + linkCount +
                 ", type=" + type +
                 '}';
+    }
+
+    public boolean isDirectory() {
+        return type == InodeType.DIRECTORY;
     }
 }

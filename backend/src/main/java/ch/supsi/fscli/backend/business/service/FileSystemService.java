@@ -2,6 +2,8 @@ package ch.supsi.fscli.backend.business.service;
 
 import ch.supsi.fscli.backend.business.filesystem.*;
 
+import java.util.Map;
+
 public class FileSystemService {
 
     private static FileSystemService instance;
@@ -29,6 +31,25 @@ public class FileSystemService {
     public void changeDirectory(String newDirPath) {
         fileSystem.changeDirectory(newDirPath);
     }
+
+    public Map<String, Inode> getINodeTableCurrentDir() {
+
+        return fileSystem.getCurrentDirectoryTable();
+    }
+
+    public Map<String, Inode> getChildInodeTable(String path) {
+
+        return fileSystem.getChildInodeTable(path);
+    }
+
+    public Inode getCurrentDirInode() {
+        return fileSystem.getCurrentDirectory();
+    }
+
+    public Inode getInode(String targetPath) {
+        return fileSystem.resolveNode(targetPath);
+    }
+
 
     private record PathParts(DirectoryNode parentDir, String name) {}
 

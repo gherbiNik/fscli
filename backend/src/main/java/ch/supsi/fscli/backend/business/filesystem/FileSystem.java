@@ -1,5 +1,7 @@
 package ch.supsi.fscli.backend.business.filesystem;
 
+import java.util.Map;
+
 public class FileSystem implements FileSystemComponent, IFileSystem
 {
     private static FileSystem instance;
@@ -120,5 +122,14 @@ public class FileSystem implements FileSystemComponent, IFileSystem
         return "FileSystem{" +
                 "root=" + root +
                 '}';
+    }
+
+    public Map<String, Inode> getCurrentDirectoryTable() {
+        return currentDirectory.getChildren();
+    }
+
+    public  Map<String, Inode> getChildInodeTable(String path) {
+        DirectoryNode dir = findDirectoryByPath(path);
+        return  dir == null ? null : dir.getChildren();
     }
 }

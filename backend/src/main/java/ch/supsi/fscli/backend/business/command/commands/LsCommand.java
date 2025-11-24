@@ -23,11 +23,25 @@ public class LsCommand extends AbstractCommand {
         StringBuilder output = new StringBuilder();
         StringBuilder error = new StringBuilder();
 
-        // 1. STRATEGIA DI STAMPA
-        // Definiamo come stampare una riga (che sia un file singolo o un elemento di una cartella)
-        boolean showInode = context.getOptions().contains("-i");
+        // 1. VALIDAZIONE OPZIONI & STRATEGIA DI STAMPA
+        boolean showInode = false;
+
+        // Cicliamo su tutte le opzioni per verificare che siano valide
+        for (String opt : context.getOptions()) {
+            if (opt.equals("-i")) {
+                showInode = true;
+            } else {
+                // Se troviamo qualsiasi cosa diversa da "-i", blocchiamo tutto
+                // Rimuoviamo il trattino "-" solo per estetica nel messaggio d'errore
+                error.append("usage: ").append(getSynopsis());
+                return CommandResult.error(error.toString());
+            }
+        }
+
+        // Qui definisci la strategia (nota: showInode deve essere 'effectively final' per la lambda)
+        boolean finalShowInode = showInode;
         BiConsumer<String, Inode> printStrategy = (name, inode) -> {
-            if (showInode) {
+            if (finalShowInode) {
                 output.append(inode.getUid()).append(" ");
             }
             output.append(name).append(" ");

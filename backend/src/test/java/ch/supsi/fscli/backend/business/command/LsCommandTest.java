@@ -97,6 +97,22 @@ public class LsCommandTest {
     }
 
     @Test
+    @DisplayName("ls -z (opzione non valida): deve ritornare errore 'illegal option'")
+    void testLsIllegalOption() {
+        // Setup: passiamo un'opzione non supportata "-z"
+        CommandContext ctx = new CommandContext(fileSystemService.getCurrentDirectory(), Collections.emptyList(), List.of("-i","-z"));
+
+        CommandResult result = lsCommand.execute(ctx);
+
+        // Verifica
+        assertFalse(result.isSuccess());
+        assertTrue(result.getError().contains("usage: "));
+    }
+
+
+
+
+    @Test
     @DisplayName("ls [file]: deve stampare solo il nome del file")
     void testLsSingleFile() {
         CommandContext ctx = new CommandContext(fileSystemService.getCurrentDirectory(), List.of("file1.txt"), Collections.emptyList());

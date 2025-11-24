@@ -4,7 +4,7 @@ import ch.supsi.fscli.backend.business.service.FileSystemService;
 
 // At the moment of creation of the command, we insert the info: name - synopis and descr from the .properties file.
 // we can use the CommandHelpContainer to get the infos
-// for this purpose we use its field: """ Map<String, Map<String, String>> commandDetailsMap """
+// for this purpose we use its field: """ Map<String, CommandDetails > commandDetailsMap """
 
 public abstract class AbstractCommand  implements ICommand{
     private final String name;

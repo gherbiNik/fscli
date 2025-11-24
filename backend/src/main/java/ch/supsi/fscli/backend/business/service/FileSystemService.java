@@ -26,6 +26,10 @@ public class FileSystemService {
         return fileSystem.getCurrentDirectory();
     }
 
+    public void changeDirectory(String newDirPath) {
+        fileSystem.changeDirectory(newDirPath);
+    }
+
     private record PathParts(DirectoryNode parentDir, String name) {}
 
     private PathParts resolveParentDirectoryAndName(String path) {

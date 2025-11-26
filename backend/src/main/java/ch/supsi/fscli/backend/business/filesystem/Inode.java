@@ -6,7 +6,7 @@ public abstract class Inode implements FileSystemComponent{
     private static int idCounter = 0;
     private final int uid;
     private final Date creationDate;
-    private final DirectoryNode parent;
+    private DirectoryNode parent;
     // FIXME da capire
     private int linkCount = 1;
     private InodeType type;
@@ -35,6 +35,11 @@ public abstract class Inode implements FileSystemComponent{
                 ", linkCount=" + linkCount +
                 ", type=" + type +
                 '}';
+    }
+
+
+    public void setParent(DirectoryNode parent) {
+        this.parent = parent;
     }
 
     public boolean isDirectory() {

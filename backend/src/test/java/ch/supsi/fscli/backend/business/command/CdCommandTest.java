@@ -167,5 +167,16 @@ public class CdCommandTest {
         assertEquals("/", fileSystemService.getCurrentDirectoryAbsolutePath());
     }
 
+    @Test
+    public void testExecute_WithFilePath_ShouldReturnError() {
+        CommandContext context = new CommandContext(
+                fileSystemService.getCurrentDirectory(),
+                List.of("/home/test.txt"), Collections.emptyList()
+        );
+
+        CommandResult result = cdCommand.execute(context);
+
+        assertFalse(result.isSuccess());
+    }
 
 }

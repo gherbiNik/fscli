@@ -50,6 +50,67 @@ public class FileSystemService {
         return fileSystem.resolveNode(targetPath);
     }
 
+    public void move(String sourcePath, String destinationPath) {
+        // resolves source node
+        Inode nodeToMove = fileSystem.resolveNode(sourcePath);
+        if(nodeToMove == null) {
+            throw new IllegalArgumentException("Source not found: " + sourcePath);
+        }
+        PathParts sourceParts = resolveParentDirectoryAndName(sourcePath);
+        DirectoryNode sourceParent = sourceParts.parentDir();
+        String sourceName = sourceParts.name();
+
+        // resolves destination
+        Inode destination = fileSystem.resolveNode(destinationPath);
+        DirectoryNode targetDir;
+        String newName;
+        
+        if(destination != null && destination.isDirectory()){
+            // Case 1: the destination directory exists
+            targetDir = (DirectoryNode) destination;
+            newName = sourceName;
+        } else if (destination == null) {
+            // Case 2: Destination doesn't exist.
+            // Could be RENAME or MOVE with new name
+            PathParts destinationParts = resolveParentDirectoryAndName(destinationPath);
+            targetDir = destinationParts.parentDir();
+            newName = destinationParts.name();
+
+            if(targetDir.getChild(newName) != null){
+                // target already exists
+                throw new IllegalArgumentException("Destination already exists: " + destinationPath);
+            }
+        } else {
+            // Case 3: destination exists but is a file
+            throw new IllegalArgumentException("Cannot overwrite non-directory: " + destinationPath);
+        }
+
+        // Prevent moving a directory into itself or its subdirectory
+        if (nodeToMove.isDirectory() && isSubdirectory((DirectoryNode) nodeToMove, targetDir)) {
+            throw new IllegalArgumentException("Cannot move directory into itself or its subdirectory");
+        }
+
+        // Perform the move/rename
+        sourceParent.removeChild(sourceName, nodeToMove);
+        targetDir.addChild(newName, nodeToMove);
+
+        // Update parent reference (if it's a directory)
+        if (nodeToMove instanceof DirectoryNode) {
+            ((DirectoryNode) nodeToMove).setParent(targetDir);
+        }
+
+    }
+
+    private boolean isSubdirectory(DirectoryNode parent, DirectoryNode potentialChild) {
+        DirectoryNode current = potentialChild;
+        while (current != null) {
+            if (current == parent) {
+                return true;
+            }
+            current = current.getParent();
+        }
+        return false;
+    }
 
     private record PathParts(DirectoryNode parentDir, String name) {}
 

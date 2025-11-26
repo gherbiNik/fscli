@@ -21,7 +21,7 @@ public class CdCommand extends AbstractCommand{
         String newDirPath = context.getArguments().get(0);
         try {
             fileSystemService.changeDirectory(newDirPath);
-        } catch (Exception e){
+        } catch (IllegalArgumentException e){
             return CommandResult.error("Error: " + e.getMessage());
         }
         return CommandResult.success(""); // Nothing should be notified

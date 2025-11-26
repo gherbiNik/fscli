@@ -7,6 +7,7 @@ import ch.supsi.fscli.backend.business.command.commands.ICommand;
 import ch.supsi.fscli.backend.business.service.FileSystemService;
 
 import java.util.List;
+import java.util.Map;
 
 public class FileSystem implements FileSystemComponent, IFileSystem
 {

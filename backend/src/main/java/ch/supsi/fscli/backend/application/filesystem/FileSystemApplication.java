@@ -23,4 +23,9 @@ public class FileSystemApplication implements IFileSystemApplication {
         fileSystem = FileSystem.getInstance();
         System.out.println(fileSystem);
     }
+
+    @Override
+    public String sendCommand(String userInput) {
+        return fileSystem.executeCommand(userInput);
+    }
 }

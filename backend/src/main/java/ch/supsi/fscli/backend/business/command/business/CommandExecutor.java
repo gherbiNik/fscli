@@ -58,6 +58,7 @@ public class CommandExecutor {
     }
 
     public CommandResult execute(String input){
+        System.out.println(input);
         try {
             ParsedCommand parsed = commandParser.parse(input);
             ICommand command = commandList.get(parsed.getCommandName());

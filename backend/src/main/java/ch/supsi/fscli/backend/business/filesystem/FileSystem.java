@@ -1,12 +1,21 @@
 package ch.supsi.fscli.backend.business.filesystem;
 
-import java.util.Map;
+import ch.supsi.fscli.backend.business.command.business.CommandExecutor;
+import ch.supsi.fscli.backend.business.command.business.CommandParser;
+import ch.supsi.fscli.backend.business.command.commands.CommandResult;
+import ch.supsi.fscli.backend.business.command.commands.ICommand;
+import ch.supsi.fscli.backend.business.service.FileSystemService;
+
+import java.util.List;
 
 public class FileSystem implements FileSystemComponent, IFileSystem
 {
     private static FileSystem instance;
     private final DirectoryNode root;
     private DirectoryNode currentDirectory;
+    private CommandExecutor commandExecutor;
+    // TODO: creare la lista dei comandi
+    private List<ICommand> commandList;
 
 
     public static FileSystem getInstance() {
@@ -19,6 +28,7 @@ public class FileSystem implements FileSystemComponent, IFileSystem
     private FileSystem(){
         root = new DirectoryNode(null);
         currentDirectory = root;
+        this.commandExecutor = CommandExecutor.getInstance(FileSystemService.getInstance(this), CommandParser.getInstance(), commandList);
     }
 
     public DirectoryNode getRoot() {
@@ -131,5 +141,15 @@ public class FileSystem implements FileSystemComponent, IFileSystem
     public  Map<String, Inode> getChildInodeTable(String path) {
         DirectoryNode dir = findDirectoryByPath(path);
         return  dir == null ? null : dir.getChildren();
+    }
+
+    @Override
+    public String executeCommand(String command) {
+        CommandResult result = commandExecutor.execute(command);
+
+        if(result.isSuccess())
+            return result.getOutput();
+        else
+            return result.getError();
     }
 }

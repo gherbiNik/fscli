@@ -23,11 +23,6 @@ public class OutputView implements UncontrolledFxView{
         return instance;
     }
 
-
-
-
-
-
     @Override
     public void initialize(I18nManager i18n, PreferenceController preferenceController) {
         this.preferenceController = preferenceController;
@@ -44,6 +39,10 @@ public class OutputView implements UncontrolledFxView{
         this.outputView.setPrefRowCount(this.preferenceController.getOutputAreaRow());
         outputView.setFont(this.preferenceController.getOutputAreaFont());
         outputView.setWrapText(false);
+    }
+
+    public void clear() {
+        this.outputView.clear();
     }
 
     @Override

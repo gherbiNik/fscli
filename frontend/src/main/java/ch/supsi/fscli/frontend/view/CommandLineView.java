@@ -1,6 +1,7 @@
 package ch.supsi.fscli.frontend.view;
 
 import ch.supsi.fscli.frontend.controller.PreferenceController;
+import ch.supsi.fscli.frontend.controller.filesystem.IFileSystemController;
 import ch.supsi.fscli.frontend.util.I18nManager;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
@@ -18,29 +19,38 @@ public class CommandLineView implements ControlledFxView{
     private Label commandLineLabel;
     private Button enter;
 
+    private IFileSystemController fileSystemController;
 
     private CommandLineView(){
     }
-    public static CommandLineView getInstance(PreferenceController preferenceController, I18nManager i18nManager){
+    public static CommandLineView getInstance(IFileSystemController fileSystemController, PreferenceController preferenceController, I18nManager i18nManager){
         if(instance == null){
             instance = new CommandLineView();
-            instance.initalize(preferenceController, i18nManager);
+            instance.initalize(fileSystemController, preferenceController, i18nManager);
 
         }
         return instance;
     }
 
-    private void initalize(PreferenceController preferenceController, I18nManager i18nManager) {
+    private void initalize(IFileSystemController fileSystemController, PreferenceController preferenceController, I18nManager i18nManager) {
+        this.fileSystemController = fileSystemController;
         this.preferenceController = preferenceController;
         this.i18n = i18nManager;
         this.enter = new Button();
         this.enter.setId("enter");
+
 
         this.commandLineLabel = new Label();
         this.commandLine = new TextField();
         this.commandLine.setFont(this.preferenceController.getCommandLineFont());
         this.commandLine.setPrefColumnCount(this.preferenceController.getColumn());
         setLocalizedText();
+
+        this.enter.setOnAction(actionEvent -> {
+                fileSystemController.sendCommand(commandLine.getText());
+                commandLine.clear();
+            }
+        );
     }
 
     public Label getLabel(){

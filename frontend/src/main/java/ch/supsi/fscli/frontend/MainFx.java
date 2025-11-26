@@ -104,9 +104,11 @@ public class MainFx extends Application {
 
         // CONTROLLER
         this.preferenceController = PreferenceController.getInstance(preferenceModel);
+        // OUTPUT VIEW (to be encapsulated properly)
+        this.outputView = OutputView.getInstance(preferenceController, i18n);
         // LOG VIEW (to be encapsulated properly)
         this.logView = LogView.getInstance(preferenceController, i18n);
-        this.fileSystemController = FileSystemController.getInstance(fileSystemModel,logView, i18n);
+        this.fileSystemController = FileSystemController.getInstance(fileSystemModel, outputView,logView, i18n);
         this.exitController = ExitController.getInstance();
 
         this.commandHelpContainer = CommandHelpContainer.getInstance(backendTranslator);
@@ -131,14 +133,7 @@ public class MainFx extends Application {
 
 
         // COMMAND LINE
-        this.commandLineView = CommandLineView.getInstance(preferenceController, i18n);
-
-
-        // OUTPUT VIEW (to be encapsulated properly)
-        this.outputView = OutputView.getInstance(preferenceController, i18n);
-
-
-
+        this.commandLineView = CommandLineView.getInstance(fileSystemController, preferenceController, i18n);
 
     }
 

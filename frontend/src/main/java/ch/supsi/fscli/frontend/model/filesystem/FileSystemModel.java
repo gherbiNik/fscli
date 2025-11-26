@@ -23,4 +23,9 @@ public class FileSystemModel implements IFileSystemModel {
     public void createFileSystem() {
         application.createFileSystem();
     }
+
+    @Override
+    public String sendCommand(String userInput) {
+        return application.sendCommand(userInput);
+    }
 }

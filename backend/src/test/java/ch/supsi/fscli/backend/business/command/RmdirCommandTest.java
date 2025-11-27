@@ -65,13 +65,13 @@ class RmdirCommandTest {
 
         List<String> arguments = new ArrayList<>();
         arguments.add("testDir");
-        List<String> options = new ArrayList<>(); // Corretto: da Map a List
+        List<String> options = new ArrayList<>();
 
         DirectoryNode currentDir = fileSystemService.getCurrentDirectory();
         CommandContext context = new CommandContext(currentDir, arguments, options);
 
         CommandResult result = rmdirCommand.execute(context);
-
+        System.out.println(fileSystem);
         assertTrue(result.isSuccess());
         assertNull(currentDir.getChild("testDir"));
     }
@@ -116,6 +116,7 @@ class RmdirCommandTest {
         CommandContext context = new CommandContext(currentDir, arguments, options);
         CommandResult result = rmdirCommand.execute(context);
 
+
         assertTrue(result.isSuccess()); // Il comando rmdir ha successo ma stampa un output
         assertTrue(result.getOutput().contains("not empty"));
         assertNotNull(currentDir.getChild("parentDir"));
@@ -136,7 +137,7 @@ class RmdirCommandTest {
 
         CommandContext context = new CommandContext(fileSystemService.getCurrentDirectory(), arguments, options);
         CommandResult result = rmdirCommand.execute(context);
-
+        System.out.println(fileSystem);
         assertTrue(result.isSuccess());
         assertNull(((DirectoryNode) docsNode).getChild("dirB"));
     }
@@ -157,6 +158,7 @@ class RmdirCommandTest {
         CommandContext context = new CommandContext(fileSystemService.getCurrentDirectory(), arguments, options);
         CommandResult result = rmdirCommand.execute(context);
 
+        System.out.println(fileSystem);
         assertTrue(result.isSuccess());
         assertNull(fileSystem.resolveNode("/dirA"));
     }

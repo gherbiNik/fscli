@@ -49,7 +49,9 @@ public class CommandExecutor {
 
         for (String arg : rawArguments) {
             if (arg.equals("*")) {
-                expandedArgs.addAll(cwd.getChildNames());
+                expandedArgs.addAll(cwd.getChildNames().stream()
+                        .filter(name -> !name.startsWith(".")) // Rimuove ., .. and evrey .file
+                        .toList());
             } else {
                 expandedArgs.add(arg);
             }

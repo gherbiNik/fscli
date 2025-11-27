@@ -92,9 +92,14 @@ public class LsCommand extends AbstractCommand {
                         ? fileSystemService.getINodeTableCurrentDir()
                         : fileSystemService.getChildInodeTable(targetPath);
 
-                // Stampiamo i figli
+                // Stampiamo i figli applicando il FILTRO
                 if (children != null && !children.isEmpty()) {
-                    children.forEach(printStrategy);
+                    children.forEach((name, inode) -> {
+                        // Ignoriamo . e ..
+                        if (!name.startsWith(".")) {
+                            printStrategy.accept(name, inode);
+                        }
+                    });
                 }
 
                 output.append("\n");

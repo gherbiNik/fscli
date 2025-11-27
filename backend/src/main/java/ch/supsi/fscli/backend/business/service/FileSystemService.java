@@ -158,7 +158,7 @@ public class FileSystemService {
         }
 
         DirectoryNode childDir = (DirectoryNode) nodeToRemove;
-        if(childDir.getNumChild() > 0) {
+        if(childDir.getNumChild() > 2) {
             return false;  // Directory not empty
         }
         targetDir.removeChild(directoryName, childDir);

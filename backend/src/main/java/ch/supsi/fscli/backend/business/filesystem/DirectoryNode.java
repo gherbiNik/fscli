@@ -1,8 +1,6 @@
 package ch.supsi.fscli.backend.business.filesystem;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class DirectoryNode extends Inode implements IDirectoryNode {
 
@@ -11,11 +9,12 @@ public class DirectoryNode extends Inode implements IDirectoryNode {
     public DirectoryNode(DirectoryNode parent) {
         super(parent, InodeType.DIRECTORY);
         this.children = new HashMap<>();
+        children.put(".", this);
+        children.put("..", Objects.requireNonNullElse(parent, this));
     }
 
     public Set<String> getChildNames() {
-        System.out.println(children.keySet());
-        return children.keySet();
+        return Collections.unmodifiableSet(children.keySet());
     }
 
     @Override
@@ -53,6 +52,15 @@ public class DirectoryNode extends Inode implements IDirectoryNode {
         // If no match is found after checking all children, return null
         return null;
     }
+    public DirectoryNode getCurrentDirectory() {
+        return (DirectoryNode) children.get(".");
+    }
+
+    public DirectoryNode getParent() {
+        Inode parent =  children.get("..");
+        if (parent == this) return null;
+        return (DirectoryNode) parent;
+    }
 
     public Map<String, Inode> getChildren() {
         return children;
@@ -60,8 +68,28 @@ public class DirectoryNode extends Inode implements IDirectoryNode {
 
     @Override
     public String toString() {
-        return super.toString()+"{" +
-                "children=" + children +
-                '}';
+        // Usiamo uno StringBuilder per efficienza
+        StringBuilder sb = new StringBuilder();
+
+        // Aggiungiamo i dati del nodo corrente (definiti in Inode)
+        sb.append(super.toString());
+
+        sb.append(" { content=[ ");
+
+        // Iteriamo sui figli per stamparli
+        // NOTA: Qui avviene la magia per evitare lo StackOverflow
+        if (children != null) {
+            String childrenString = children.entrySet().stream()
+                    // FILTRO FONDAMENTALE: Ignoriamo i puntatori di navigazione
+                    .filter(entry -> !entry.getKey().equals(".") && !entry.getKey().equals(".."))
+                    // Per gli altri, chiamiamo il loro toString() (ricorsione sicura)
+                    .map(entry -> entry.getKey() + "=" + entry.getValue().toString())
+                    .collect(java.util.stream.Collectors.joining(", "));
+
+            sb.append(childrenString);
+        }
+
+        sb.append(" ] }");
+        return sb.toString();
     }
 }

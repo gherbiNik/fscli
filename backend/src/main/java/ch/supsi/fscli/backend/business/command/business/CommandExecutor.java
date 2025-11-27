@@ -42,6 +42,7 @@ public class CommandExecutor {
                 }
             }
         }
+        System.out.println(commandList);
     }
 
     private List<String> expandArguments(DirectoryNode cwd, List<String> rawArguments) {
@@ -49,7 +50,9 @@ public class CommandExecutor {
 
         for (String arg : rawArguments) {
             if (arg.equals("*")) {
-                expandedArgs.addAll(cwd.getChildNames());
+                expandedArgs.addAll(cwd.getChildNames().stream()
+                        .filter(name -> !name.startsWith(".")) // Rimuove ., .. and evrey .file
+                        .toList());
             } else {
                 expandedArgs.add(arg);
             }
@@ -58,7 +61,6 @@ public class CommandExecutor {
     }
 
     public CommandResult execute(String input){
-        System.out.println(input);
         try {
             ParsedCommand parsed = commandParser.parse(input);
             ICommand command = commandList.get(parsed.getCommandName());
@@ -75,6 +77,7 @@ public class CommandExecutor {
                     expandedArguments,
                     parsed.getOptions()
             );
+            System.out.println(commandContext);
 
             return command.execute(commandContext);
         } catch (InvalidCommandException e){

@@ -49,7 +49,7 @@ public class DirectoryNodeTest {
         assertNotNull(subDir.getChild("f1.txt"));
         assertNotNull(subDir.getChild("f2.txt"));
         assertNotNull(subDir.getChild("documents"));
-        assertEquals(3, subDir.getNumChild());
+        assertEquals(3+2, subDir.getNumChild()); // considero . e ..
     }
 
     @Test
@@ -68,7 +68,7 @@ public class DirectoryNodeTest {
         subDir.addChild("documents", childDir);
 
         var names = subDir.getChildNames();
-        assertEquals(2, names.size());
+        assertEquals(2+2, names.size()); // considero . e ..
         assertTrue(names.contains("f1.txt"));
         assertTrue(names.contains("documents"));
     }

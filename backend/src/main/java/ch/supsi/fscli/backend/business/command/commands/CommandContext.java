@@ -27,4 +27,13 @@ public class CommandContext {
     public Inode getCurrentWorkingDirectory() {
         return currentWorkingDirectory;
     }
+
+    @Override
+    public String toString() {
+        return "CommandContext{" +
+                "currentWorkingDirectory=" + currentWorkingDirectory +
+                ", arguments=" + arguments +
+                ", options=" + options +
+                '}';
+    }
 }

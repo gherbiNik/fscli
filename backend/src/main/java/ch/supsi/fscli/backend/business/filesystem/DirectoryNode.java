@@ -94,4 +94,8 @@ public class DirectoryNode extends Inode implements IDirectoryNode {
         sb.append(" ] }");
         return sb.toString();
     }
+
+    public void setParent(DirectoryNode targetDir) {
+        children.put("..", targetDir);
+    }
 }

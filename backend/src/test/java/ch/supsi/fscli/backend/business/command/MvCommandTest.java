@@ -59,6 +59,9 @@ public class MvCommandTest {
                     var children = fileSystemService.getChildInodeTable(dirName);
                     if (children != null) {
                         for (String childName : children.keySet().toArray(new String[0])) {
+                            if (childName.equals(".") || childName.equals("..")) {
+                                continue;
+                            }
                             cleanupDirectory(dirName + "/" + childName);
                         }
                     }

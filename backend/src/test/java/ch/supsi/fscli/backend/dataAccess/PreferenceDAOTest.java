@@ -1,5 +1,6 @@
 package ch.supsi.fscli.backend.dataAccess;
 
+import ch.supsi.fscli.backend.dataAccess.preferences.PreferenceDAO;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.io.TempDir;
 

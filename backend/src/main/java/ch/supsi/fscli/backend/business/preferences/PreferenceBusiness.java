@@ -1,6 +1,6 @@
-package ch.supsi.fscli.backend.business;
+package ch.supsi.fscli.backend.business.preferences;
 
-import ch.supsi.fscli.backend.dataAccess.IPreferenceDAO;
+import ch.supsi.fscli.backend.dataAccess.preferences.IPreferenceDAO;
 
 
 import java.nio.file.Path;

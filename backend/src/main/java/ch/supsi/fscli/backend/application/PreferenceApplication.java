@@ -1,6 +1,6 @@
 package ch.supsi.fscli.backend.application;
 
-import ch.supsi.fscli.backend.business.IPreferenceBusiness;
+import ch.supsi.fscli.backend.business.preferences.IPreferenceBusiness;
 
 
 import java.nio.file.Path;

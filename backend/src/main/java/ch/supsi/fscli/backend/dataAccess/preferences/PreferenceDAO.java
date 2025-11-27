@@ -1,4 +1,4 @@
-package ch.supsi.fscli.backend.dataAccess;
+package ch.supsi.fscli.backend.dataAccess.preferences;
 
 
 import java.io.FileInputStream;

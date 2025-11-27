@@ -51,7 +51,6 @@ public class LnCommand extends AbstractCommand {
 
         Inode destination = fileSystemService.getInode(arg.get(1));
 
-        // TODO devo controllare se con indirizzo dir/file -> dir esiste o no
         if (destination == null) {
             return CommandResult.error("ln: cannot create link "+arg.get(1)+": No such file or directory.");
         }

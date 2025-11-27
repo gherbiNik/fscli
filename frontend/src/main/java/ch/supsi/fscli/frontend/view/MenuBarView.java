@@ -82,11 +82,11 @@ public class MenuBarView implements ControlledFxView {
 
         saveMenuItem = new MenuItem();
         saveMenuItem.setId("saveMenuItem");
-        saveMenuItem.setDisable(true); // when app starts there is nothing to save
+        //saveMenuItem.setDisable(true); // when app starts there is nothing to save
 
         saveAsMenuItem = new MenuItem();
         saveAsMenuItem.setId("saveAsMenuItem");
-        saveAsMenuItem.setDisable(true);
+        //saveAsMenuItem.setDisable(true);
 
         exitMenuItem = new MenuItem();
         exitMenuItem.setId("exitMenuItem");

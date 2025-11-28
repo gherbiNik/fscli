@@ -112,7 +112,7 @@ public class FileSystemService {
         return false;
     }
 
-    private record PathParts(DirectoryNode parentDir, String name) {}
+    public record PathParts(DirectoryNode parentDir, String name) {}
 
     private PathParts resolveParentDirectoryAndName(String path) {
         if (path == null || path.trim().isEmpty()) {

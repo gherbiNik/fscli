@@ -38,6 +38,8 @@ public class RmCommand extends AbstractCommand {
             return CommandResult.error(errors.toString().trim());
         }
 
+        // TODO ADD SOFT LINK CONTROLL
+
         return CommandResult.success(output.toString().trim());
     }
 }

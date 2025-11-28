@@ -42,7 +42,6 @@ public class CommandExecutor {
                 }
             }
         }
-        System.out.println(commandList);
     }
 
     private List<String> expandArguments(DirectoryNode cwd, List<String> rawArguments) {

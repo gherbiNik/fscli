@@ -24,6 +24,9 @@ public class CdCommand extends AbstractCommand{
         } catch (IllegalArgumentException e){
             return CommandResult.error("Error: " + e.getMessage());
         }
+
+        // TODO ADD SOFT LINK CONTROLL
+
         return CommandResult.success(""); // Nothing should be notified
     }
 }

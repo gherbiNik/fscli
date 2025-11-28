@@ -1,6 +1,8 @@
 package ch.supsi.fscli.backend.business.command.commands;
 
 import ch.supsi.fscli.backend.business.service.FileSystemService;
+import ch.supsi.fscli.backend.util.BackendTranslator;
+
 import java.util.List;
 
 public class HelpCommand extends AbstractCommand {
@@ -31,14 +33,19 @@ public class HelpCommand extends AbstractCommand {
             return CommandResult.error("help: no commands available (system error)");
         }
 
-        StringBuilder sb = new StringBuilder("Available Commands List:\n");
-
+        BackendTranslator backendTranslator = BackendTranslator.getInstance();
+        StringBuilder sb = new StringBuilder(backendTranslator.getString("commandList.title") + "\n");
         // Iteriamo sulla lista 'this.commands' invece di usare il vecchio 'container'
         for (ICommand cmd : this.commands) {
-            sb.append(cmd.getSynopsis())
+            sb.append(backendTranslator.getString(cmd.getSynopsis()))
                     .append(" : ")
-                    .append(cmd.getDescription())
+                    .append(backendTranslator.getString(cmd.getDescription()))
                     .append("\n");
+        }
+
+        // Rimuovi l'ultimo \n
+        if (sb.length() > 0) {
+            sb.setLength(sb.length() - 1);
         }
 
         return CommandResult.success(sb.toString());

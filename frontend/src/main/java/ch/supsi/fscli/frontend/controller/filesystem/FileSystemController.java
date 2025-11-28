@@ -37,7 +37,6 @@ public class FileSystemController implements IFileSystemController {
     @Override
     public void createFileSystem() {
         fileSystemModel.createFileSystem();
-        // FIXME: è giusto castare?
         ((CommandLineView) commandLineView).setDisable(false);
         ((OutputView)outputView).clear();
         logView.update(i18n.getString("log.fsCreated"));

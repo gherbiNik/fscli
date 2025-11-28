@@ -46,7 +46,11 @@ public class FileSystemController implements IFileSystemController {
     @Override
     public void sendCommand(String userInput) {
         String result = fileSystemModel.sendCommand(userInput);
-        outputView.update(result + "\n");
+        if(result.equals("Perform Clear")){
+            ((OutputView)outputView).clear();
+            return;
+        }
+        outputView.update("<user> " + userInput + "\n" + result + "\n\n");
     }
 
 

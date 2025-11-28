@@ -29,6 +29,7 @@ public class OutputView implements UncontrolledFxView{
         this.i18nManager = i18n;
 
         this.outputView = new TextArea();
+        this.outputView.setEditable(false);
         this.outputView.setId("outputView");
 
         // EXAMPLE TEXT

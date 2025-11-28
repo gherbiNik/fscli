@@ -1,3 +1,4 @@
+/*
 package ch.supsi.fscli.backend.business.command.business;
 
 import ch.supsi.fscli.backend.util.BackendTranslator;
@@ -82,3 +83,4 @@ public class CommandHelpContainer {
         return descriptions;
     }
 }
+*/

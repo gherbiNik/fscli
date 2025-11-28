@@ -1,3 +1,4 @@
+/*
 package ch.supsi.fscli.frontend.model;
 
 import ch.supsi.fscli.backend.application.CommandHelpApplication;
@@ -34,3 +35,4 @@ public class CommandHelpModel implements ICommandHelpModel {
         return commandHelpApplication.getCommandDescriptions();
     }
 }
+*/

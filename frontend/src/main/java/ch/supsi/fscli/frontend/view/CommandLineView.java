@@ -42,15 +42,26 @@ public class CommandLineView implements ControlledFxView{
 
         this.commandLineLabel = new Label();
         this.commandLine = new TextField();
+
+        // Disabilito di default
+        this.setDisable(true);
+
         this.commandLine.setFont(this.preferenceController.getCommandLineFont());
         this.commandLine.setPrefColumnCount(this.preferenceController.getColumn());
         setLocalizedText();
 
         this.enter.setOnAction(actionEvent -> {
                 fileSystemController.sendCommand(commandLine.getText());
-                commandLine.clear();
+                this.update("");
             }
         );
+
+        this.commandLine.setOnAction(event -> this.enter.fire());
+    }
+
+    public void setDisable(boolean b) {
+        this.commandLine.setDisable(b);
+        this.enter.setDisable(b);
     }
 
     public Label getLabel(){
@@ -68,7 +79,7 @@ public class CommandLineView implements ControlledFxView{
 
     @Override
     public void update(String message) {
-        //TODO
+        commandLine.clear();
     }
 
     @Override

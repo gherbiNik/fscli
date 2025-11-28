@@ -96,7 +96,7 @@ public class FileSystemService {
 
         // Update parent reference (if it's a directory)
         if (nodeToMove instanceof DirectoryNode) {
-            ((DirectoryNode) nodeToMove).setParent(targetDir);
+            //((DirectoryNode) nodeToMove).setParent(targetDir);
         }
 
     }

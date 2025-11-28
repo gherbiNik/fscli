@@ -1,20 +1,18 @@
 package ch.supsi.fscli.frontend;
 
-import ch.supsi.fscli.backend.application.CommandHelpApplication;
-import ch.supsi.fscli.backend.application.ICommandHelpApplication;
+// FIXME import ch.supsi.fscli.backend.application.ICommandHelpApplication;
 import ch.supsi.fscli.backend.application.TranslationApplication;
 import ch.supsi.fscli.backend.application.PreferenceApplication;
 import ch.supsi.fscli.backend.application.filesystem.FileSystemApplication;
 import ch.supsi.fscli.backend.business.PreferenceBusiness;
-import ch.supsi.fscli.backend.business.command.business.CommandHelpContainer;
 import ch.supsi.fscli.backend.dataAccess.PreferenceDAO;
 import ch.supsi.fscli.backend.util.BackendTranslator;
 import ch.supsi.fscli.frontend.controller.CreditsController;
 import ch.supsi.fscli.frontend.controller.ExitController;
-import ch.supsi.fscli.frontend.controller.HelpController;
+//FIXME import ch.supsi.fscli.frontend.controller.HelpController;
 import ch.supsi.fscli.frontend.controller.PreferenceController;
 import ch.supsi.fscli.frontend.controller.filesystem.FileSystemController;
-import ch.supsi.fscli.frontend.model.CommandHelpModel;
+//FIXME import ch.supsi.fscli.frontend.model.CommandHelpModel;
 import ch.supsi.fscli.frontend.model.ICommandHelpModel;
 import ch.supsi.fscli.frontend.model.TranslationModel;
 import ch.supsi.fscli.frontend.model.PreferenceModel;
@@ -63,10 +61,8 @@ public class MainFx extends Application {
     private final TranslationApplication creditsFacade;
     private final CreditsController creditsController;
     private final BackendTranslator backendTranslator;
-    private final ICommandHelpApplication commandHelpApplication;
-    private final CommandHelpContainer commandHelpContainer;
-    private final ICommandHelpModel commandHelpModel;
-    private final HelpController helpController;
+    //FIXME private final ICommandHelpModel commandHelpModel;
+    //FIXME private final HelpController helpController;
 
     public MainFx() {
 
@@ -111,9 +107,8 @@ public class MainFx extends Application {
         this.fileSystemController = FileSystemController.getInstance(fileSystemModel, outputView,logView, i18n);
         this.exitController = ExitController.getInstance();
 
-        this.commandHelpContainer = CommandHelpContainer.getInstance(backendTranslator);
-        this.commandHelpApplication = CommandHelpApplication.getInstance(commandHelpContainer);
-        this.commandHelpModel = CommandHelpModel.getInstance(commandHelpApplication, i18n);
+        /* FIXME this.commandHelpApplication = CommandHelpApplication.getInstance(commandHelpContainer);
+        this.commandHelpModel = CommandHelpModel.getInstance(commandHelpApplication, i18n);*/
 
         // VIEW
         this.preferenceView = PreferenceView.getInstance(preferenceController, i18n);
@@ -121,19 +116,17 @@ public class MainFx extends Application {
         this.creditsView = CreditsView.getInstance(i18n);
         this.exitView = ExitView.getInstance(exitController, i18n);
         this.menuBarView = MenuBarView.getInstance(i18n, exitView, creditsView, helpView, preferenceView, fileSystemController);
-
+        // COMMAND LINE
+        this.commandLineView = CommandLineView.getInstance(fileSystemController, preferenceController, i18n);
+        this.fileSystemController.setCommandLineView(this.commandLineView);
         // CONTROLLER
         this.creditsController = CreditsController.getInstance(i18n, creditsView);
-        this.helpController = HelpController.getInstance(helpView, i18n, commandHelpModel);
+        // FIXME this.helpController = HelpController.getInstance(helpView, i18n, commandHelpModel);
 
 
         System.out.println("Application started with language: " + loadedLocale.getLanguage());
 
         this.applicationTitle = i18n.getString("app.title");
-
-
-        // COMMAND LINE
-        this.commandLineView = CommandLineView.getInstance(fileSystemController, preferenceController, i18n);
 
     }
 

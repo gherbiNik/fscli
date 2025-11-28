@@ -15,7 +15,6 @@ public class FileSystem implements FileSystemComponent, IFileSystem
     private final DirectoryNode root;
     private DirectoryNode currentDirectory;
     private CommandExecutor commandExecutor;
-    // TODO: creare la lista dei comandi
     private List<ICommand> commandList;
 
 
@@ -29,7 +28,10 @@ public class FileSystem implements FileSystemComponent, IFileSystem
     private FileSystem(){
         root = new DirectoryNode(null);
         currentDirectory = root;
-        this.commandExecutor = CommandExecutor.getInstance(FileSystemService.getInstance(this), CommandParser.getInstance(), commandList);
+    }
+
+    public void setCommandExecutor(CommandExecutor commandExecutor) {
+        this.commandExecutor = commandExecutor;
     }
 
     public DirectoryNode getRoot() {

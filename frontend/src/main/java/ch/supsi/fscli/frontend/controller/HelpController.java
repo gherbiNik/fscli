@@ -1,3 +1,4 @@
+/*
 package ch.supsi.fscli.frontend.controller;
 
 import ch.supsi.fscli.frontend.model.CommandHelpModel;
@@ -34,3 +35,4 @@ public class HelpController {
         view.setCommandDescriptions(model.getCommandDescriptions());
     }
 }
+*/

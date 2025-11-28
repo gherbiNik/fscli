@@ -1,9 +1,11 @@
 package ch.supsi.fscli.backend.dataAccess.filesystem;
 
-import ch.supsi.fscli.backend.business.dto.IFsStateBusiness;
+import ch.supsi.fscli.backend.business.dto.IFsStateDto;
+
+import java.io.File;
 
 public interface ISaveData {
-    void save(IFsStateBusiness iFsStateBusiness);
-    void saveAs(IFsStateBusiness iFsStateBusiness);
-    IFsStateBusiness load(String fileName);
+    void save(IFsStateDto iFsStateDto);
+    void saveAs(IFsStateDto iFsStateDto, File file);
+    IFsStateDto load(String fileName);
 }

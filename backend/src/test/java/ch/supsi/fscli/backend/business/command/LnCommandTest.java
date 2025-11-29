@@ -82,7 +82,7 @@ public class LnCommandTest {
 
         Inode source = fileSystemService.getInode("source.txt");
         Inode link = fileSystemService.getInode("hardlink.txt");
-        System.out.println(fileSystem);
+        //System.out.println(fileSystem);
         assertNotNull(link);
         // Verifica cruciale per Hard Link: devono avere lo stesso UID (stesso oggetto Inode)
         assertEquals(source.getUid(), link.getUid());
@@ -100,6 +100,170 @@ public class LnCommandTest {
         assertFalse(result.isSuccess());
         assertTrue(result.getError().contains("hard link not allowed for directory"));
     }
+
+    @Test
+    @DisplayName("ln source dir: Crea link dentro la directory con lo stesso nome")
+    void testCreateHardLinkIntoDirectory() {
+        // Comando: ln source.txt myDir
+        // Risultato atteso: dir/source.txt
+        fileSystemService.createFile("source.txt");
+        fileSystemService.createDirectory("dir");
+        List<String> args = List.of("source.txt", "dir");
+        CommandContext ctx = new CommandContext(fileSystemService.getCurrentDirectory(), args, Collections.emptyList());
+
+        CommandResult result = lnCommand.execute(ctx);
+
+        assertTrue(result.isSuccess());
+
+        Inode source = fileSystemService.getInode("source.txt");
+        Inode linkInside = fileSystemService.getInode("dir/source.txt");
+
+        //System.out.println(fileSystem);
+
+        assertNotNull(linkInside, "Il file dovrebbe essere stato creato dentro dir");
+        assertEquals(source.getUid(), linkInside.getUid());
+    }
+
+    @Test
+    @DisplayName("ln -s source target: Crea un soft link")
+    void testCreateSoftLink() {
+        fileSystemService.createFile("source.txt");
+        List<String> args = List.of("source.txt", "softlink");
+        List<String> opts = List.of("-s");
+        CommandContext ctx = new CommandContext(fileSystemService.getCurrentDirectory(), args, opts);
+
+        CommandResult result = lnCommand.execute(ctx);
+
+        assertTrue(result.isSuccess());
+        Inode link = fileSystemService.getInode("softlink");
+        assertNotNull(link);
+        //System.out.println(fileSystem);
+        // Verifica che sia un tipo diverso (SOFTLINK) o comunque un nuovo oggetto con UID diverso
+        assertNotEquals(fileSystemService.getInode("source.txt").getUid(), link.getUid());
+    }
+
+    @Test
+    @DisplayName("ln -s source target: Crea un soft link con percorso assoluto")
+    void testCreateSoftLinkAbsolutePath() {
+        fileSystemService.createDirectory("dir");
+        fileSystemService.createDirectory("dir/dir");
+        fileSystemService.createDirectory("dir/dir/dir");
+
+        fileSystemService.createFile("dir/dir/dir/source.txt");
+        List<String> args = List.of("/dir/dir/dir/source.txt", "softlink");
+        List<String> opts = List.of("-s");
+        CommandContext ctx = new CommandContext(fileSystemService.getCurrentDirectory(), args, opts);
+
+        CommandResult result = lnCommand.execute(ctx);
+
+        assertTrue(result.isSuccess());
+        Inode link = fileSystemService.getInode("softlink");
+        assertNotNull(link);
+        System.out.println(fileSystem);
+        // Verifica che sia un tipo diverso (SOFTLINK) o comunque un nuovo oggetto con UID diverso
+        assertNotEquals(fileSystemService.getInode("/dir/dir/dir/source.txt").getUid(), link.getUid());
+    }
+
+    @Test
+    @DisplayName("ln -s source target: Crea un soft link of copmposed path")
+    void testCreateSoftLinkOfComposedPath() {
+        fileSystemService.createDirectory("dir");
+        fileSystemService.createFile("dir/source.txt");
+        List<String> args = List.of("dir/source.txt", "softlink");
+        List<String> opts = List.of("-s");
+        CommandContext ctx = new CommandContext(fileSystemService.getCurrentDirectory(), args, opts);
+
+        CommandResult result = lnCommand.execute(ctx);
+
+        assertTrue(result.isSuccess());
+        Inode link = fileSystemService.getInode("softlink");
+        assertNotNull(link);
+        //System.out.println(fileSystem);
+        // Verifica che sia un tipo diverso (SOFTLINK) o comunque un nuovo oggetto con UID diverso
+        assertNotEquals(fileSystemService.getInode("dir/source.txt").getUid(), link.getUid());
+    }
+
+    @Test
+    @DisplayName("ln (no args): Errore argomenti mancanti")
+    void testMissingArguments() {
+        CommandContext ctx = new CommandContext(fileSystemService.getCurrentDirectory(), Collections.emptyList(), Collections.emptyList());
+        CommandResult result = lnCommand.execute(ctx);
+
+        assertFalse(result.isSuccess());
+        assertTrue(result.getError().contains("usage"));
+    }
+
+    @Test
+    @DisplayName("ln -z source target: Errore opzione illegale")
+    void testIllegalOption() {
+        fileSystemService.createFile("source.txt");
+        List<String> args = List.of("source.txt", "link");
+        List<String> opts = List.of("-z"); // Opzione non valida
+        CommandContext ctx = new CommandContext(fileSystemService.getCurrentDirectory(), args, opts);
+
+        CommandResult result = lnCommand.execute(ctx);
+
+        assertFalse(result.isSuccess());
+        assertTrue(result.getError().contains("illegal option"));
+    }
+
+    @Test
+    @DisplayName("ln ghost.txt target: Errore source inesistente")
+    void testSourceNotFound() {
+        List<String> args = List.of("ghost.txt", "link");
+        CommandContext ctx = new CommandContext(fileSystemService.getCurrentDirectory(), args, Collections.emptyList());
+
+        CommandResult result = lnCommand.execute(ctx);
+
+        assertFalse(result.isSuccess());
+        assertTrue(result.getError().contains("No such file or directory"));
+    }
+
+    @Test
+    @DisplayName("ln source existingFile: Errore file destinazione esistente")
+    void testDestinationFileExists() {
+        fileSystemService.createFile("source.txt");
+        fileSystemService.createFile("exists.txt");
+        List<String> args = List.of("source.txt", "exists.txt");
+        CommandContext ctx = new CommandContext(fileSystemService.getCurrentDirectory(), args, Collections.emptyList());
+
+        CommandResult result = lnCommand.execute(ctx);
+
+        assertFalse(result.isSuccess());
+        assertTrue(result.getError().contains("File exists"));
+    }
+
+    @Test
+    @DisplayName("ln source myDir: Errore se dentro myDir esiste già il file")
+    void testDestinationFileInDirectoryExists() {
+        fileSystemService.createFile("source.txt");
+        fileSystemService.createDirectory("dir");
+        fileSystemService.createFile("dir/source.txt");
+
+        // Provo a fare ln source.txt myDir (che proverebbe a creare myDir/source.txt)
+        List<String> args = List.of("source.txt", "dir");
+        CommandContext ctx = new CommandContext(fileSystemService.getCurrentDirectory(), args, Collections.emptyList());
+
+        CommandResult result = lnCommand.execute(ctx);
+
+        assertFalse(result.isSuccess());
+        assertTrue(result.getError().contains("File exists"));
+    }
+
+    @Test
+    @DisplayName("ln source fakeDir/link: Errore parent folder destinazione inesistente")
+    void testDestinationParentMissing() {
+        fileSystemService.createFile("source.txt");
+        List<String> args = List.of("source.txt", "fakeDir/link.txt");
+        CommandContext ctx = new CommandContext(fileSystemService.getCurrentDirectory(), args, Collections.emptyList());
+
+        CommandResult result = lnCommand.execute(ctx);
+
+        assertFalse(result.isSuccess());
+        assertTrue(result.getError().contains("No such file or directory"));
+    }
+
+
 
 
 }

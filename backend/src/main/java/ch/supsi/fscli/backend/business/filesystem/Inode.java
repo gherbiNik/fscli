@@ -25,11 +25,14 @@ public abstract class Inode implements FileSystemComponent{
         return "Inode{" +
                 "uid=" + uid +
                 ", linkCount=" + linkCount +
-                ", type=" + type +
-                '}';
+                ", type=" + type;
     }
 
     public boolean isDirectory() {
         return type == InodeType.DIRECTORY;
+    }
+
+    public boolean isSoftLink() {
+        return type == InodeType.SOFTLINK;
     }
 }

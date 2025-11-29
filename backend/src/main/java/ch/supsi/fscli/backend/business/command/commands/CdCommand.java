@@ -7,14 +7,14 @@ public class CdCommand extends AbstractCommand{
     public CdCommand(FileSystemService fileSystemService, String name, String synopsis, String description) {
         super(fileSystemService, name, synopsis, description);
     }
-// cd [DIR]
+    // cd [DIR]
     @Override
     public CommandResult execute(CommandContext context) {
         if(context.getArguments() == null || context.getArguments().isEmpty()){
             return CommandResult.error("cd: missing arguments");
         }
 
-        if(context.getArguments().size() != 1) {
+        if(context.getArguments().size() != 1 || (context.getOptions()!=null && !context.getOptions().isEmpty() )) {
             return CommandResult.error("cd: too many arguments");
         }
 
@@ -25,7 +25,6 @@ public class CdCommand extends AbstractCommand{
             return CommandResult.error("Error: " + e.getMessage());
         }
 
-        // TODO ADD SOFT LINK CONTROLL
 
         return CommandResult.success(""); // Nothing should be notified
     }

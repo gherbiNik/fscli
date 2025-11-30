@@ -20,9 +20,6 @@ import javafx.stage.Stage;
 import java.util.List;
 
 public class PreferenceView implements ShowView {
-
-    private static PreferenceView instance;
-
     private IPreferenceController controller;
     private I18nManager i18nManager;
 
@@ -46,26 +43,21 @@ public class PreferenceView implements ShowView {
     private Label outputAreaFontLabel;
     private Label logAreaFontLabel;
 
-    private Stage stage = new Stage();
+    private final Stage stage;
 
-    public static PreferenceView getInstance(IPreferenceController controller,  I18nManager i18nManager) {
-        if (instance == null) {
-            instance = new PreferenceView();
-            instance.initialize(controller, i18nManager);
-        }
-        return instance;
+
+    private void initialize() {
+
+
     }
 
-    private void initialize(IPreferenceController controller, I18nManager i18nManager) {
+    public PreferenceView(IPreferenceController controller, I18nManager i18nManager) {
         this.controller = controller;
         this.i18nManager = i18nManager;
+        this.stage = new Stage();
+        initializeUI();
         applicateTranslation();
         loadCurrentPreferences();
-    }
-
-    private PreferenceView() {
-        // This only builds the UI structure now
-        initializeUI();
     }
 
     // This method now handles ALL text content
@@ -148,7 +140,6 @@ public class PreferenceView implements ShowView {
         stage.setScene(scene);
     }
 
-    // Simplified: No longer needs parameters as it uses the class fields
     private void savePreferences() {
         controller.setPreferences("language-tag", languageComboBox.getValue());
         controller.setPreferences("column", columnsSpinner.getValue().toString());
@@ -159,7 +150,6 @@ public class PreferenceView implements ShowView {
         controller.setPreferences("font-log-area", logAreaFontComboBox.getValue());
     }
 
-    // Simplified: No longer needs parameters
     private void loadCurrentPreferences() {
         languageComboBox.setValue(controller.getPreferences("language-tag"));
         columnsSpinner.getValueFactory().setValue(Integer.parseInt(controller.getPreferences("column")));
@@ -171,7 +161,7 @@ public class PreferenceView implements ShowView {
     }
 
     @Override
-    public void showView() {
+    public void show() {
         stage.show();
     }
 

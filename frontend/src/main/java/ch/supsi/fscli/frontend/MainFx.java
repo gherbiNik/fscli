@@ -13,7 +13,6 @@ import ch.supsi.fscli.frontend.controller.ExitController;
 import ch.supsi.fscli.frontend.controller.PreferenceController;
 import ch.supsi.fscli.frontend.controller.filesystem.FileSystemController;
 //FIXME import ch.supsi.fscli.frontend.model.CommandHelpModel;
-import ch.supsi.fscli.frontend.model.ICommandHelpModel;
 import ch.supsi.fscli.frontend.model.TranslationModel;
 import ch.supsi.fscli.frontend.model.PreferenceModel;
 import ch.supsi.fscli.frontend.model.filesystem.FileSystemModel;
@@ -101,9 +100,9 @@ public class MainFx extends Application {
         // CONTROLLER
         this.preferenceController = PreferenceController.getInstance(preferenceModel);
         // OUTPUT VIEW (to be encapsulated properly)
-        this.outputView = OutputView.getInstance(preferenceController, i18n);
+        this.outputView = new OutputView(i18n, preferenceController);
         // LOG VIEW (to be encapsulated properly)
-        this.logView = LogView.getInstance(preferenceController, i18n);
+        this.logView = new LogView(i18n, preferenceController);
         this.fileSystemController = FileSystemController.getInstance(fileSystemModel, outputView,logView, i18n);
         this.exitController = ExitController.getInstance();
 
@@ -111,13 +110,13 @@ public class MainFx extends Application {
         this.commandHelpModel = CommandHelpModel.getInstance(commandHelpApplication, i18n);*/
 
         // VIEW
-        this.preferenceView = PreferenceView.getInstance(preferenceController, i18n);
-        this.helpView = HelpView.getInstance(i18n);
-        this.creditsView = CreditsView.getInstance(i18n);
-        this.exitView = ExitView.getInstance(exitController, i18n);
-        this.menuBarView = MenuBarView.getInstance(i18n, exitView, creditsView, helpView, preferenceView, fileSystemController);
+        this.preferenceView = new PreferenceView(preferenceController, i18n);
+        this.helpView = new HelpView(i18n);
+        this.creditsView = new CreditsView(i18n);
+        this.exitView = new ExitView(exitController, i18n);
+        this.menuBarView = new MenuBarView(i18n, exitView, creditsView, helpView, preferenceView, fileSystemController);
         // COMMAND LINE
-        this.commandLineView = CommandLineView.getInstance(fileSystemController, preferenceController, i18n);
+        this.commandLineView = new CommandLineView(fileSystemController, preferenceController, i18n);
         this.fileSystemController.setCommandLineView(this.commandLineView);
         // CONTROLLER
         this.creditsController = CreditsController.getInstance(i18n, creditsView);
@@ -208,7 +207,7 @@ public class MainFx extends Application {
             //
             // for new we just close the app directly
             e.consume();
-            exitView.showView();
+            exitView.show();
             //primaryStage.close();
         });
 

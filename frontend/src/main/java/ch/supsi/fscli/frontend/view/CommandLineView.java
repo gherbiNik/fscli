@@ -8,10 +8,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 
-public class CommandLineView implements ControlledFxView{
-    private static  CommandLineView instance;
-
-
+public class CommandLineView implements ViewComponent{
     private PreferenceController  preferenceController;
     private I18nManager  i18n;
     // FX Componenents
@@ -21,21 +18,16 @@ public class CommandLineView implements ControlledFxView{
 
     private IFileSystemController fileSystemController;
 
-    private CommandLineView(){
-    }
-    public static CommandLineView getInstance(IFileSystemController fileSystemController, PreferenceController preferenceController, I18nManager i18nManager){
-        if(instance == null){
-            instance = new CommandLineView();
-            instance.initalize(fileSystemController, preferenceController, i18nManager);
-
-        }
-        return instance;
-    }
-
-    private void initalize(IFileSystemController fileSystemController, PreferenceController preferenceController, I18nManager i18nManager) {
+    public CommandLineView(IFileSystemController fileSystemController, PreferenceController preferenceController, I18nManager i18nManager){
         this.fileSystemController = fileSystemController;
         this.preferenceController = preferenceController;
         this.i18n = i18nManager;
+        createLayout();
+    }
+
+
+    private void createLayout() {
+
         this.enter = new Button();
         this.enter.setId("enter");
 
@@ -77,12 +69,10 @@ public class CommandLineView implements ControlledFxView{
         return this.commandLine;
     }
 
-    @Override
     public void update(String message) {
         commandLine.clear();
     }
 
-    @Override
     public void setLocalizedText() {
         enter.setText(i18n.getString("commandLine.enter"));
         commandLineLabel.setText(i18n.getString("commandLine.command"));

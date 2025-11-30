@@ -37,10 +37,6 @@ public class FileSystemController implements IFileSystemController {
     @Override
     public void createFileSystem() {
         fileSystemModel.createFileSystem();
-        // TODO spostare da qua alle view e sistemare tutto
-        commandLineView.setDisable(false);
-        outputView.clear();
-        logView.log(i18n.getString("log.fsCreated"));
     }
 
     @Override

@@ -2,6 +2,7 @@ package ch.supsi.fscli.frontend.view;
 
 import ch.supsi.fscli.frontend.controller.PreferenceController;
 import ch.supsi.fscli.frontend.event.ClearEvent;
+import ch.supsi.fscli.frontend.event.FileSystemCreationEvent;
 import ch.supsi.fscli.frontend.event.OutputEvent;
 import ch.supsi.fscli.frontend.util.I18nManager;
 import javafx.scene.Node;
@@ -26,17 +27,15 @@ public class OutputView implements ViewComponent, PropertyChangeListener {
     }
 
     public void createLayout() {
-
-
         this.outputView = new TextArea();
         this.outputView.setEditable(false);
         this.outputView.setId("outputView");
 
         // EXAMPLE TEXT
-        this.outputView.appendText("1This is an example output text...\n");
-        this.outputView.appendText("2This is an example output text...\n");
-        this.outputView.appendText("3This is an example output text...\n");
-        this.outputView.appendText("4This is an example output text...\n");
+//        this.outputView.appendText("1This is an example output text...\n");
+//        this.outputView.appendText("2This is an example output text...\n");
+//        this.outputView.appendText("3This is an example output text...\n");
+//        this.outputView.appendText("4This is an example output text...\n");
         this.outputView.setPrefRowCount(this.preferenceController.getOutputAreaRow());
         outputView.setFont(this.preferenceController.getOutputAreaFont());
         outputView.setWrapText(false);
@@ -59,6 +58,8 @@ public class OutputView implements ViewComponent, PropertyChangeListener {
             this.outputView.appendText(text);
         } else if (evt instanceof ClearEvent) {
             this.outputView.clear();
+        } else if(evt instanceof FileSystemCreationEvent){
+            clear();
         }
     }
 

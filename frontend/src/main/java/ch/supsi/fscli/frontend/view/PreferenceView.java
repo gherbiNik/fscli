@@ -141,13 +141,8 @@ public class PreferenceView implements ShowView {
     }
 
     private void savePreferences() {
-        controller.setPreferences("language-tag", languageComboBox.getValue());
-        controller.setPreferences("column", columnsSpinner.getValue().toString());
-        controller.setPreferences("output-area-row", outputLinesSpinner.getValue().toString());
-        controller.setPreferences("log-area-row", logLinesSpinner.getValue().toString());
-        controller.setPreferences("font-command-line", commandLineFontComboBox.getValue());
-        controller.setPreferences("font-output-area", outputAreaFontComboBox.getValue());
-        controller.setPreferences("font-log-area", logAreaFontComboBox.getValue());
+        controller.savePreferences(languageComboBox.getValue(), columnsSpinner.getValue().toString(), outputLinesSpinner.getValue().toString(),
+                logLinesSpinner.getValue().toString(), commandLineFontComboBox.getValue(),  outputAreaFontComboBox.getValue(), logAreaFontComboBox.getValue());
     }
 
     private void loadCurrentPreferences() {

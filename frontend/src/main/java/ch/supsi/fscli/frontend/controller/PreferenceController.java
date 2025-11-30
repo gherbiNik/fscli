@@ -62,5 +62,11 @@ public class PreferenceController implements IPreferenceController {
         return preferenceModel.getColumn();
     }
 
+    @Override
+    public void savePreferences(String languageComboBox, String columnsSpinner, String outputLinesSpinner, String logLinesSpinner, String commandLineFontComboBox, String outputAreaFontComboBox, String logAreaFontComboBox) {
+        preferenceModel.savePreferences(languageComboBox, columnsSpinner, outputLinesSpinner, logLinesSpinner, commandLineFontComboBox, outputAreaFontComboBox, logAreaFontComboBox);
+
+    }
+
 
 }

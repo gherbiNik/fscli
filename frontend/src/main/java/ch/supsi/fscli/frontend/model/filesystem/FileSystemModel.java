@@ -2,7 +2,7 @@ package ch.supsi.fscli.frontend.model.filesystem;
 
 import ch.supsi.fscli.backend.application.filesystem.IFileSystemApplication;
 import ch.supsi.fscli.frontend.event.ClearEvent;
-import ch.supsi.fscli.frontend.event.FirstFileSystemCreationEvent;
+import ch.supsi.fscli.frontend.event.FileSystemCreationEvent;
 import ch.supsi.fscli.frontend.event.OutputEvent;
 
 import java.beans.PropertyChangeListener;
@@ -29,7 +29,6 @@ public class FileSystemModel implements IFileSystemModel {
     public void addPropertyChangeListener(PropertyChangeListener pcl) {
         support.addPropertyChangeListener(pcl);
     }
-
     public void removePropertyChangeListener(PropertyChangeListener pcl) {
         support.removePropertyChangeListener(pcl);
     }
@@ -39,7 +38,7 @@ public class FileSystemModel implements IFileSystemModel {
     public void createFileSystem() {
         application.createFileSystem();
 
-        support.firePropertyChange(new FirstFileSystemCreationEvent(this,"createFileSystemEvent", null, "FileSystem created!"));
+        support.firePropertyChange(new FileSystemCreationEvent(this,"createFileSystemEvent", null, null));
 
     }
 

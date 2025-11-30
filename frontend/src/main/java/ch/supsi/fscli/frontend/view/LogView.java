@@ -1,7 +1,8 @@
 package ch.supsi.fscli.frontend.view;
 
 import ch.supsi.fscli.frontend.controller.PreferenceController;
-import ch.supsi.fscli.frontend.event.FirstFileSystemCreationEvent;
+import ch.supsi.fscli.frontend.event.FileSystemCreationEvent;
+import ch.supsi.fscli.frontend.event.PreferenceSavedEvent;
 import ch.supsi.fscli.frontend.util.I18nManager;
 import javafx.scene.Node;
 import javafx.scene.control.TextArea;
@@ -29,11 +30,11 @@ public class LogView implements ViewComponent, PropertyChangeListener {
         this.logView = new TextArea();
         this.logView.setId("logView");
 
-        // Example code
-        this.logView.appendText("1This is an example log text...\n");
-        this.logView.appendText("2This is an example log text...\n");
-        this.logView.appendText("3This is an example log text...\n");
-        this.logView.appendText("4This is an example log text...\n");
+            //Example code
+//        this.logView.appendText("1This is an example log text...\n");
+//        this.logView.appendText("2This is an example log text...\n");
+//        this.logView.appendText("3This is an example log text...\n");
+//        this.logView.appendText("4This is an example log text...\n");
         logView.setFont(this.preferenceController.getLogAreaFont());
         logView.setPrefRowCount(this.preferenceController.getLogAreaRow());
 
@@ -51,9 +52,10 @@ public class LogView implements ViewComponent, PropertyChangeListener {
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
         // La LogView ascolta eventi diversi, es. ""
-        if (evt instanceof FirstFileSystemCreationEvent) {
-            String msg = (String) evt.getNewValue();
-            log(msg + "\n");
+        if (evt instanceof FileSystemCreationEvent) {
+            log(i18n.getString("log.fsCreated"));
+        } else if (evt instanceof PreferenceSavedEvent) {
+            log(i18n.getString("log.preferenceSaved"));
         }
     }
 

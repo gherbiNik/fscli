@@ -1,18 +1,24 @@
 package ch.supsi.fscli.frontend.model;
 
 import ch.supsi.fscli.backend.application.IPreferenceApplication;
+import ch.supsi.fscli.frontend.event.PreferenceSavedEvent;
 import javafx.scene.text.Font;
-
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import java.nio.file.Path;
 
 public class PreferenceModel implements IPreferenceModel{
 
     private static PreferenceModel instance;
     private IPreferenceApplication preferenceApplication;
+    private final PropertyChangeSupport support;
+
 
     private static final double DEFAULT_FONT_SIZE = Font.getDefault().getSize();
 
-    private PreferenceModel() {}
+    private PreferenceModel() {
+        support = new PropertyChangeSupport(this);
+    }
 
     public static PreferenceModel getInstance(IPreferenceApplication preferenceApplication) {
         if (instance == null) {
@@ -21,6 +27,14 @@ public class PreferenceModel implements IPreferenceModel{
         }
         return instance;
     }
+    //FIXME capire se fare interfaccia observable
+    public void addPropertyChangeListener(PropertyChangeListener pcl) {
+        support.addPropertyChangeListener(pcl);
+    }
+    public void removePropertyChangeListener(PropertyChangeListener pcl) {
+        support.removePropertyChangeListener(pcl);
+    }
+
 
     private void initialize(IPreferenceApplication preferenceApplication) {
         this.preferenceApplication = preferenceApplication;
@@ -29,6 +43,7 @@ public class PreferenceModel implements IPreferenceModel{
     @Override
     public void setPreferences(String key, String value) {
         preferenceApplication.setPreference(key, value);
+
     }
 
     @Override
@@ -69,5 +84,17 @@ public class PreferenceModel implements IPreferenceModel{
     @Override
     public int getColumn() {
         return preferenceApplication.getColumn();
+    }
+
+    @Override
+    public void savePreferences(String languageComboBox, String columnsSpinner, String outputLinesSpinner, String logLinesSpinner, String commandLineFontComboBox, String outputAreaFontComboBox, String logAreaFontComboBox) {
+        setPreferences("language-tag", languageComboBox);
+        setPreferences("column", columnsSpinner);
+        setPreferences("output-area-row", outputLinesSpinner);
+        setPreferences("log-area-row", logLinesSpinner);
+        setPreferences("font-command-line", commandLineFontComboBox);
+        setPreferences("font-output-area", outputAreaFontComboBox);
+        setPreferences("font-log-area", logAreaFontComboBox);
+        support.firePropertyChange(new PreferenceSavedEvent(this, "savePreferencesEvent", null, null));
     }
 }

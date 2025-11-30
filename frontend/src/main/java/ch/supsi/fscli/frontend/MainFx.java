@@ -122,6 +122,13 @@ public class MainFx extends Application {
         this.creditsController = CreditsController.getInstance(i18n, creditsView);
         // FIXME this.helpController = HelpController.getInstance(helpView, i18n, commandHelpModel);
 
+        // ADD LISTENER
+        this.fileSystemModel.addPropertyChangeListener(commandLineView);
+        this.fileSystemModel.addPropertyChangeListener(logView);
+        this.fileSystemModel.addPropertyChangeListener(outputView);
+
+        this.preferenceModel.addPropertyChangeListener(logView);
+
 
         System.out.println("Application started with language: " + loadedLocale.getLanguage());
 

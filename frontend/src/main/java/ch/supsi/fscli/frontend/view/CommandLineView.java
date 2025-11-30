@@ -2,13 +2,17 @@ package ch.supsi.fscli.frontend.view;
 
 import ch.supsi.fscli.frontend.controller.PreferenceController;
 import ch.supsi.fscli.frontend.controller.filesystem.IFileSystemController;
+import ch.supsi.fscli.frontend.event.FileSystemCreationEvent;
 import ch.supsi.fscli.frontend.util.I18nManager;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 
-public class CommandLineView implements ViewComponent{
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+
+public class CommandLineView implements ViewComponent, PropertyChangeListener {
     private PreferenceController  preferenceController;
     private I18nManager  i18n;
     // FX Componenents
@@ -77,5 +81,12 @@ public class CommandLineView implements ViewComponent{
         enter.setText(i18n.getString("commandLine.enter"));
         commandLineLabel.setText(i18n.getString("commandLine.command"));
 
+    }
+
+    @Override
+    public void propertyChange(PropertyChangeEvent evt) {
+        if (evt instanceof FileSystemCreationEvent) {
+            setDisable(false);
+        }
     }
 }

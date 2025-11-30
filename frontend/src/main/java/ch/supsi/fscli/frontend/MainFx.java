@@ -5,8 +5,16 @@ import ch.supsi.fscli.backend.application.ICommandHelpApplication;
 import ch.supsi.fscli.backend.application.TranslationApplication;
 import ch.supsi.fscli.backend.application.PreferenceApplication;
 import ch.supsi.fscli.backend.application.filesystem.FileSystemApplication;
+import ch.supsi.fscli.backend.application.mapper.FsStateMapperApplication;
+import ch.supsi.fscli.backend.application.mapper.IFsStateMapperApplication;
+import ch.supsi.fscli.backend.business.dto.FsStateMapper;
+import ch.supsi.fscli.backend.business.dto.IFsStateMapper;
+import ch.supsi.fscli.backend.business.filesystem.FileSystem;
 import ch.supsi.fscli.backend.business.preferences.PreferenceBusiness;
 import ch.supsi.fscli.backend.business.command.business.CommandHelpContainer;
+import ch.supsi.fscli.backend.business.service.ISaveDataService;
+import ch.supsi.fscli.backend.business.service.SaveDataService;
+import ch.supsi.fscli.backend.dataAccess.filesystem.JacksonSaveDataService;
 import ch.supsi.fscli.backend.dataAccess.preferences.PreferenceDAO;
 import ch.supsi.fscli.backend.util.BackendTranslator;
 import ch.supsi.fscli.frontend.controller.CreditsController;
@@ -14,11 +22,15 @@ import ch.supsi.fscli.frontend.controller.ExitController;
 import ch.supsi.fscli.frontend.controller.HelpController;
 import ch.supsi.fscli.frontend.controller.PreferenceController;
 import ch.supsi.fscli.frontend.controller.filesystem.FileSystemController;
+import ch.supsi.fscli.frontend.controller.mapper.FsStateMapperController;
+import ch.supsi.fscli.frontend.controller.mapper.IFsStateMapperController;
 import ch.supsi.fscli.frontend.model.CommandHelpModel;
 import ch.supsi.fscli.frontend.model.ICommandHelpModel;
 import ch.supsi.fscli.frontend.model.TranslationModel;
 import ch.supsi.fscli.frontend.model.PreferenceModel;
 import ch.supsi.fscli.frontend.model.filesystem.FileSystemModel;
+import ch.supsi.fscli.frontend.model.mapper.FsStateMapperModel;
+import ch.supsi.fscli.frontend.model.mapper.IFsStateMapperModel;
 import ch.supsi.fscli.frontend.util.I18nManager;
 import ch.supsi.fscli.frontend.view.*;
 import javafx.application.Application;
@@ -32,6 +44,7 @@ import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
+import java.util.List;
 import java.util.Locale;
 
 public class MainFx extends Application {
@@ -67,6 +80,16 @@ public class MainFx extends Application {
     private final CommandHelpContainer commandHelpContainer;
     private final ICommandHelpModel commandHelpModel;
     private final HelpController helpController;
+    private final OpenView openView;
+    private final SaveAsView saveAsView;
+    private final IFsStateMapperApplication fsStateMapperApplication;
+    private final IFsStateMapper fsStateMapper;
+    private final ISaveDataService saveDataService;
+    private final JacksonSaveDataService jacksonSaveDataService;
+    private final FileSystem fileSystem = FileSystem.getInstance();
+    private final IFsStateMapperController fsStateMapperController;
+    private final IFsStateMapperModel fsStateMapperModel;
+
 
     public MainFx() {
 
@@ -88,7 +111,6 @@ public class MainFx extends Application {
         // MODEL
         this.preferenceModel = PreferenceModel.getInstance(preferenceApplication);
         this.fileSystemModel = FileSystemModel.getInstance(fileSystemApplication);
-
 
 
         // TRANSLATOR - Backend
@@ -115,12 +137,21 @@ public class MainFx extends Application {
         this.commandHelpApplication = CommandHelpApplication.getInstance(commandHelpContainer);
         this.commandHelpModel = CommandHelpModel.getInstance(commandHelpApplication, i18n);
 
+        this.jacksonSaveDataService = JacksonSaveDataService.getInstance(preferenceDAO);
+        this.saveDataService = SaveDataService.getInstance(preferenceDAO, jacksonSaveDataService);
+        this.fsStateMapper = FsStateMapper.getInstance(saveDataService, fileSystem); // business layer
+        this.fsStateMapperApplication = FsStateMapperApplication.getInstance(fsStateMapper); // application layer
+        this.fsStateMapperModel = FsStateMapperModel.getInstance(fsStateMapperApplication);
+        this.fsStateMapperController = FsStateMapperController.getInstance(fsStateMapperModel, List.of(logView));
+
         // VIEW
         this.preferenceView = PreferenceView.getInstance(preferenceController, i18n);
         this.helpView = HelpView.getInstance(i18n);
         this.creditsView = CreditsView.getInstance(i18n);
         this.exitView = ExitView.getInstance(exitController, i18n);
-        this.menuBarView = MenuBarView.getInstance(i18n, exitView, creditsView, helpView, preferenceView, fileSystemController);
+        this.saveAsView = SaveAsView.getInstance(fsStateMapperController, preferenceModel);
+        this.openView = OpenView.getInstance(fsStateMapperController, preferenceModel);
+        this.menuBarView = MenuBarView.getInstance(i18n, exitView, creditsView, helpView, preferenceView, fileSystemController, openView, saveAsView, fsStateMapperController);
 
         // CONTROLLER
         this.creditsController = CreditsController.getInstance(i18n, creditsView);

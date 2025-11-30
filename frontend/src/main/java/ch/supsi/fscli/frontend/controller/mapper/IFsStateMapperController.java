@@ -2,7 +2,7 @@ package ch.supsi.fscli.frontend.controller.mapper;
 
 import java.io.File;
 
-public interface IFsStateMapper {
+public interface IFsStateMapperController {
     void save();
     void open(String fileName);
     void saveAs(File file);

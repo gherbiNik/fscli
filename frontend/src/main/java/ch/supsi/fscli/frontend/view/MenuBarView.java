@@ -1,6 +1,8 @@
 package ch.supsi.fscli.frontend.view;
 
 import ch.supsi.fscli.frontend.controller.filesystem.IFileSystemController;
+import ch.supsi.fscli.frontend.controller.mapper.FsStateMapperController;
+import ch.supsi.fscli.frontend.controller.mapper.IFsStateMapperController;
 import ch.supsi.fscli.frontend.util.I18nManager;
 import javafx.scene.Node;
 import javafx.scene.control.Menu;
@@ -28,24 +30,28 @@ public class MenuBarView implements ControlledFxView {
 
     private I18nManager i18n;
     private IFileSystemController fileSystemController;
+    private IFsStateMapperController fsStateMapperController;
 
     public static MenuBarView getInstance(I18nManager i18n, ExitView exitView, CreditsView creditsView,
-    HelpView helpView, PreferenceView preferenceView, IFileSystemController fileSystemController) {
+    HelpView helpView, PreferenceView preferenceView, IFileSystemController fileSystemController, OpenView openView,
+                                          SaveAsView saveAsView, IFsStateMapperController fsStateMapperController) {
         if(instance == null) {
             instance = new MenuBarView();
-            instance.initialize(i18n, exitView, creditsView, helpView, preferenceView, fileSystemController);
+            instance.initialize(i18n, exitView, creditsView, helpView, preferenceView, fileSystemController, openView, saveAsView, fsStateMapperController);
         }
         return instance;
     }
 
      public void initialize(I18nManager i18n, ExitView exitView, CreditsView creditsView,
-            HelpView helpView, PreferenceView preferenceView, IFileSystemController fileSystemController) {
+            HelpView helpView, PreferenceView preferenceView, IFileSystemController fileSystemController,
+                            OpenView openView, SaveAsView saveAsView,IFsStateMapperController fsStateMapperController) {
 
         this.i18n = i18n;
         this.fileSystemController = fileSystemController;
         this.menuBar = new MenuBar();
+        this.fsStateMapperController = fsStateMapperController;
 
-        initFileMenu(exitView);
+        initFileMenu(exitView, openView, saveAsView);
         initEditMenu(preferenceView);
         initHelpMenu(helpView, creditsView);
 
@@ -72,20 +78,23 @@ public class MenuBarView implements ControlledFxView {
         preferencesMenuItem.setOnAction(actionEvent -> preferenceView.showView());
     }
 
-    private void initFileMenu(ExitView exitView) {
+    private void initFileMenu(ExitView exitView, OpenView openView, SaveAsView saveAsView) {
         newMenuItem = new MenuItem();
         newMenuItem.setId("newMenuItem");
         newMenuItem.setOnAction(event -> fileSystemController.createFileSystem());
 
-        openMenuItem = new MenuItem();
-        openMenuItem.setId("openMenuItem");
+        this.openMenuItem = new MenuItem();
+        this.openMenuItem.setId("openMenuItem");
+        this.openMenuItem.setOnAction(event -> openView.showView());
 
         saveMenuItem = new MenuItem();
         saveMenuItem.setId("saveMenuItem");
+        saveMenuItem.setOnAction(event -> fsStateMapperController.save());
         //saveMenuItem.setDisable(true); // when app starts there is nothing to save
 
-        saveAsMenuItem = new MenuItem();
-        saveAsMenuItem.setId("saveAsMenuItem");
+        this.saveAsMenuItem = new MenuItem();
+        this.saveAsMenuItem.setId("saveAsMenuItem");
+        this.saveAsMenuItem.setOnAction(event -> saveAsView.showView());
         //saveAsMenuItem.setDisable(true);
 
         exitMenuItem = new MenuItem();

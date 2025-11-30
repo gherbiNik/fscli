@@ -1,6 +1,6 @@
 package ch.supsi.fscli.frontend.view;
 
-import ch.supsi.fscli.frontend.controller.mapper.IFsStateMapper;
+import ch.supsi.fscli.frontend.controller.mapper.IFsStateMapperController;
 import ch.supsi.fscli.frontend.model.IPreferenceModel;
 import javafx.stage.FileChooser;
 
@@ -9,20 +9,20 @@ import java.io.File;
 public class SaveAsView implements ShowView{
 
     public static SaveAsView instance;
-    private IFsStateMapper iFsStateMapper;
+    private IFsStateMapperController iFsStateMapperController;
     private IPreferenceModel preferencesModel;
 
     private SaveAsView() {}
-    public static SaveAsView getInstance(IFsStateMapper iFsStateMapper,  IPreferenceModel preferencesModel) {
+    public static SaveAsView getInstance(IFsStateMapperController iFsStateMapperController, IPreferenceModel preferencesModel) {
         if (instance == null) {
             instance = new SaveAsView();
-            instance.initialize(iFsStateMapper, preferencesModel);
+            instance.initialize(iFsStateMapperController, preferencesModel);
         }
         return instance;
     }
 
-    private void initialize(IFsStateMapper iFsStateMapper,  IPreferenceModel preferencesModel){
-        this.iFsStateMapper = iFsStateMapper;
+    private void initialize(IFsStateMapperController iFsStateMapperController, IPreferenceModel preferencesModel){
+        this.iFsStateMapperController = iFsStateMapperController;
         this.preferencesModel = preferencesModel;
     }
 
@@ -45,10 +45,9 @@ public class SaveAsView implements ShowView{
         File selectedfile = fileChooser.showSaveDialog(null);
 
         if (selectedfile != null) {
-            iFsStateMapper.saveAs(selectedfile);
+            iFsStateMapperController.saveAs(selectedfile);
         } else {
-            System.out.println("VA STAMPATO ANCHE NEL LOG??\nNessun file selezionato");
-            iFsStateMapper.save();
+            System.out.println("VA STAMPATO ANCHE NEL LOG??\nOperazione SaveAs annullata");
         }
     }
 }

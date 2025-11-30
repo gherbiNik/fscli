@@ -5,10 +5,13 @@ import ch.supsi.fscli.backend.business.command.business.CommandHelpContainer;
 import ch.supsi.fscli.backend.business.command.commands.CdCommand;
 import ch.supsi.fscli.backend.business.command.commands.CommandContext;
 import ch.supsi.fscli.backend.business.command.commands.CommandResult;
+import ch.supsi.fscli.backend.business.command.commands.LnCommand;
 import ch.supsi.fscli.backend.business.filesystem.FileSystem;
+import ch.supsi.fscli.backend.business.filesystem.Inode;
 import ch.supsi.fscli.backend.business.service.FileSystemService;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
@@ -21,6 +24,7 @@ public class CdCommandTest {
     private static FileSystem fileSystem;
     private static FileSystemService fileSystemService;
     private static CdCommand cdCommand;
+    private static LnCommand lnCommand;
 
     @BeforeAll
     public static void setUp() {
@@ -32,6 +36,9 @@ public class CdCommandTest {
                 "cd [DIR]",
                 "Change the current directory"
         );
+
+        // Init Comandi
+        lnCommand = new LnCommand(fileSystemService, "ln", "ln usage", "desc");
 
         // Crea una struttura di directory per i test
         fileSystemService.createDirectory("home");
@@ -177,6 +184,73 @@ public class CdCommandTest {
         CommandResult result = cdCommand.execute(context);
 
         assertFalse(result.isSuccess());
+    }
+
+    @Test
+    @DisplayName("cd linkToDir: Deve entrare nella directory reale")
+    void testCdThroughSoftLink() {
+
+        fileSystemService.changeDirectory("/");
+
+        // 1. Crea link
+        createSoftLink("home", "linkTohome");
+
+        // 2. Esegui: cd linkTohome
+        List<String> args = List.of("linkTohome");
+        CommandContext ctx = new CommandContext(fileSystemService.getCurrentDirectory(), args, Collections.emptyList());
+
+        CommandResult result = cdCommand.execute(ctx);
+
+        assertTrue(result.isSuccess(), "Il comando cd su un soft link deve funzionare");
+
+        // 3. Verifica: Siamo finiti in /home?
+        assertEquals("/home", fileSystemService.getCurrentDirectoryAbsolutePath());
+
+        // Verifica Inode
+        Inode realDocs = fileSystemService.getInode("/home");
+        assertEquals(realDocs, fileSystemService.getCurrentDirectory());
+    }
+
+    @Test
+    @DisplayName("cd linkToDocs/subdir: Navigazione composta tramite link")
+    void testCdThroughSoftLinkNested() {
+
+        fileSystemService.changeDirectory("/");
+        // Crea link: myDocs -> documents
+        createSoftLink("home", "myDocs");
+
+        // Esegui: cd myDocs/work
+        List<String> args = List.of("myDocs/user");
+        CommandContext ctx = new CommandContext(fileSystemService.getCurrentDirectory(), args, Collections.emptyList());
+
+        CommandResult result = cdCommand.execute(ctx);
+
+        assertTrue(result.isSuccess());
+        assertEquals("/home/user", fileSystemService.getCurrentDirectoryAbsolutePath());
+    }
+
+    @Test
+    @DisplayName("cd brokenLink: Deve fallire")
+    void testCdBrokenLink() {
+        // Crea link a file inesistente
+        createSoftLink("nowhere", "brokenLink");
+
+        // Esegui: cd brokenLink
+        List<String> args = List.of("brokenLink");
+        CommandContext ctx = new CommandContext(fileSystemService.getCurrentDirectory(), args, Collections.emptyList());
+
+        CommandResult result = cdCommand.execute(ctx);
+
+        assertFalse(result.isSuccess());
+        assertTrue(result.getError().contains("No such file") || result.getError().contains("broken link"));
+    }
+
+    // --- Helper per creare link rapidamente nei test ---
+    private void createSoftLink(String source, String dest) {
+        List<String> args = List.of(source, dest);
+        List<String> opts = List.of("-s");
+        CommandContext ctx = new CommandContext(fileSystemService.getCurrentDirectory(), args, opts);
+        lnCommand.execute(ctx);
     }
 
 }

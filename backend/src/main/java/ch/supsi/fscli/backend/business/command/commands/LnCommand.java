@@ -1,6 +1,8 @@
 package ch.supsi.fscli.backend.business.command.commands;
 
+import ch.supsi.fscli.backend.business.filesystem.DirectoryNode;
 import ch.supsi.fscli.backend.business.filesystem.Inode;
+import ch.supsi.fscli.backend.business.filesystem.SoftLink;
 import ch.supsi.fscli.backend.business.service.FileSystemService;
 
 import java.util.List;
@@ -13,58 +15,143 @@ public class LnCommand extends AbstractCommand {
 
     @Override
     public CommandResult execute(CommandContext context) {
+        // 0. GUARD CLAUSE: Internal Errors
         if (context.getArguments() == null || context.getOptions() == null) {
             return CommandResult.error("internal error: arguments or options null");
         }
-        List<String> arg = context.getArguments();
-        List<String> opt = context.getOptions();
 
-        StringBuilder output = new StringBuilder();
-        StringBuilder error = new StringBuilder();
+        List<String> args = context.getArguments();
+        List<String> opts = context.getOptions();
 
+        // 1. GESTIONE OPZIONI
         boolean isSoftLink = false;
-
-        for (String o : opt) {
-            if (o.equals("-s")) {
+        for (String opt : opts) {
+            if (opt.equals("-s")) {
                 isSoftLink = true;
             } else {
-                error.append("usage: ").append(getSynopsis());
-                return CommandResult.error(error.toString());
+                return CommandResult.error("ln: illegal option -- " + opt.replace("-", ""));
             }
         }
 
-        boolean finalIsSoftLink = isSoftLink;
-        if (finalIsSoftLink) {
-            // TODO
+        // 2. CONTROLLO NUMERO ARGOMENTI
+        // ln richiede: [OPZIONI] SOURCE DESTINATION (o DIRECTORY)
+        if (args.size() != 2) {
+            // Nota: su Unix standard se manca l'argomento è "missing file operand"
+            return CommandResult.error("usage: " + getSynopsis());
         }
 
-        if (arg.size() != 2)
-            return CommandResult.error("usage: "+getSynopsis());
+        String sourcePath = args.get(0);
+        String destinationPath = args.get(1);
 
-        Inode source = fileSystemService.getInode(arg.get(0));
-        if (source == null) {
-            return CommandResult.error("ln: cannot access "+arg.get(0)+": No such file or directory.");
+        // 3. VALIDAZIONE SORGENTE (SOURCE)
+        Inode sourceInode = fileSystemService.getInode(sourcePath);
+
+        if (!isSoftLink) {
+            // su hard link non controllo il source path perchè può essere anche sbagliato
+
+            if (sourceInode == null) {
+                return CommandResult.error("ln: cannot access '" + sourcePath + "': No such file or directory");
+            }
+
+            if (sourceInode.isDirectory()) {
+                return CommandResult.error("ln: '" + sourcePath + "': hard link not allowed for directory");
+            }
         }
 
-        if (source.isDirectory())
-            return CommandResult.error("ln: "+arg.get(0)+": hard link not allowed for directory.");
+        // 4. RISOLUZIONE DESTINAZIONE (TARGET)
+        // Dobbiamo capire dove mettere il link e come chiamarlo.
 
-        Inode destination = fileSystemService.getInode(arg.get(1));
+        DirectoryNode targetDir = null;
+        String linkName = null;
 
-        if (destination == null) {
-            return CommandResult.error("ln: cannot create link "+arg.get(1)+": No such file or directory.");
+        Inode destinationInode = fileSystemService.getInode(destinationPath);
+
+        if (destinationInode != null) {
+            // CASO A: La destinazione esiste già
+            if (destinationInode.isDirectory()) {
+                // CASO A1: Destinazione è una cartella.
+                // Comportamento: creiamo il link DENTRO quella cartella con lo stesso nome del source.
+                targetDir = (DirectoryNode) destinationInode;
+
+                // Estraiamo il nome del file sorgente dal path (es. "a/b/file.txt" -> "file.txt")
+                linkName = getFileNameFromPath(sourcePath);
+            } else {
+                // CASO A2: Destinazione è un file esistente.
+                // Errore: non possiamo sovrascrivere
+                return CommandResult.error("ln: failed to create link '" + destinationPath + "': File exists");
+            }
+        } else {
+            // CASO B: La destinazione NON esiste (è il nome del nuovo link)
+            // Dobbiamo trovare la cartella padre e il nome del nuovo file
+
+            // Logica manuale di split del path (simile a quella nel Service, ma qui serve lato Command)
+            FileSystemService.PathParts parts = resolveParentAndName(destinationPath);
+
+            if (parts.parentDir() == null) {
+                return CommandResult.error("ln: cannot create link '" + destinationPath + "': No such file or directory");
+            }
+
+            targetDir = parts.parentDir();
+            linkName = parts.name();
         }
 
-        if (destination != null) {
-            return CommandResult.error("ln: failed to create hard link "+arg.get(1)+": File exists");
+        // 5. CONTROLLO FINALE PRIMA DELLA CREAZIONE
+        // Verifichiamo se dentro targetDir esiste già un file con nome linkName
+        // (Questo serve per il Caso A1 e per sicurezza nel Caso B)
+        if (targetDir.getChild(linkName) != null) {
+            return CommandResult.error("ln: failed to create link '" + linkName + "': File exists");
         }
 
-        if (destination.isDirectory()){
-            // TODO: controllo se dentro la dir c'è file con lo stesso nome della source
+        // 6. ESECUZIONE (CREAZIONE LINK)
+        if (isSoftLink) {
+            // Logica Soft Link
+            SoftLink softLink = new SoftLink(targetDir, sourcePath);
+            targetDir.addChild(linkName, softLink);
+        } else {
+            // Logica Hard Link
+            targetDir.addChild(linkName, sourceInode);
         }
 
+        return CommandResult.success("");
+    }
 
-        return null;
+    // Estrae il nome del file da un path completo (es. /home/user/file.txt -> file.txt)
+    private String getFileNameFromPath(String path) {
+        if (path == null || path.isEmpty()) return "";
+        // Rimuove slash finale se presente (es. dir/ -> dir)
+        String cleanPath = path.endsWith("/") ? path.substring(0, path.length() - 1) : path;
+        int lastSlashIndex = cleanPath.lastIndexOf('/');
+        if (lastSlashIndex == -1) {
+            return cleanPath; // È già solo il nome
+        }
+        return cleanPath.substring(lastSlashIndex + 1);
+    }
 
+    private FileSystemService.PathParts resolveParentAndName(String path) {
+        String parentPath;
+        String name;
+
+        if (path.contains("/")) {
+            // Path complesso (es. dir/link)
+            int lastSlash = path.lastIndexOf('/');
+            parentPath = path.substring(0, lastSlash);
+            name = path.substring(lastSlash + 1);
+
+            // Gestione root "/"
+            if (parentPath.isEmpty()) parentPath = "/";
+        } else {
+            // Path semplice (es. link) -> parent è la current dir
+            return new FileSystemService.PathParts(fileSystemService.getCurrentDirectory(), path);
+        }
+
+        // Risolviamo il parent path usando il service
+        Inode parentNode = fileSystemService.getInode(parentPath);
+
+        if (parentNode instanceof DirectoryNode) {
+            return new FileSystemService.PathParts((DirectoryNode) parentNode, name);
+        }
+
+        // Parent non trovato o non è una directory
+        return new FileSystemService.PathParts(null, name);
     }
 }

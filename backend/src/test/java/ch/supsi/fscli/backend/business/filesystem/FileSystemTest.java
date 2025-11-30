@@ -1,11 +1,14 @@
 package ch.supsi.fscli.backend.business.filesystem;
 
+import ch.supsi.fscli.backend.business.command.commands.CommandContext;
+import ch.supsi.fscli.backend.business.command.commands.LnCommand;
 import ch.supsi.fscli.backend.business.service.FileSystemService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.Field;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -18,6 +21,8 @@ class FileSystemTest {
     private DirectoryNode user;
     private DirectoryNode docs;
     private FileNode fileTxt;
+
+    private LnCommand lnCommand;
 
     @BeforeEach
     void setUp() {
@@ -133,5 +138,34 @@ class FileSystemTest {
         assertSame(user, fileSystem.getCurrentDirectory());
 
         assertThrows(IllegalArgumentException.class, () -> fileSystem.changeDirectory("/nonEsiste"));
+    }
+
+    @Test
+    @DisplayName("followLink: Deve risolvere una catena di link")
+    void testFollowChainOfLinks() {
+        // documents <- link1 <- link2
+        fileSystemService.createDirectory("documents");
+        Inode documents = fileSystemService.getInode("documents");
+        lnCommand = new LnCommand(fileSystemService, "ln", "ln usage", "desc");
+
+        createSoftLink("documents", "link1");
+        createSoftLink("link1", "link2");
+
+        Inode link2 = fileSystemService.getInode("link2");
+        assertNotNull(link2);
+
+        // Testiamo il metodo del service direttamente
+        Inode resolved = fileSystemService.followLink(link2);
+
+        assertNotNull(resolved);
+        assertTrue(resolved.isDirectory());
+        assertEquals(documents.getUid(), resolved.getUid());
+    }
+
+    private void createSoftLink(String source, String dest) {
+        List<String> args = List.of(source, dest);
+        List<String> opts = List.of("-s");
+        CommandContext ctx = new CommandContext(fileSystemService.getCurrentDirectory(), args, opts);
+        lnCommand.execute(ctx);
     }
 }

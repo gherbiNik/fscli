@@ -95,7 +95,16 @@ public class FileSystem implements FileSystemComponent, IFileSystem
             }
 
             if (!(currentNode instanceof DirectoryNode)) {
-                return null; // Percorso non valido (es. /file.txt/qualcosa)
+                if (currentNode instanceof SoftLink) {
+                    Inode resolved = followLink(currentNode);
+                    if (resolved instanceof DirectoryNode) {
+                        currentNode = resolved; // Sostituisci il link con la directory vera e prosegui
+                    } else {
+                        return null; // Link rotto o punta a un file
+                    }
+                } else {
+                    return null; // E' un file normale, non posso entrarci
+                }
             }
 
             DirectoryNode currentDir = (DirectoryNode) currentNode;
@@ -118,6 +127,37 @@ public class FileSystem implements FileSystemComponent, IFileSystem
         }
 
         return currentNode;
+    }
+
+    public Inode followLink(Inode inode) {
+        int maxDepth = 10; // Prevenzione loop infiniti (link A -> link B -> link A)
+        int depth = 0;
+
+        Inode current = inode;
+
+        // Continua a seguire finché è un SoftLink
+        while (current instanceof SoftLink) {
+            if (depth > maxDepth) {
+                throw new IllegalArgumentException("Too many levels of symbolic links");
+            }
+
+            // Recupera il path salvato nel SoftLink
+            String targetPath = ((SoftLink) current).getTargetPath();
+
+            // Risolve il path target
+
+            Inode target = resolveNode(targetPath);
+
+            if (target == null) {
+                //il link punta a qualcosa che non esiste
+                return null;
+            }
+
+            current = target;
+            depth++;
+        }
+
+        return current;
     }
 
     private DirectoryNode findDirectoryByPath(String path) {

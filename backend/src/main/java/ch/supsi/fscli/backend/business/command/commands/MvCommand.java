@@ -32,5 +32,8 @@ public class MvCommand extends AbstractCommand{
         } catch (IllegalArgumentException e){
             return CommandResult.error("mv: " + e.getMessage());
         }
+
+        // TODO ADD SOFT LINK CONTROLL
+
     }
 }

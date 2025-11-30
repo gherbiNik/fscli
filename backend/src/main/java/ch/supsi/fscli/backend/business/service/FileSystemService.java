@@ -29,7 +29,65 @@ public class FileSystemService {
     }
 
     public void changeDirectory(String newDirPath) {
-        fileSystem.changeDirectory(newDirPath);
+        // 1. Risoluzione Inode dal path stringa
+        Inode target = getInode(newDirPath);
+
+        if (target == null) {
+            throw new IllegalArgumentException("No such file or directory: " + newDirPath);
+        }
+
+        // 2. Seguiamo i link (se presenti)
+        Inode resolved = followLink(target);
+        if (resolved == null) {
+            throw new IllegalArgumentException("No such file or directory (broken link)");
+        }
+
+        // 3. Verifica fondamentale: DEVE essere una Directory
+        if (!resolved.isDirectory()) {
+            throw new IllegalArgumentException("Not a directory: " + newDirPath);
+        }
+
+        // 4. Casting sicuro a DirectoryNode
+        // Ora che sappiamo che è una directory, possiamo usarla come tale per risalire i padri
+        DirectoryNode dirNode = (DirectoryNode) resolved;
+
+        // 5. Calcoliamo il path assoluto reale (senza link)
+        String realPath = calculateAbsolutePath(dirNode);
+
+        // 6. Eseguiamo il cambio directory sul FileSystem
+        fileSystem.changeDirectory(realPath);
+    }
+
+    /**
+     * Ricostruisce il percorso assoluto partendo da un DirectoryNode e risalendo tramite getParent().
+     * Accetta SOLO DirectoryNode perché Inode non ha getParent().
+     */
+    private String calculateAbsolutePath(DirectoryNode directory) {
+        // Caso base: siamo già alla root
+        if (directory == fileSystem.getRoot()) {
+            return "/";
+        }
+
+        StringBuilder path = new StringBuilder();
+        DirectoryNode current = directory;
+
+        // Risaliamo finché il padre non è null (la root ha parent null o gestito internamente)
+        // Nota: current deve essere DirectoryNode per chiamare getParent()
+        while (current.getParent() != null) {
+            DirectoryNode parent = current.getParent();
+
+            // Troviamo il nome della cartella corrente guardando dentro al padre
+            String name = parent.getINodeName(current);
+
+            if (name != null) {
+                path.insert(0, "/" + name);
+            }
+
+            // Saliamo di un livello
+            current = parent;
+        }
+
+        return path.toString();
     }
 
     public Map<String, Inode> getINodeTableCurrentDir() {
@@ -112,7 +170,7 @@ public class FileSystemService {
         return false;
     }
 
-    private record PathParts(DirectoryNode parentDir, String name) {}
+    public record PathParts(DirectoryNode parentDir, String name) {}
 
     private PathParts resolveParentDirectoryAndName(String path) {
         if (path == null || path.trim().isEmpty()) {
@@ -232,6 +290,10 @@ public class FileSystemService {
 
     public String getCurrentDirectoryAbsolutePath(){
         return fileSystem.getCurrentDirectoryAbsolutePath();
+    }
+
+    public Inode followLink(Inode inode) {
+        return fileSystem.followLink(inode);
     }
 
 }

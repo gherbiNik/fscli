@@ -1,4 +1,9 @@
 package ch.supsi.fscli.backend.application.mapper;
 
-public interface IFsStateMapper {
+import java.io.File;
+
+public interface IFsStateMapperApplication {
+    void toDTO();
+    void fromDTO(String fileName);
+    void toDTOas(File file);
 }

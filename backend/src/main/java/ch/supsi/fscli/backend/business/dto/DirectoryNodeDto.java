@@ -28,6 +28,12 @@ public class DirectoryNodeDto extends InodeDto implements IDirectoryNodeDto {
         this.childrenUids = childrenUids != null ? new HashMap<>(childrenUids) : new HashMap<>();
     }
 
+    public DirectoryNodeDto(int uid, InodeType type, Map<String, Integer> childrenUids, Integer parentUid) {
+        super(uid, type);
+        this.childrenUids = childrenUids;
+        this.parentUid = parentUid;
+    }
+
     @Override
     public Map<String, Integer> getChildrenUids() {
         return childrenUids;

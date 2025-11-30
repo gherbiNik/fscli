@@ -15,10 +15,12 @@ public class FsStateDto implements IFsStateDto {
     @JsonCreator
     public FsStateDto(@JsonProperty("root") DirectoryNodeDto root,
                       @JsonProperty("currentDirectoryUid") int currentDirectoryUid,
-                      @JsonProperty("nextInodeId") int nextInodeId) {
+                      @JsonProperty("nextInodeId") int nextInodeId,
+                      @JsonProperty("inodeTable") Map<Integer, InodeDto> inodeTable) {
         this.root = root;
         this.currentDirectoryUid = currentDirectoryUid;
         this.nextInodeId = nextInodeId;
+        this.inodeTable = inodeTable;
     }
 
     @Override
@@ -36,6 +38,7 @@ public class FsStateDto implements IFsStateDto {
         return nextInodeId;
     }
 
+    @Override
     public Map<Integer, InodeDto> getInodeTable() {
         return inodeTable;
     }

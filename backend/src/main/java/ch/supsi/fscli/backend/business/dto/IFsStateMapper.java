@@ -1,4 +1,5 @@
-package ch.supsi.fscli.backend.business.mapper;
+package ch.supsi.fscli.backend.business.dto;
+
 
 import java.io.File;
 
@@ -7,3 +8,4 @@ public interface IFsStateMapper {
     void fromDTO(String fileName);
     void toDTOas(File file);
 }
+

@@ -20,6 +20,11 @@ public class SoftLinkDto extends InodeDto implements ISoftLinkDto {
         this.targetPath = targetPath;
     }
 
+    public SoftLinkDto(int uid, InodeType type, String targetPath) {
+        super(uid, type);
+        this.targetPath = targetPath;
+    }
+
     @Override
     public String getTargetPath() {
         return targetPath;

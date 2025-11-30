@@ -16,5 +16,9 @@ public class FileNodeDto extends InodeDto implements IFileNodeDto {
     public FileNodeDto(@JsonProperty("uid") int uid) {
         super(uid, InodeType.FILE);
     }
+
+    public FileNodeDto(int uid, InodeType type) {
+        super(uid, type);
+    }
 }
 

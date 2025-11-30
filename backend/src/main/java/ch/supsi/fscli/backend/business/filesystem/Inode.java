@@ -4,7 +4,7 @@ import java.util.Date;
 
 public abstract class Inode implements FileSystemComponent{
     private static int idCounter = 0;
-    private final int uid;
+    private int uid;
     // FIXME da capire
     private int linkCount = 1;
     private InodeType type;
@@ -13,8 +13,6 @@ public abstract class Inode implements FileSystemComponent{
         this.uid = idCounter++;
         this.type = type;
     }
-
-
 
     public int getUid() {
         return uid;
@@ -27,6 +25,23 @@ public abstract class Inode implements FileSystemComponent{
                 ", linkCount=" + linkCount +
                 ", type=" + type +
                 '}';
+    }
+
+    public static int getIdCounter() {
+        return idCounter;
+    }
+
+    // only for deserialization
+    protected void setUid(int uid) {
+        this.uid = uid;
+    }
+
+    public void setType(InodeType type) {
+        this.type = type;
+    }
+
+    public InodeType getType() {
+        return type;
     }
 
     public boolean isDirectory() {

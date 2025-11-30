@@ -6,6 +6,7 @@ import ch.supsi.fscli.backend.business.command.commands.CommandResult;
 import ch.supsi.fscli.backend.business.command.commands.ICommand;
 import ch.supsi.fscli.backend.business.service.FileSystemService;
 
+import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Map;
 
@@ -152,5 +153,9 @@ public class FileSystem implements FileSystemComponent, IFileSystem
             return result.getOutput();
         else
             return result.getError();
+    }
+
+    public void setCurrentDirectory(DirectoryNode currentDirectory) {
+        this.currentDirectory = currentDirectory;
     }
 }

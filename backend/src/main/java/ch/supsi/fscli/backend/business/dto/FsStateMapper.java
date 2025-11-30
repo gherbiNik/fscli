@@ -1,6 +1,7 @@
 package ch.supsi.fscli.backend.business.dto;
 
 import ch.supsi.fscli.backend.business.filesystem.*;
+import ch.supsi.fscli.backend.business.service.ISaveDataService;
 import ch.supsi.fscli.backend.business.service.SaveDataService;
 
 import java.io.File;
@@ -10,14 +11,14 @@ import java.util.Map;
 
 public class FsStateMapper implements IFsStateMapper{
     public static FsStateMapper myself;
-    private SaveDataService saveDataService;
+    private ISaveDataService saveDataService;
     private FileSystem fileSystem;
 
 
     private FsStateMapper() {
     }
 
-    public static FsStateMapper getInstance(SaveDataService saveDataService, FileSystem fileSystem) {
+    public static FsStateMapper getInstance(ISaveDataService saveDataService, FileSystem fileSystem) {
         if (myself == null) {
             myself = new FsStateMapper();
             myself.initialize(saveDataService, fileSystem);
@@ -25,7 +26,7 @@ public class FsStateMapper implements IFsStateMapper{
         return myself;
     }
 
-    private void initialize(SaveDataService saveDataService, FileSystem fileSystem) {
+    private void initialize(ISaveDataService saveDataService, FileSystem fileSystem) {
         this.saveDataService = saveDataService;
         this.fileSystem = fileSystem;
     }

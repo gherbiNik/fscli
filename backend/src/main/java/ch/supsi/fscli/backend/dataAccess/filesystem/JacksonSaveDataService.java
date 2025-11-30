@@ -1,5 +1,6 @@
 package ch.supsi.fscli.backend.dataAccess.filesystem;
 
+import ch.supsi.fscli.backend.business.dto.FsStateDto;
 import ch.supsi.fscli.backend.business.dto.IFsStateDto;
 import ch.supsi.fscli.backend.dataAccess.preferences.PreferenceDAO;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -79,7 +80,7 @@ public class JacksonSaveDataService implements ISaveData {
             if (!Files.exists(saveFilePath)) {
                 throw new NoFilesystemSavedEx("Nessun salvataggio presente");
             }
-            return objectMapper.readValue(saveFilePath.toFile(), IFsStateDto.class);
+            return objectMapper.readValue(saveFilePath.toFile(), FsStateDto.class);
         } catch (IOException e) {
             return null;
         }

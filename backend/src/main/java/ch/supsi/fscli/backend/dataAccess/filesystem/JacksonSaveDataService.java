@@ -31,31 +31,47 @@ public class JacksonSaveDataService implements ISaveData {
         if (myself == null) {
             myself = new JacksonSaveDataService();
             myself.preferenceDAO = preferenceDAO;
-            myself.createSaveDirectoryIfNotExists();
         }
         return myself;
     }
 
     private void createSaveDirectoryIfNotExists() {
         try {
-            Path path = Paths.get(preferenceDAO.getUserPreferencesFilePath().toString(), saveDirectory);
-            if (!Files.exists(path)) {
-                Files.createDirectories(path);
+            Path userPrefsPath = preferenceDAO.getUserPreferencesFilePath();
+            if (userPrefsPath == null) {
+                return; // Postpone directory creation
+            }
+
+            Path baseDir = userPrefsPath.getParent();
+            if (baseDir == null) {
+                throw new IllegalStateException("Cannot determine parent directory of preferences file");
+            }
+
+            Path savesPath = baseDir.resolve(saveDirectory);
+
+            if (!Files.exists(savesPath)) {
+                Files.createDirectories(savesPath);
             }
         } catch (IOException e) {
             throw new RuntimeException("Impossibile creare la directory di salvataggio", e);
         }
     }
 
+
     @Override
     public void save(IFsStateDto iFsStateDto) {
+        createSaveDirectoryIfNotExists();
+
         LocalDateTime localDateTime = LocalDateTime.now();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss");
         String formattedDateTime = localDateTime.format(formatter);
         String completeFileName = saveFileName + "_" + formattedDateTime + ".json";
 
         try {
-            Path saveFilePath = Paths.get(preferenceDAO.getUserPreferencesFilePath().toString(), saveDirectory, completeFileName);
+            Path userPrefsPath = preferenceDAO.getUserPreferencesFilePath();
+            Path baseDir = userPrefsPath.getParent(); // Directory che contiene preferences.properties
+            Path saveFilePath = baseDir.resolve(saveDirectory).resolve(completeFileName);
+
             objectMapper.writeValue(saveFilePath.toFile(), iFsStateDto);
         } catch (IOException e) {
             System.out.println(e.getMessage());
@@ -64,6 +80,7 @@ public class JacksonSaveDataService implements ISaveData {
 
     @Override
     public void saveAs(IFsStateDto iFsStateDto, File file) {
+        createSaveDirectoryIfNotExists();
 
         try {
             Path saveFilePath = Paths.get(file.getPath());

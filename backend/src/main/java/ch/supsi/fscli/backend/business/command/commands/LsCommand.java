@@ -102,8 +102,12 @@ public class LsCommand extends AbstractCommand {
             } else if (targetInode.isSoftLink()){
                 Inode resolved = fileSystemService.followLink(targetInode);
 
+                if (targets.size() > 1 && !isCurrentDir) {
+                    output.append(targetPath).append(":\n");
+                }
+
                 // Se resolved è una directory, ls si comporta come se avessi chiesto di listare quella directory
-                if (resolved != null && resolved.isDirectory() && !context.getOptions().contains("-d")) {
+                if (resolved != null && resolved.isDirectory()) {
                     // Usa 'resolved' per ottenere la tabella dei figli
                     Map<String, Inode> children = ((DirectoryNode) resolved).getChildren();
                     // Stampiamo i figli applicando il FILTRO
@@ -115,6 +119,8 @@ public class LsCommand extends AbstractCommand {
                             }
                         });
                     }
+                    output.append("\n");
+                    if (targets.size() > 1) output.append("\n"); // Spaziatura extra tra cartelle
                 } else {
                     // E' un file o un link a un file (o un link rotto): stampa solo la riga del link
                     printStrategy.accept(targetPath, targetInode);

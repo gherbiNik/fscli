@@ -87,7 +87,7 @@ public class MainFx extends Application {
     private final ISaveDataService saveDataService;
     private final JacksonSaveDataService jacksonSaveDataService;
     private final FileSystem fileSystem = FileSystem.getInstance();
-    private final IFsStateMapperController fsStateMapperController;
+    private final FsStateMapperController fsStateMapperController;
     private final IFsStateMapperModel fsStateMapperModel;
 
 
@@ -142,16 +142,19 @@ public class MainFx extends Application {
         this.fsStateMapper = FsStateMapper.getInstance(saveDataService, fileSystem); // business layer
         this.fsStateMapperApplication = FsStateMapperApplication.getInstance(fsStateMapper); // application layer
         this.fsStateMapperModel = FsStateMapperModel.getInstance(fsStateMapperApplication);
-        this.fsStateMapperController = FsStateMapperController.getInstance(fsStateMapperModel, List.of(logView));
 
         // VIEW
         this.preferenceView = PreferenceView.getInstance(preferenceController, i18n);
         this.helpView = HelpView.getInstance(i18n);
         this.creditsView = CreditsView.getInstance(i18n);
         this.exitView = ExitView.getInstance(exitController, i18n);
-        this.saveAsView = SaveAsView.getInstance(fsStateMapperController, preferenceModel);
+        this.fsStateMapperController = FsStateMapperController.getInstance(fsStateMapperModel, fileSystemModel);
         this.openView = OpenView.getInstance(fsStateMapperController, preferenceModel);
+        this.saveAsView = SaveAsView.getInstance(fsStateMapperController, preferenceModel);
         this.menuBarView = MenuBarView.getInstance(i18n, exitView, creditsView, helpView, preferenceView, fileSystemController, openView, saveAsView, fsStateMapperController);
+
+        fsStateMapperController.initialize(logView, menuBarView);
+
 
         // CONTROLLER
         this.creditsController = CreditsController.getInstance(i18n, creditsView);

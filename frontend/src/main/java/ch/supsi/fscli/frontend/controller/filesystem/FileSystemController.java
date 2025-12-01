@@ -41,5 +41,8 @@ public class FileSystemController implements IFileSystemController {
         outputView.update(result + "\n");
     }
 
+    public boolean hasDataToSave(){
+        return fileSystemModel.isDataToSave();
+    }
 
 }

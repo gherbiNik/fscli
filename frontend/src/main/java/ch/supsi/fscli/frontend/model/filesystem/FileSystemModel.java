@@ -6,6 +6,7 @@ public class FileSystemModel implements IFileSystemModel {
 
     private static FileSystemModel instance;
     private final IFileSystemApplication application;
+    private boolean dataToSave = false;
 
     public static FileSystemModel getInstance(IFileSystemApplication application) {
         if (instance == null) {
@@ -22,10 +23,21 @@ public class FileSystemModel implements IFileSystemModel {
     @Override
     public void createFileSystem() {
         application.createFileSystem();
+        this.dataToSave = true;
     }
 
     @Override
     public String sendCommand(String userInput) {
         return application.sendCommand(userInput);
+    }
+
+    @Override
+    public boolean isDataToSave() {
+        return dataToSave;
+    }
+
+    @Override
+    public void setDataToSave(boolean dataToSave) {
+        this.dataToSave = dataToSave;
     }
 }

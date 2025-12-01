@@ -49,5 +49,6 @@ public class OpenView implements ShowView{
         } else {
             System.out.println("DOVE???\nNessun file selezionato");
         }
+
     }
 }

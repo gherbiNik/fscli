@@ -90,12 +90,12 @@ public class MenuBarView implements ControlledFxView {
         saveMenuItem = new MenuItem();
         saveMenuItem.setId("saveMenuItem");
         saveMenuItem.setOnAction(event -> fsStateMapperController.save());
-        //saveMenuItem.setDisable(true); // when app starts there is nothing to save
+        saveMenuItem.setDisable(true);
 
         this.saveAsMenuItem = new MenuItem();
         this.saveAsMenuItem.setId("saveAsMenuItem");
         this.saveAsMenuItem.setOnAction(event -> saveAsView.showView());
-        //saveAsMenuItem.setDisable(true);
+        this.saveAsMenuItem.setDisable(true);
 
         exitMenuItem = new MenuItem();
         exitMenuItem.setId("exitMenuItem");
@@ -121,19 +121,18 @@ public class MenuBarView implements ControlledFxView {
 
     @Override
     public void update(String message) {
-        /* FIXME
-            if (this.gameService.isStarted()) {
-                newMenuItem.disableProperty().setValue(false);
-                if (!this.gameService.isGameOver()) {
-                    saveMenuItem.disableProperty().setValue(false);
-                    saveAsMenuItem.disableProperty().setValue(false);
-                } else {
-                    saveMenuItem.disableProperty().setValue(true);
-                    saveAsMenuItem.disableProperty().setValue(true);
-                }
-            }
-        */
+
+        if (this.fileSystemController.hasDataToSave()) {
+            this.saveMenuItem.setDisable(false);
+            this.saveAsMenuItem.setDisable(false);
+            this.newMenuItem.setDisable(true);
+        } else {
+            this.saveMenuItem.setDisable(true);
+            this.saveAsMenuItem.setDisable(true);
+        }
     }
+
+
 
     @Override
     public void setLocalizedText() {

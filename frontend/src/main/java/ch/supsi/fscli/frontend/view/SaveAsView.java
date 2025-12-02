@@ -27,7 +27,7 @@ public class SaveAsView implements ShowView{
     }
 
     @Override
-    public void showView() {
+    public void show() {
         FileChooser fileChooser = new FileChooser();
 
         String userPreferencesPath = preferencesModel.getUserPreferencesDirectoryPath().toString();

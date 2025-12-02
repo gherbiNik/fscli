@@ -10,13 +10,10 @@ import ch.supsi.fscli.backend.business.dto.FsStateMapper;
 import ch.supsi.fscli.backend.business.dto.IFsStateMapper;
 import ch.supsi.fscli.backend.business.filesystem.FileSystem;
 import ch.supsi.fscli.backend.business.preferences.PreferenceBusiness;
-import ch.supsi.fscli.backend.business.command.business.CommandHelpContainer;
 import ch.supsi.fscli.backend.business.service.ISaveDataService;
 import ch.supsi.fscli.backend.business.service.SaveDataService;
 import ch.supsi.fscli.backend.dataAccess.filesystem.JacksonSaveDataService;
 import ch.supsi.fscli.backend.dataAccess.preferences.PreferenceDAO;
-import ch.supsi.fscli.backend.business.PreferenceBusiness;
-import ch.supsi.fscli.backend.dataAccess.PreferenceDAO;
 import ch.supsi.fscli.backend.util.BackendTranslator;
 import ch.supsi.fscli.frontend.controller.CreditsController;
 import ch.supsi.fscli.frontend.controller.ExitController;
@@ -24,9 +21,6 @@ import ch.supsi.fscli.frontend.controller.ExitController;
 import ch.supsi.fscli.frontend.controller.PreferenceController;
 import ch.supsi.fscli.frontend.controller.filesystem.FileSystemController;
 import ch.supsi.fscli.frontend.controller.mapper.FsStateMapperController;
-import ch.supsi.fscli.frontend.controller.mapper.IFsStateMapperController;
-import ch.supsi.fscli.frontend.model.CommandHelpModel;
-import ch.supsi.fscli.frontend.model.ICommandHelpModel;
 //FIXME import ch.supsi.fscli.frontend.model.CommandHelpModel;
 import ch.supsi.fscli.frontend.model.TranslationModel;
 import ch.supsi.fscli.frontend.model.PreferenceModel;
@@ -79,8 +73,8 @@ public class MainFx extends Application {
     private final BackendTranslator backendTranslator;
     //FIXME private final ICommandHelpModel commandHelpModel;
     //FIXME private final HelpController helpController;
-    private final ICommandHelpApplication commandHelpApplication;
-    private final CommandHelpContainer commandHelpContainer;
+    //private final ICommandHelpApplication commandHelpApplication;
+    //private final CommandHelpContainer commandHelpContainer;
     private final OpenView openView;
     private final SaveAsView saveAsView;
     private final IFsStateMapperApplication fsStateMapperApplication;
@@ -140,7 +134,7 @@ public class MainFx extends Application {
         this.jacksonSaveDataService = JacksonSaveDataService.getInstance(preferenceDAO);
         this.saveDataService = SaveDataService.getInstance(preferenceDAO, jacksonSaveDataService);
         this.fsStateMapper = FsStateMapper.getInstance(saveDataService, fileSystem); // business layer
-        this.fsStateMapperApplication = FsStateMapperApplication.getInstance(fsStateMapper); // application layer
+        this.fsStateMapperApplication = FsStateMapperApplication.getInstance(fsStateMapper, fileSystemApplication); // application layer
         this.fsStateMapperModel = FsStateMapperModel.getInstance(fsStateMapperApplication);
 
         // VIEW
@@ -154,7 +148,7 @@ public class MainFx extends Application {
         this.fsStateMapperController = FsStateMapperController.getInstance(fsStateMapperModel, fileSystemModel);
         this.openView = OpenView.getInstance(fsStateMapperController, preferenceModel);
         this.saveAsView = SaveAsView.getInstance(fsStateMapperController, preferenceModel);
-        this.menuBarView = MenuBarView.getInstance(i18n, exitView, creditsView, helpView, preferenceView, fileSystemController, openView, saveAsView, fsStateMapperController);
+        this.menuBarView = new MenuBarView(i18n, exitView, creditsView, openView, saveAsView, helpView, preferenceView,  fileSystemController, fsStateMapperController);
 
         fsStateMapperController.initialize(logView, menuBarView);
 
@@ -167,8 +161,13 @@ public class MainFx extends Application {
         this.fileSystemModel.addPropertyChangeListener(commandLineView);
         this.fileSystemModel.addPropertyChangeListener(logView);
         this.fileSystemModel.addPropertyChangeListener(outputView);
+        this.fileSystemModel.addPropertyChangeListener(menuBarView);
 
         this.preferenceModel.addPropertyChangeListener(logView);
+
+        this.fsStateMapperModel.addPropertyChangeListener(menuBarView);
+        this.fsStateMapperModel.addPropertyChangeListener(logView);
+        this.fsStateMapperModel.addPropertyChangeListener(commandLineView);
 
 
         System.out.println("Application started with language: " + loadedLocale.getLanguage());
@@ -255,7 +254,7 @@ public class MainFx extends Application {
             //
             // for new we just close the app directly
             e.consume();
-            exitView.showView();
+            exitView.show();
             //primaryStage.close();
         });
 

@@ -57,4 +57,19 @@ public class FileSystemApplication implements IFileSystemApplication {
     public String sendCommand(String userInput) {
         return fileSystem.executeCommand(userInput);
     }
+
+    @Override
+    public boolean isDataToSave() {
+        return fileSystem.isDataToSave();
+    }
+
+    @Override
+    public void setDataToSave(boolean dataToSave) {
+        fileSystem.setDataToSave(dataToSave);
+    }
+
+    @Override
+    public boolean isFileSystemCreated() {
+        return fileSystem!=null;
+    }
 }

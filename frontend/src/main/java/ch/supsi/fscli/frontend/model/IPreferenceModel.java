@@ -2,6 +2,7 @@ package ch.supsi.fscli.frontend.model;
 
 import javafx.scene.text.Font;
 
+import java.beans.PropertyChangeListener;
 import java.nio.file.Path;
 
 public interface IPreferenceModel {
@@ -17,5 +18,4 @@ public interface IPreferenceModel {
     int getLogAreaRow();
     int getColumn();
     void savePreferences(String languageComboBox, String columnsSpinner, String outputLinesSpinner, String logLinesSpinner, String commandLineFontComboBox, String outputAreaFontComboBox, String logAreaFontComboBox);
-
 }

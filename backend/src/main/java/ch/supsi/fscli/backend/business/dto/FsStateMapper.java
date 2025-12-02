@@ -145,8 +145,8 @@ public class FsStateMapper implements IFsStateMapper{
             inode = new DirectoryNode(null);
         } else if(dto instanceof ISoftLinkDto) {
             String targetPath = ((ISoftLinkDto) dto).getTargetPath();
-            inode = new SoftLink(null);
-            ((SoftLink) inode).setPath(targetPath);
+            inode = new SoftLink(null, targetPath);
+
         }
 
         // Override uid and type using reflection

@@ -18,10 +18,10 @@ public class SoftLink extends Inode implements ISoftLink{
     }
 
     public String getPath() {
-        return path;
+        return targetPath;
     }
 
     public void setPath(String path) {
-        this.path = path;
+        this.targetPath = path;
     }
 }

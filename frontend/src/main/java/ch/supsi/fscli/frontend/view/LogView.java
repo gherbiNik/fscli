@@ -1,8 +1,7 @@
 package ch.supsi.fscli.frontend.view;
 
 import ch.supsi.fscli.frontend.controller.PreferenceController;
-import ch.supsi.fscli.frontend.event.FileSystemCreationEvent;
-import ch.supsi.fscli.frontend.event.PreferenceSavedEvent;
+import ch.supsi.fscli.frontend.event.*;
 import ch.supsi.fscli.frontend.util.I18nManager;
 import javafx.scene.Node;
 import javafx.scene.control.TextArea;
@@ -54,9 +53,22 @@ public class LogView implements ViewComponent, PropertyChangeListener {
         // La LogView ascolta eventi diversi, es. ""
         if (evt instanceof FileSystemCreationEvent) {
             log(i18n.getString("log.fsCreated"));
-        } else if (evt instanceof PreferenceSavedEvent) {
+        }
+        if (evt instanceof PreferenceSavedEvent) {
             log(i18n.getString("log.preferenceSaved"));
         }
+
+        if (evt instanceof FileSystemSaved)
+            log("DA TRADURRE: fs salvato");
+
+        if (evt instanceof FileSystemSavedAs)
+            log("DA TRADURRE: fs salvato come...");
+
+        if (evt instanceof FileSystemOpenEvent)
+            log("DA TRADURRE: fs open");
+
+
+
     }
 
 }

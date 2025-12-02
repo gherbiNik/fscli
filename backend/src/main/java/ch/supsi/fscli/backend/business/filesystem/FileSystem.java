@@ -17,6 +17,7 @@ public class FileSystem implements FileSystemComponent, IFileSystem
     private DirectoryNode currentDirectory;
     private CommandExecutor commandExecutor;
     private List<ICommand> commandList;
+    private boolean dataToSave;
 
 
     public static FileSystem getInstance() {
@@ -28,6 +29,7 @@ public class FileSystem implements FileSystemComponent, IFileSystem
 
     private FileSystem(){
         root = new DirectoryNode(null);
+        dataToSave = true;
         currentDirectory = root;
     }
 
@@ -191,10 +193,23 @@ public class FileSystem implements FileSystemComponent, IFileSystem
     public String executeCommand(String command) {
         CommandResult result = commandExecutor.execute(command);
 
-        if(result.isSuccess())
+        if(result.isSuccess()) {
+            //FIXME per pwd e clear non aggiorno
+            dataToSave = true;
             return result.getOutput();
+        }
         else
-            return result.getError();
+            return "ERROR-"+result.getError();
+    }
+
+    @Override
+    public boolean isDataToSave() {
+        return dataToSave;
+    }
+
+    @Override
+    public void setDataToSave(boolean dataToSave) {
+        this.dataToSave = dataToSave;
     }
 
     public void setCurrentDirectory(DirectoryNode currentDirectory) {

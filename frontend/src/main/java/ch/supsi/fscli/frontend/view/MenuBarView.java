@@ -3,6 +3,9 @@ package ch.supsi.fscli.frontend.view;
 import ch.supsi.fscli.frontend.controller.filesystem.IFileSystemController;
 import ch.supsi.fscli.frontend.controller.mapper.FsStateMapperController;
 import ch.supsi.fscli.frontend.controller.mapper.IFsStateMapperController;
+import ch.supsi.fscli.frontend.event.FileSystemCreationEvent;
+import ch.supsi.fscli.frontend.event.FileSystemSaved;
+import ch.supsi.fscli.frontend.event.FileSystemToSaved;
 import ch.supsi.fscli.frontend.util.I18nManager;
 import javafx.scene.Node;
 import javafx.scene.control.Menu;
@@ -10,8 +13,11 @@ import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.SeparatorMenuItem;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 
-public class MenuBarView implements ViewComponent {
+
+public class MenuBarView implements ViewComponent, PropertyChangeListener {
     private final MenuBar menuBar;
     private final I18nManager i18n;
     private final IFileSystemController fileSystemController;
@@ -21,17 +27,17 @@ public class MenuBarView implements ViewComponent {
     private final ShowView creditsView;
     private final ShowView helpView;
     private final ShowView preferenceView;
+    private final ShowView openView;
+    private final ShowView saveAsView;
 
-    private I18nManager i18n;
-    private IFileSystemController fileSystemController;
-    private IFsStateMapperController fsStateMapperController;
+    private final IFsStateMapperController fsStateMapperController;
     // Componenti UI da aggiornare
     private Menu fileMenu, editMenu, helpMenu;
     private MenuItem newMenuItem, openMenuItem, saveMenuItem, saveAsMenuItem, exitMenuItem;
     private MenuItem preferencesMenuItem, helpMenuItem, aboutMenuItem;
 
-    public MenuBarView(I18nManager i18n, ExitView exitView, CreditsView creditsView,
-                       HelpView helpView, PreferenceView preferenceView, IFileSystemController fileSystemController) {
+    public MenuBarView(I18nManager i18n, ExitView exitView, CreditsView creditsView, OpenView openView, SaveAsView saveAsView,
+                       HelpView helpView, PreferenceView preferenceView, IFileSystemController fileSystemController, IFsStateMapperController fsStateMapperController) {
 
         this.i18n = i18n;
         this.fileSystemController = fileSystemController;
@@ -39,6 +45,8 @@ public class MenuBarView implements ViewComponent {
         this.creditsView = creditsView;
         this.helpView = helpView;
         this.preferenceView = preferenceView;
+        this.openView = openView;
+        this.saveAsView = saveAsView;
         this.menuBar = new MenuBar();
         this.fsStateMapperController = fsStateMapperController;
 
@@ -83,15 +91,15 @@ public class MenuBarView implements ViewComponent {
         preferencesMenuItem.setOnAction(actionEvent -> preferenceView.show());
     }
 
-    private void initFileMenu(ExitView exitView, OpenView openView, SaveAsView saveAsView) {
     private void initFileMenu() {
+
         newMenuItem = new MenuItem();
         newMenuItem.setId("newMenuItem");
         newMenuItem.setOnAction(event -> fileSystemController.createFileSystem());
 
         this.openMenuItem = new MenuItem();
         this.openMenuItem.setId("openMenuItem");
-        this.openMenuItem.setOnAction(event -> openView.showView());
+        this.openMenuItem.setOnAction(event -> openView.show());
 
         saveMenuItem = new MenuItem();
         saveMenuItem.setId("saveMenuItem");
@@ -100,7 +108,7 @@ public class MenuBarView implements ViewComponent {
 
         this.saveAsMenuItem = new MenuItem();
         this.saveAsMenuItem.setId("saveAsMenuItem");
-        this.saveAsMenuItem.setOnAction(event -> saveAsView.showView());
+        this.saveAsMenuItem.setOnAction(event -> saveAsView.show());
         this.saveAsMenuItem.setDisable(true);
 
         exitMenuItem = new MenuItem();
@@ -125,20 +133,6 @@ public class MenuBarView implements ViewComponent {
         return this.menuBar;
     }
 
-    @Override
-    public void update(String message) {
-
-        if (this.fileSystemController.hasDataToSave()) {
-            this.saveMenuItem.setDisable(false);
-            this.saveAsMenuItem.setDisable(false);
-            this.newMenuItem.setDisable(true);
-        } else {
-            this.saveMenuItem.setDisable(true);
-            this.saveAsMenuItem.setDisable(true);
-        }
-    }
-
-
 
     public void setLocalizedText() {
         // FILE MENU
@@ -158,6 +152,25 @@ public class MenuBarView implements ViewComponent {
         helpMenu.setText(i18n.getString("menu.help"));
         helpMenuItem.setText(i18n.getString("menu.help.help"));
         aboutMenuItem.setText(i18n.getString("menu.help.about"));
+
+    }
+
+    @Override
+    public void propertyChange(PropertyChangeEvent evt) {
+        if (evt instanceof FileSystemCreationEvent) {
+            this.saveMenuItem.setDisable(false);
+            this.saveAsMenuItem.setDisable(false);
+            this.newMenuItem.setDisable(true);
+        }
+        if (evt instanceof FileSystemSaved) {
+            this.saveMenuItem.setDisable(true);
+            this.saveAsMenuItem.setDisable(true);
+        }
+        if (evt instanceof FileSystemToSaved) {
+            this.saveMenuItem.setDisable(false);
+            this.saveAsMenuItem.setDisable(false);
+        }
+
 
     }
 }

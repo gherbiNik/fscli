@@ -39,24 +39,21 @@ public class FsStateMapperController implements IFsStateMapperController {
     @Override
     public void save() {
         fsStateMapperModel.save();
-        logView.update("DA TRADURRE: fs salvato");
         fileSystemModel.setDataToSave(false); // mods has been saved
-        menuBarView.update("");
+
     }
 
     @Override
     public void open(String fileName) {
         fsStateMapperModel.open(fileName);
-        logView.update("DA TRADURRE: fs open");
         fileSystemModel.setDataToSave(true);
-        menuBarView.update("");
+
     }
 
     @Override
     public void saveAs(File file) {
         fsStateMapperModel.saveAs(file);
-        logView.update("DA TRADURRE: fs salvato come...");
         fileSystemModel.setDataToSave(false); // mods has been saved
-        menuBarView.update("");
+
     }
 }

@@ -1,5 +1,6 @@
 package ch.supsi.fscli.backend.application.mapper;
 
+import ch.supsi.fscli.backend.application.filesystem.IFileSystemApplication;
 import ch.supsi.fscli.backend.business.dto.IFsStateMapper;
 
 import java.io.File;
@@ -7,20 +8,22 @@ import java.io.File;
 public class FsStateMapperApplication implements IFsStateMapperApplication{
     private static FsStateMapperApplication myself;
     private IFsStateMapper iFsStateMapper;
+    private IFileSystemApplication fileSystemApplication;
 
     private FsStateMapperApplication() {
     }
 
-    public static FsStateMapperApplication getInstance(IFsStateMapper iFsStateMapper) {
+    public static FsStateMapperApplication getInstance(IFsStateMapper iFsStateMapper, IFileSystemApplication fileSystemApplication) {
         if (myself == null) {
             myself = new FsStateMapperApplication();
-            myself.intialize(iFsStateMapper);
+            myself.intialize(iFsStateMapper, fileSystemApplication);
         }
         return myself;
     }
 
-    private void intialize(IFsStateMapper iFsStateMapper) {
+    private void intialize(IFsStateMapper iFsStateMapper,  IFileSystemApplication fileSystemApplication) {
         this.iFsStateMapper = iFsStateMapper;
+        this.fileSystemApplication = fileSystemApplication;
     }
     @Override
     public void toDTO() {
@@ -29,6 +32,8 @@ public class FsStateMapperApplication implements IFsStateMapperApplication{
 
     @Override
     public void fromDTO(String fileName) {
+        if (!fileSystemApplication.isFileSystemCreated())
+            fileSystemApplication.createFileSystem();
         iFsStateMapper.fromDTO(fileName);
     }
 

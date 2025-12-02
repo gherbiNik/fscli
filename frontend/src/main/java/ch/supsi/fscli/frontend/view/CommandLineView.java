@@ -1,8 +1,10 @@
 package ch.supsi.fscli.frontend.view;
 
+import ch.supsi.fscli.backend.application.filesystem.FileSystemApplication;
 import ch.supsi.fscli.frontend.controller.PreferenceController;
 import ch.supsi.fscli.frontend.controller.filesystem.IFileSystemController;
 import ch.supsi.fscli.frontend.event.FileSystemCreationEvent;
+import ch.supsi.fscli.frontend.event.FileSystemOpenEvent;
 import ch.supsi.fscli.frontend.util.I18nManager;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
@@ -48,7 +50,8 @@ public class CommandLineView implements ViewComponent, PropertyChangeListener {
 
         this.enter.setOnAction(actionEvent -> {
                 fileSystemController.sendCommand(commandLine.getText());
-                this.update("");
+                commandLine.clear();
+
             }
         );
 
@@ -73,9 +76,6 @@ public class CommandLineView implements ViewComponent, PropertyChangeListener {
         return this.commandLine;
     }
 
-    public void update(String message) {
-        commandLine.clear();
-    }
 
     public void setLocalizedText() {
         enter.setText(i18n.getString("commandLine.enter"));
@@ -88,5 +88,9 @@ public class CommandLineView implements ViewComponent, PropertyChangeListener {
         if (evt instanceof FileSystemCreationEvent) {
             setDisable(false);
         }
+        if (evt instanceof FileSystemOpenEvent)
+            setDisable(false);
+
+
     }
 }

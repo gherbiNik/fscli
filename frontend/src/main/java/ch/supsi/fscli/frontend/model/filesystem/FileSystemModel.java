@@ -3,6 +3,7 @@ package ch.supsi.fscli.frontend.model.filesystem;
 import ch.supsi.fscli.backend.application.filesystem.IFileSystemApplication;
 import ch.supsi.fscli.frontend.event.ClearEvent;
 import ch.supsi.fscli.frontend.event.FileSystemCreationEvent;
+import ch.supsi.fscli.frontend.event.FileSystemToSaved;
 import ch.supsi.fscli.frontend.event.OutputEvent;
 
 import java.beans.PropertyChangeListener;
@@ -13,7 +14,6 @@ public class FileSystemModel implements IFileSystemModel {
     private static FileSystemModel instance;
     private final IFileSystemApplication application;
     private final PropertyChangeSupport support;
-    private boolean dataToSave = false;
 
     public static FileSystemModel getInstance(IFileSystemApplication application) {
         if (instance == null) {
@@ -38,8 +38,6 @@ public class FileSystemModel implements IFileSystemModel {
     @Override
     public void createFileSystem() {
         application.createFileSystem();
-        this.dataToSave = true;
-
         support.firePropertyChange(new FileSystemCreationEvent(this,"createFileSystemEvent", null, null));
 
     }
@@ -47,7 +45,10 @@ public class FileSystemModel implements IFileSystemModel {
     @Override
     public String sendCommand(String userInput) {
         String result = application.sendCommand(userInput);
-
+        if (!result.contains("ERROR-")){
+            support.firePropertyChange(new FileSystemToSaved(this,"filesystem to saved", null, null));
+        } else
+            result = result.replace("ERROR-","");
         // Costruiamo il messaggio formattato
         String formattedOutput = "<user> " + userInput + "\n" + result + "\n";
 
@@ -63,11 +64,11 @@ public class FileSystemModel implements IFileSystemModel {
 
     @Override
     public boolean isDataToSave() {
-        return dataToSave;
+        return application.isDataToSave();
     }
 
     @Override
     public void setDataToSave(boolean dataToSave) {
-        this.dataToSave = dataToSave;
+        application.setDataToSave(dataToSave);
     }
 }

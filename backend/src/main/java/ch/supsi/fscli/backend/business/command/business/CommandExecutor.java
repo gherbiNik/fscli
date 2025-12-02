@@ -19,8 +19,7 @@ public class CommandExecutor {
 
     private CommandExecutor() {}
 
-    public static CommandExecutor getInstance(FileSystemService fileSystemService,
-                          CommandParser commandParser, List<ICommand> commandList){
+    public static CommandExecutor getInstance(FileSystemService fileSystemService, CommandParser commandParser, List<ICommand> commandList){
         if(instance == null){
             instance = new CommandExecutor();
             instance.initialize(fileSystemService, commandParser, commandList);
@@ -28,21 +27,21 @@ public class CommandExecutor {
         return instance;
     }
 
-    private void initialize(FileSystemService fileSystemService, CommandParser commandParser,
-                            List<ICommand> commands){
+    private void initialize(FileSystemService fileSystemService, CommandParser commandParser, List<ICommand> commands){
         this.fileSystemService = fileSystemService;
         this.commandParser = commandParser;
 
         this.commandList = new HashMap<>();
 
         if (commands != null) {
+            //FIXME DEBUGGING
+            System.out.println("DEBUGGING: sto mappando la mappa");
             for (ICommand c : commands) {
                 if (c != null && c.getName() != null) {
                     this.commandList.put(c.getName(), c);
                 }
             }
         }
-        System.out.println(commandList);
     }
 
     private List<String> expandArguments(DirectoryNode cwd, List<String> rawArguments) {

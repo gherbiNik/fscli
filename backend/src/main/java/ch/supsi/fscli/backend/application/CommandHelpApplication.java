@@ -1,3 +1,4 @@
+/*
 package ch.supsi.fscli.backend.application;
 
 import ch.supsi.fscli.backend.business.command.business.CommandHelpContainer;
@@ -27,4 +28,4 @@ public class CommandHelpApplication implements ICommandHelpApplication {
     public List<String> getCommandDescriptions() {
         return container.getCommandDescriptions();
     }
-}
+}*/

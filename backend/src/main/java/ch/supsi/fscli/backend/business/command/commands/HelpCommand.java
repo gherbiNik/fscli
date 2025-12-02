@@ -1,16 +1,22 @@
 package ch.supsi.fscli.backend.business.command.commands;
 
-import ch.supsi.fscli.backend.business.command.business.CommandDetails;
-import ch.supsi.fscli.backend.business.command.business.CommandHelpContainer;
 import ch.supsi.fscli.backend.business.service.FileSystemService;
+import ch.supsi.fscli.backend.util.BackendTranslator;
 
-import java.util.Map;
+import java.util.List;
 
-public class HelpCommand extends AbstractCommand{
-    private CommandHelpContainer container;
-    public HelpCommand(FileSystemService fileSystemService, String name, String synopsis, String description, CommandHelpContainer commandHelpContainer) {
-        super(fileSystemService, name, synopsis, description);
-        this.container = commandHelpContainer;
+public class HelpCommand extends AbstractCommand {
+
+    // Questa è la lista che il CommandLoader ci passerà dopo aver creato tutto
+    private List<ICommand> commands;
+
+    public HelpCommand(FileSystemService fsService, String name, String synopsis, String description) {
+        super(fsService, name, synopsis, description);
+    }
+
+    // Il metodo che userà il CommandLoader (tramite Reflection) per iniettare la lista
+    public void setCommands(List<ICommand> commands) {
+        this.commands = commands;
     }
 
     @Override
@@ -22,21 +28,26 @@ public class HelpCommand extends AbstractCommand{
             return CommandResult.error("help: no options needed");
         }
 
-        StringBuilder sb = new StringBuilder("Available Commands List:\n");
-        Map<String, CommandDetails> infos = container.getCommandDetailsMap();
+        // Controllo se la lista è stata iniettata correttamente
+        if (this.commands == null || this.commands.isEmpty()) {
+            return CommandResult.error("help: no commands available (system error)");
+        }
 
-        if(infos == null)
-            return CommandResult.error("help: error occurred while reading commands");
-        if(infos.isEmpty())
-            return CommandResult.error("help: no commands available");
-
-        for(Map.Entry<String, CommandDetails> commandInfos : infos.entrySet()){
-            sb.append(commandInfos.getKey())
+        BackendTranslator backendTranslator = BackendTranslator.getInstance();
+        StringBuilder sb = new StringBuilder(backendTranslator.getString("commandList.title") + "\n");
+        // Iteriamo sulla lista 'this.commands' invece di usare il vecchio 'container'
+        for (ICommand cmd : this.commands) {
+            sb.append(backendTranslator.getString(cmd.getSynopsis()))
                     .append(" : ")
-                    .append(commandInfos.getValue().synopsis())
+                    .append(backendTranslator.getString(cmd.getDescription()))
                     .append("\n");
         }
-        return CommandResult.success(sb.toString());
 
+        // Rimuovi l'ultimo \n
+        if (sb.length() > 0) {
+            sb.setLength(sb.length() - 1);
+        }
+
+        return CommandResult.success(sb.toString());
     }
 }

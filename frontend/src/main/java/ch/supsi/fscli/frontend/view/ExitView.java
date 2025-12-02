@@ -13,7 +13,6 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 public class ExitView implements ShowView {
-    private static ExitView instance;
     private I18nManager i18nManager;
 
     private Stage stage = new Stage();
@@ -21,25 +20,13 @@ public class ExitView implements ShowView {
     private Button cancelButton;
     private ExitController exitController;
 
-    public static ExitView getInstance(ExitController exitController, I18nManager i18nManager) {
-        if (instance == null) {
-            instance = new ExitView();
-            instance.initialize(exitController, i18nManager);
-        }
-
-        return instance;
-    }
-
-    private void initialize(ExitController exitController, I18nManager i18nManager) {
+    public ExitView(ExitController exitController, I18nManager i18nManager) {
         this.exitController = exitController;
         this.i18nManager = i18nManager;
-        initializeUI();
+        createLayout();
     }
 
-    private ExitView() {
-    }
-
-    private void initializeUI() {
+    private void createLayout() {
         stage = new Stage();
 
         stage.setTitle(i18nManager.getString("confirmation.exit.windowname"));
@@ -89,7 +76,7 @@ public class ExitView implements ShowView {
     }
 
     @Override
-    public void showView() {
+    public void show() {
         stage.showAndWait();
     }
 

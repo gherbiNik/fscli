@@ -1,7 +1,6 @@
 package ch.supsi.fscli.frontend;
 
-import ch.supsi.fscli.backend.application.CommandHelpApplication;
-import ch.supsi.fscli.backend.application.ICommandHelpApplication;
+// FIXME import ch.supsi.fscli.backend.application.ICommandHelpApplication;
 import ch.supsi.fscli.backend.application.TranslationApplication;
 import ch.supsi.fscli.backend.application.PreferenceApplication;
 import ch.supsi.fscli.backend.application.filesystem.FileSystemApplication;
@@ -16,16 +15,19 @@ import ch.supsi.fscli.backend.business.service.ISaveDataService;
 import ch.supsi.fscli.backend.business.service.SaveDataService;
 import ch.supsi.fscli.backend.dataAccess.filesystem.JacksonSaveDataService;
 import ch.supsi.fscli.backend.dataAccess.preferences.PreferenceDAO;
+import ch.supsi.fscli.backend.business.PreferenceBusiness;
+import ch.supsi.fscli.backend.dataAccess.PreferenceDAO;
 import ch.supsi.fscli.backend.util.BackendTranslator;
 import ch.supsi.fscli.frontend.controller.CreditsController;
 import ch.supsi.fscli.frontend.controller.ExitController;
-import ch.supsi.fscli.frontend.controller.HelpController;
+//FIXME import ch.supsi.fscli.frontend.controller.HelpController;
 import ch.supsi.fscli.frontend.controller.PreferenceController;
 import ch.supsi.fscli.frontend.controller.filesystem.FileSystemController;
 import ch.supsi.fscli.frontend.controller.mapper.FsStateMapperController;
 import ch.supsi.fscli.frontend.controller.mapper.IFsStateMapperController;
 import ch.supsi.fscli.frontend.model.CommandHelpModel;
 import ch.supsi.fscli.frontend.model.ICommandHelpModel;
+//FIXME import ch.supsi.fscli.frontend.model.CommandHelpModel;
 import ch.supsi.fscli.frontend.model.TranslationModel;
 import ch.supsi.fscli.frontend.model.PreferenceModel;
 import ch.supsi.fscli.frontend.model.filesystem.FileSystemModel;
@@ -44,7 +46,6 @@ import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
-import java.util.List;
 import java.util.Locale;
 
 public class MainFx extends Application {
@@ -76,10 +77,10 @@ public class MainFx extends Application {
     private final TranslationApplication creditsFacade;
     private final CreditsController creditsController;
     private final BackendTranslator backendTranslator;
+    //FIXME private final ICommandHelpModel commandHelpModel;
+    //FIXME private final HelpController helpController;
     private final ICommandHelpApplication commandHelpApplication;
     private final CommandHelpContainer commandHelpContainer;
-    private final ICommandHelpModel commandHelpModel;
-    private final HelpController helpController;
     private final OpenView openView;
     private final SaveAsView saveAsView;
     private final IFsStateMapperApplication fsStateMapperApplication;
@@ -127,15 +128,14 @@ public class MainFx extends Application {
         // CONTROLLER
         this.preferenceController = PreferenceController.getInstance(preferenceModel);
         // OUTPUT VIEW (to be encapsulated properly)
-        this.outputView = OutputView.getInstance(preferenceController, i18n);
+        this.outputView = new OutputView(i18n, preferenceController);
         // LOG VIEW (to be encapsulated properly)
-        this.logView = LogView.getInstance(preferenceController, i18n);
+        this.logView = new LogView(i18n, preferenceController);
         this.fileSystemController = FileSystemController.getInstance(fileSystemModel, outputView,logView, i18n);
         this.exitController = ExitController.getInstance();
 
-        this.commandHelpContainer = CommandHelpContainer.getInstance(backendTranslator);
-        this.commandHelpApplication = CommandHelpApplication.getInstance(commandHelpContainer);
-        this.commandHelpModel = CommandHelpModel.getInstance(commandHelpApplication, i18n);
+        /* FIXME this.commandHelpApplication = CommandHelpApplication.getInstance(commandHelpContainer);
+        this.commandHelpModel = CommandHelpModel.getInstance(commandHelpApplication, i18n);*/
 
         this.jacksonSaveDataService = JacksonSaveDataService.getInstance(preferenceDAO);
         this.saveDataService = SaveDataService.getInstance(preferenceDAO, jacksonSaveDataService);
@@ -144,10 +144,13 @@ public class MainFx extends Application {
         this.fsStateMapperModel = FsStateMapperModel.getInstance(fsStateMapperApplication);
 
         // VIEW
-        this.preferenceView = PreferenceView.getInstance(preferenceController, i18n);
-        this.helpView = HelpView.getInstance(i18n);
-        this.creditsView = CreditsView.getInstance(i18n);
-        this.exitView = ExitView.getInstance(exitController, i18n);
+        this.preferenceView = new PreferenceView(preferenceController, i18n);
+        this.helpView = new HelpView(i18n);
+        this.creditsView = new CreditsView(i18n);
+        this.exitView = new ExitView(exitController, i18n);
+        // COMMAND LINE
+        this.commandLineView = new CommandLineView(fileSystemController, preferenceController, i18n);
+        this.fileSystemController.setCommandLineView(this.commandLineView);
         this.fsStateMapperController = FsStateMapperController.getInstance(fsStateMapperModel, fileSystemModel);
         this.openView = OpenView.getInstance(fsStateMapperController, preferenceModel);
         this.saveAsView = SaveAsView.getInstance(fsStateMapperController, preferenceModel);
@@ -158,16 +161,19 @@ public class MainFx extends Application {
 
         // CONTROLLER
         this.creditsController = CreditsController.getInstance(i18n, creditsView);
-        this.helpController = HelpController.getInstance(helpView, i18n, commandHelpModel);
+        // FIXME this.helpController = HelpController.getInstance(helpView, i18n, commandHelpModel);
+
+        // ADD LISTENER
+        this.fileSystemModel.addPropertyChangeListener(commandLineView);
+        this.fileSystemModel.addPropertyChangeListener(logView);
+        this.fileSystemModel.addPropertyChangeListener(outputView);
+
+        this.preferenceModel.addPropertyChangeListener(logView);
 
 
         System.out.println("Application started with language: " + loadedLocale.getLanguage());
 
         this.applicationTitle = i18n.getString("app.title");
-
-
-        // COMMAND LINE
-        this.commandLineView = CommandLineView.getInstance(fileSystemController, preferenceController, i18n);
 
     }
 

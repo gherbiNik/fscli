@@ -11,11 +11,10 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 
 public class CreditsView implements ShowView {
-    private static CreditsView instance;
+
     private Stage stage;
     private I18nManager i18nManager;
 
-    // Declare labels as instance variables for setter access
     private Label titleLabel;
     private Label frontendVersionLabel;
     private Label frontendBuildDateLabel;
@@ -24,23 +23,14 @@ public class CreditsView implements ShowView {
     private Label backendBuildDateLabel;
     private Label authorLabel;
 
-    public static CreditsView getInstance(I18nManager i18nManager) {
-        if (instance == null) {
-            instance = new CreditsView();
-            instance.initialize(i18nManager);
-        }
-        return instance;
-    }
 
-    private void initialize(I18nManager i18nManager) {
+
+    public CreditsView(I18nManager i18nManager) {
         this.i18nManager = i18nManager;
-        initializeUI();
+        createLayout();
     }
 
-    private CreditsView() {
-    }
-
-    private void initializeUI() {
+    private void createLayout() {
         stage = new Stage();
         stage.setTitle(""); // Initially empty; set by controller
         stage.initModality(Modality.APPLICATION_MODAL);
@@ -121,7 +111,7 @@ public class CreditsView implements ShowView {
     }
 
     @Override
-    public void showView() {
+    public void show() {
         stage.show();
     }
 }

@@ -13,34 +13,21 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import java.util.List;
-import java.util.Map;
 
 public class HelpView implements ShowView{
-    private static HelpView instance;
     private I18nManager i18nManager;
     private List<String> commandDescriptions;
     private Stage stage = new Stage();
     private VBox root;
 
-    public static HelpView getInstance(I18nManager i18nManager){
-        if(instance == null){
-            instance = new HelpView();
-            instance.initialize(i18nManager);
-        }
 
-        return instance;
-    }
 
-    private void initialize(I18nManager i18nManager) {
+    public HelpView(I18nManager i18nManager) {
         this.i18nManager = i18nManager;
-        initializeUI();
+        createLayout();
     }
 
-    private HelpView() {
-
-    }
-
-    private void initializeUI() {
+    private void createLayout() {
         stage = new Stage();
 
         stage.setTitle(i18nManager.getString("help.name"));
@@ -90,7 +77,7 @@ public class HelpView implements ShowView{
         return tf;
     }
     @Override
-    public void showView() {
+    public void show() {
         stage.show();
     }
 

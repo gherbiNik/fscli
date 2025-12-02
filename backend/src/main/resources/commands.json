@@ -1,0 +1,68 @@
+[
+  {
+    "commandName": "cd",
+    "className": "CdCommand",
+    "synopsisKey": "command.cd.synopsis",
+    "descriptionKey": "command.cd.desc"
+  },
+  {
+    "commandName": "clear",
+    "className": "ClearCommand",
+    "synopsisKey": "command.clear.synopsis",
+    "descriptionKey": "command.clear.desc"
+  },
+  {
+    "commandName": "help",
+    "className": "HelpCommand",
+    "synopsisKey": "command.help.synopsis",
+    "descriptionKey": "command.help.desc"
+  },
+  {
+    "commandName": "ln",
+    "className": "LnCommand",
+    "synopsisKey": "command.ln.synopsis",
+    "descriptionKey": "command.ln.desc"
+  },
+  {
+    "commandName": "ls",
+    "className": "LsCommand",
+    "synopsisKey": "command.ls.synopsis",
+    "descriptionKey": "command.ls.desc"
+  },
+  {
+    "commandName": "mkdir",
+    "className": "MkdirCommand",
+    "synopsisKey": "command.mkdir.synopsis",
+    "descriptionKey": "command.mkdir.desc"
+  },
+  {
+    "commandName": "mv",
+    "className": "MvCommand",
+    "synopsisKey": "command.mv.synopsis",
+    "descriptionKey": "command.mv.desc"
+  },
+  {
+    "commandName": "pwd",
+    "className": "PwdCommand",
+    "synopsisKey": "command.pwd.synopsis",
+    "descriptionKey": "command.pwd.desc"
+  },
+  {
+    "commandName": "rm",
+    "className": "RmCommand",
+    "synopsisKey": "command.rm.synopsis",
+    "descriptionKey": "command.rm.desc"
+  },
+  {
+    "commandName": "rmdir",
+    "className": "RmdirCommand",
+    "synopsisKey": "command.rmdir.synopsis",
+    "descriptionKey": "command.rmdir.desc"
+  },
+  {
+    "commandName": "touch",
+    "className": "TouchCommand",
+    "synopsisKey": "command.touch.synopsis",
+    "descriptionKey": "command.touch.desc"
+  }
+]

@@ -1,11 +1,18 @@
 package ch.supsi.fscli.frontend.model.filesystem;
 
 import ch.supsi.fscli.backend.application.filesystem.IFileSystemApplication;
+import ch.supsi.fscli.frontend.event.ClearEvent;
+import ch.supsi.fscli.frontend.event.FileSystemCreationEvent;
+import ch.supsi.fscli.frontend.event.OutputEvent;
+
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 
 public class FileSystemModel implements IFileSystemModel {
 
     private static FileSystemModel instance;
     private final IFileSystemApplication application;
+    private final PropertyChangeSupport support;
     private boolean dataToSave = false;
 
     public static FileSystemModel getInstance(IFileSystemApplication application) {
@@ -17,6 +24,14 @@ public class FileSystemModel implements IFileSystemModel {
 
     private FileSystemModel(IFileSystemApplication application) {
         this.application = application;
+        this.support = new PropertyChangeSupport(this);
+    }
+
+    public void addPropertyChangeListener(PropertyChangeListener pcl) {
+        support.addPropertyChangeListener(pcl);
+    }
+    public void removePropertyChangeListener(PropertyChangeListener pcl) {
+        support.removePropertyChangeListener(pcl);
     }
 
 
@@ -24,11 +39,26 @@ public class FileSystemModel implements IFileSystemModel {
     public void createFileSystem() {
         application.createFileSystem();
         this.dataToSave = true;
+
+        support.firePropertyChange(new FileSystemCreationEvent(this,"createFileSystemEvent", null, null));
+
     }
 
     @Override
     public String sendCommand(String userInput) {
-        return application.sendCommand(userInput);
+        String result = application.sendCommand(userInput);
+
+        // Costruiamo il messaggio formattato
+        String formattedOutput = "<user> " + userInput + "\n" + result + "\n";
+
+        // Il model non sa chi c'è dall'altra parte. Se c'è la GUI, bene. Se non c'è, amen.
+        if (result.equals("Perform Clear")) {
+            support.firePropertyChange(new ClearEvent(this, "ClearEvent", null, null));
+        } else {
+            support.firePropertyChange(new OutputEvent(this, "OutputEvent", null, formattedOutput));
+        }
+
+        return result;
     }
 
     @Override

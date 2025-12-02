@@ -11,74 +11,80 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.control.SeparatorMenuItem;
 
 
-public class MenuBarView implements ControlledFxView {
-    private static MenuBarView instance;
+public class MenuBarView implements ViewComponent {
+    private final MenuBar menuBar;
+    private final I18nManager i18n;
+    private final IFileSystemController fileSystemController;
 
-    private MenuBar menuBar;
-    private Menu fileMenu;
-    private Menu editMenu;
-    private Menu helpMenu;
-    private MenuItem newMenuItem;
-    private MenuItem openMenuItem;
-    private MenuItem saveMenuItem;
-    private MenuItem saveAsMenuItem;
-    private MenuItem exitMenuItem;
-
-    private MenuItem preferencesMenuItem;
-    private MenuItem helpMenuItem;
-    private MenuItem aboutMenuItem;
+    // Dipendenze verso le finestre modali che il menu deve aprire
+    private final ShowView exitView;
+    private final ShowView creditsView;
+    private final ShowView helpView;
+    private final ShowView preferenceView;
 
     private I18nManager i18n;
     private IFileSystemController fileSystemController;
     private IFsStateMapperController fsStateMapperController;
+    // Componenti UI da aggiornare
+    private Menu fileMenu, editMenu, helpMenu;
+    private MenuItem newMenuItem, openMenuItem, saveMenuItem, saveAsMenuItem, exitMenuItem;
+    private MenuItem preferencesMenuItem, helpMenuItem, aboutMenuItem;
 
-    public static MenuBarView getInstance(I18nManager i18n, ExitView exitView, CreditsView creditsView,
-    HelpView helpView, PreferenceView preferenceView, IFileSystemController fileSystemController, OpenView openView,
-                                          SaveAsView saveAsView, IFsStateMapperController fsStateMapperController) {
-        if(instance == null) {
-            instance = new MenuBarView();
-            instance.initialize(i18n, exitView, creditsView, helpView, preferenceView, fileSystemController, openView, saveAsView, fsStateMapperController);
-        }
-        return instance;
-    }
-
-     public void initialize(I18nManager i18n, ExitView exitView, CreditsView creditsView,
-            HelpView helpView, PreferenceView preferenceView, IFileSystemController fileSystemController,
-                            OpenView openView, SaveAsView saveAsView,IFsStateMapperController fsStateMapperController) {
+    public MenuBarView(I18nManager i18n, ExitView exitView, CreditsView creditsView,
+                       HelpView helpView, PreferenceView preferenceView, IFileSystemController fileSystemController) {
 
         this.i18n = i18n;
         this.fileSystemController = fileSystemController;
+        this.exitView = exitView;
+        this.creditsView = creditsView;
+        this.helpView = helpView;
+        this.preferenceView = preferenceView;
         this.menuBar = new MenuBar();
         this.fsStateMapperController = fsStateMapperController;
 
-        initFileMenu(exitView, openView, saveAsView);
-        initEditMenu(preferenceView);
-        initHelpMenu(helpView, creditsView);
+        createStructure();     // Crea gli oggetti Menu/MenuItem
+        setupEventHandlers();  // Collega le azioni ai bottoni
+    }
 
+
+    private void setupEventHandlers() {
+        exitMenuItem.setOnAction(e -> exitView.show());
+        preferencesMenuItem.setOnAction(e -> preferenceView.show());
+        aboutMenuItem.setOnAction(e -> creditsView.show());
+        helpMenuItem.setOnAction(e -> helpView.show());
+        newMenuItem.setOnAction(e -> fileSystemController.createFileSystem());
+    }
+
+    private void createStructure() {
+        initFileMenu();
+        initEditMenu();
+        initHelpMenu();
         setLocalizedText();
         menuBar.getMenus().addAll(fileMenu, editMenu, helpMenu);
-     }
+    }
 
-    private void initHelpMenu(HelpView helpView, CreditsView creditsView) {
+
+    private void initHelpMenu() {
         helpMenu = new Menu();
         helpMenuItem = new MenuItem();
         aboutMenuItem = new MenuItem();
         helpMenu.getItems().add(helpMenuItem);
         helpMenu.getItems().add(aboutMenuItem);
 
-        helpMenuItem.setOnAction(event -> helpView.showView());
-        aboutMenuItem.setOnAction(event -> creditsView.showView());
+        helpMenuItem.setOnAction(event -> helpView.show());
+        aboutMenuItem.setOnAction(event -> creditsView.show());
 
     }
 
-    private void initEditMenu(PreferenceView preferenceView) {
+    private void initEditMenu() {
         editMenu = new Menu();
         preferencesMenuItem = new MenuItem();
         editMenu.getItems().add(preferencesMenuItem);
-        preferencesMenuItem.setOnAction(actionEvent -> preferenceView.showView());
+        preferencesMenuItem.setOnAction(actionEvent -> preferenceView.show());
     }
 
     private void initFileMenu(ExitView exitView, OpenView openView, SaveAsView saveAsView) {
+    private void initFileMenu() {
         newMenuItem = new MenuItem();
         newMenuItem.setId("newMenuItem");
         newMenuItem.setOnAction(event -> fileSystemController.createFileSystem());
@@ -99,7 +105,7 @@ public class MenuBarView implements ControlledFxView {
 
         exitMenuItem = new MenuItem();
         exitMenuItem.setId("exitMenuItem");
-        exitMenuItem.setOnAction(event -> exitView.showView());
+        exitMenuItem.setOnAction(event -> exitView.show());
 
 
 
@@ -134,7 +140,6 @@ public class MenuBarView implements ControlledFxView {
 
 
 
-    @Override
     public void setLocalizedText() {
         // FILE MENU
         newMenuItem.setText(i18n.getString("menu.file.new"));

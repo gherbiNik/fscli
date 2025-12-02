@@ -1,5 +1,6 @@
 package ch.supsi.fscli.backend.business.command.commands;
 
+import ch.supsi.fscli.backend.business.filesystem.DirectoryNode;
 import ch.supsi.fscli.backend.business.filesystem.Inode;
 import ch.supsi.fscli.backend.business.service.FileSystemService;
 
@@ -73,14 +74,7 @@ public class LsCommand extends AbstractCommand {
             }
 
             // C. LOGICA DI VISUALIZZAZIONE
-            if (!targetInode.isDirectory()) {
-                // --- CASO 1: È UN FILE ---
-                // Stampiamo direttamente il file usando la strategia
-                printStrategy.accept(targetPath, targetInode);
-                output.append("\n");
-
-            } else {
-                // --- CASO 2: È UNA DIRECTORY ---
+            if (targetInode.isDirectory()) {
 
                 // Se stiamo listando più cartelle, stampiamo il nome header (es. "folder:")
                 if (targets.size() > 1 && !isCurrentDir) {
@@ -104,6 +98,38 @@ public class LsCommand extends AbstractCommand {
 
                 output.append("\n");
                 if (targets.size() > 1) output.append("\n"); // Spaziatura extra tra cartelle
+
+            } else if (targetInode.isSoftLink()){
+                Inode resolved = fileSystemService.followLink(targetInode);
+
+                if (targets.size() > 1 && !isCurrentDir) {
+                    output.append(targetPath).append(":\n");
+                }
+
+                // Se resolved è una directory, ls si comporta come se avessi chiesto di listare quella directory
+                if (resolved != null && resolved.isDirectory()) {
+                    // Usa 'resolved' per ottenere la tabella dei figli
+                    Map<String, Inode> children = ((DirectoryNode) resolved).getChildren();
+                    // Stampiamo i figli applicando il FILTRO
+                    if (children != null && !children.isEmpty()) {
+                        children.forEach((name, inode) -> {
+                            // Ignoriamo . e ..
+                            if (!name.startsWith(".")) {
+                                printStrategy.accept(name, inode);
+                            }
+                        });
+                    }
+                    output.append("\n");
+                    if (targets.size() > 1) output.append("\n"); // Spaziatura extra tra cartelle
+                } else {
+                    // E' un file o un link a un file (o un link rotto): stampa solo la riga del link
+                    printStrategy.accept(targetPath, targetInode);
+                }
+            } else {
+                // È UN FILE
+                // Stampiamo direttamente il file usando la strategia
+                printStrategy.accept(targetPath, targetInode);
+                output.append("\n");
             }
         }
 

@@ -79,13 +79,12 @@ public class DirectoryNode extends Inode implements IDirectoryNode {
         sb.append(" { content=[ ");
 
         // Iteriamo sui figli per stamparli
-        // NOTA: Qui avviene la magia per evitare lo StackOverflow
         if (children != null) {
             String childrenString = children.entrySet().stream()
-                    // FILTRO FONDAMENTALE: Ignoriamo i puntatori di navigazione
+                    // . e ..
                     .filter(entry -> !entry.getKey().equals(".") && !entry.getKey().equals(".."))
                     // Per gli altri, chiamiamo il loro toString() (ricorsione sicura)
-                    .map(entry -> entry.getKey() + "=" + entry.getValue().toString())
+                    .map(entry -> entry.getKey() + "=" + entry.getValue().toString()+"}")
                     .collect(java.util.stream.Collectors.joining(", "));
 
             sb.append(childrenString);

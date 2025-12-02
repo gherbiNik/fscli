@@ -16,4 +16,6 @@ public interface IPreferenceModel {
     int getOutputAreaRow();
     int getLogAreaRow();
     int getColumn();
+    void savePreferences(String languageComboBox, String columnsSpinner, String outputLinesSpinner, String logLinesSpinner, String commandLineFontComboBox, String outputAreaFontComboBox, String logAreaFontComboBox);
+
 }

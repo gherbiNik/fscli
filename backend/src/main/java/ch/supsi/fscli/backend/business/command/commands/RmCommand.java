@@ -38,6 +38,7 @@ public class RmCommand extends AbstractCommand {
             return CommandResult.error(errors.toString().trim());
         }
 
+
         return CommandResult.success(output.toString().trim());
     }
 }

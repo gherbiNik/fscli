@@ -2,7 +2,6 @@ package ch.supsi.fscli.backend.business.dto;
 
 import ch.supsi.fscli.backend.business.filesystem.*;
 import ch.supsi.fscli.backend.business.service.ISaveDataService;
-import ch.supsi.fscli.backend.business.service.SaveDataService;
 
 import java.io.File;
 import java.lang.reflect.Field;
@@ -145,7 +144,7 @@ public class FsStateMapper implements IFsStateMapper{
             inode = new DirectoryNode(null);
         } else if(dto instanceof ISoftLinkDto) {
             String targetPath = ((ISoftLinkDto) dto).getTargetPath();
-            inode = new SoftLink(null, targetPath);
+            inode = new SoftLink(targetPath);
 
         }
 
@@ -195,7 +194,7 @@ public class FsStateMapper implements IFsStateMapper{
             } else if (child instanceof SoftLink) {
                 if (!inodeTable.containsKey(child.getUid())) {
                     SoftLink link = (SoftLink) child;
-                    String targetPath = link.getPath();
+                    String targetPath = link.getTargetPath();
                     inodeTable.put(child.getUid(), new SoftLinkDto(child.getUid(), child.getType(), targetPath));
                 }
             }

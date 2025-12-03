@@ -35,8 +35,7 @@ public class HelpCommandTest {
                 fileSystemService,
                 "help",
                 "help",
-                "Display available commands",
-                mockContainer
+                "Display available commands"
         );
     }
 

@@ -7,7 +7,7 @@ public class DirectoryNode extends Inode implements IDirectoryNode {
     private final Map<String, Inode>  children;
 
     public DirectoryNode(DirectoryNode parent) {
-        super(parent, InodeType.DIRECTORY);
+        super(InodeType.DIRECTORY);
         this.children = new HashMap<>();
         children.put(".", this);
         children.put("..", Objects.requireNonNullElse(parent, this));

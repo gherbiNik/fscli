@@ -105,7 +105,7 @@ public class LnCommand extends AbstractCommand {
         // 6. ESECUZIONE (CREAZIONE LINK)
         if (isSoftLink) {
             // Logica Soft Link
-            SoftLink softLink = new SoftLink(targetDir, sourcePath);
+            SoftLink softLink = new SoftLink(sourcePath);
             targetDir.addChild(linkName, softLink);
         } else {
             // Logica Hard Link

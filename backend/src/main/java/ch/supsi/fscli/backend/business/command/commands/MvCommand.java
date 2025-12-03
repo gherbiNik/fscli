@@ -1,14 +1,11 @@
 package ch.supsi.fscli.backend.business.command.commands;
 
-/*
-mv SOURCE DESTINATION
-move a file/directory to a new file/directory
-(therefore also acts as rename)
- */
-
+import ch.supsi.fscli.backend.business.filesystem.Inode;
 import ch.supsi.fscli.backend.business.service.FileSystemService;
 
-public class MvCommand extends AbstractCommand{
+import java.util.List;
+
+public class MvCommand extends AbstractCommand {
     public MvCommand(FileSystemService fileSystemService, String name, String synopsis, String description) {
         super(fileSystemService, name, synopsis, description);
     }
@@ -16,24 +13,60 @@ public class MvCommand extends AbstractCommand{
     @Override
     public CommandResult execute(CommandContext context) {
         if (context.getArguments() == null || context.getArguments().isEmpty()) {
-            return CommandResult.error("mv: missing arguments");
+            return CommandResult.error("mv: missing file operand");
         }
 
-        if(context.getArguments().size() != 2){
-            return CommandResult.error("You need 2 arguments: [SOURCE] [DESTINATION]");
+        List<String> args = context.getArguments();
+
+        if (args.size() < 2) {
+            return CommandResult.error("mv: missing destination file operand after '" + args.get(0) + "'");
         }
 
-        String source = context.getArguments().get(0);
-        String destination = context.getArguments().get(1);
+        String destinationPath = args.get(args.size() - 1); // L'ultimo argomento è la destinazione
+        List<String> sources = args.subList(0, args.size() - 1); // Tutti gli altri sono sorgenti
 
-        try {
-            fileSystemService.move(source, destination);
-            return CommandResult.success("Moved '" + source + "' to '" + destination + "'");
-        } catch (IllegalArgumentException e){
-            return CommandResult.error("mv: " + e.getMessage());
+        // --- VALIDAZIONE PER SPOSTAMENTO MULTIPLO ---
+        // Se stiamo spostando più di un file, la destinazione DEVE essere una directory esistente.
+        if (sources.size() > 1) {
+            Inode destNode = fileSystemService.getInode(destinationPath);
+
+            // Gestione Soft Link: se è un link, vediamo se punta a una directory
+            if (destNode != null && destNode.isSoftLink()) {
+                destNode = fileSystemService.followLink(destNode);
+            }
+
+            if (destNode == null || !destNode.isDirectory()) {
+                return CommandResult.error("mv: target '" + destinationPath + "' is not a directory");
+            }
         }
 
-        // TODO ADD SOFT LINK CONTROLL
+        // --- ESECUZIONE ---
+        StringBuilder output = new StringBuilder();
+        StringBuilder errors = new StringBuilder();
+        boolean hasError = false;
 
+        for (String source : sources) {
+            try {
+                // Chiamiamo il service per ogni file.
+                // Il service (nella versione aggiornata) gestisce già lo spostamento "dentro" se la destinazione è una directory.
+                fileSystemService.move(source, destinationPath);
+                // output.append("Moved '").append(source).append("'\n"); // Mv è solitamente silenzioso
+            } catch (Exception e) {
+                hasError = true;
+                errors.append(e.getMessage());
+            }
+        }
+
+        if (hasError) {
+            return CommandResult.error(errors.toString().trim());
+        }
+
+        // Se tutto va bene e abbiamo spostato più file, possiamo restituire un messaggio cumulativo o stringa vuota
+        if (sources.size() > 1) {
+            return CommandResult.success("Moved " + sources.size() + " files to " + destinationPath);
+        } else {
+            // Caso singolo (compatibilità output precedente)
+            return CommandResult.success("Moved '" + sources.get(0) + "' to '" + destinationPath + "'");
+        }
     }
 }

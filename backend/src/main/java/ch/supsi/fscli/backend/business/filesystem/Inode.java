@@ -1,7 +1,5 @@
 package ch.supsi.fscli.backend.business.filesystem;
 
-import java.util.Date;
-
 public abstract class Inode implements FileSystemComponent{
     private static int idCounter = 0;
     private int uid;
@@ -9,7 +7,7 @@ public abstract class Inode implements FileSystemComponent{
     private int linkCount = 1;
     private InodeType type;
 
-    public Inode(DirectoryNode parent, InodeType type) {
+    public Inode(InodeType type) {
         this.uid = idCounter++;
         this.type = type;
     }

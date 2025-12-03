@@ -67,8 +67,7 @@ class FsStateMapperTest {
         user.addChild("file.txt", file);
 
         // Create /home/link -> /home/user/file.txt
-        SoftLink link = new SoftLink(home);
-        link.setPath("/home/user/file.txt");
+        SoftLink link = new SoftLink("/home/user/file.txt");
         home.addChild("link", link);
 
         // Change to /home/user
@@ -136,7 +135,7 @@ class FsStateMapperTest {
         Inode linkNode = homeDir.getChild("link");
         assertNotNull(linkNode);
         assertTrue(linkNode instanceof SoftLink);
-        assertEquals("/home/user/file.txt", ((SoftLink) linkNode).getPath());
+        assertEquals("/home/user/file.txt", ((SoftLink) linkNode).getTargetPath());
 
         // Verify current directory is restored correctly
         DirectoryNode currentDir = fileSystem.getCurrentDirectory();

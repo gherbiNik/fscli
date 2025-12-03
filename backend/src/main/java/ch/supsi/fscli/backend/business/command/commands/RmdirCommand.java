@@ -1,23 +1,20 @@
 package ch.supsi.fscli.backend.business.command.commands;
 
+import ch.supsi.fscli.backend.business.command.commands.validators.CommandValidator;
+import ch.supsi.fscli.backend.business.command.commands.validators.RequiresArgumentsValidator;
 import ch.supsi.fscli.backend.business.service.FileSystemService;
 
 // Removes an empty dir
-public class RmdirCommand extends AbstractCommand{
-     // used to create a dir
+public class RmdirCommand extends AbstractValidatedCommand{
 
+    // used to create a dir
 
     public RmdirCommand(FileSystemService fileSystemService, String name, String synopsis, String description) {
         super(fileSystemService, name, synopsis, description);
     }
-    // FIXME: Maybe template pattern? some commands are very similar
 
     @Override
-    public CommandResult execute(CommandContext context) {
-        if (context.getArguments() == null || context.getArguments().isEmpty()) {
-            return CommandResult.error("rmdir: missing name");
-        }
-
+    protected CommandResult executeCommand(CommandContext context) {
         StringBuilder output = new StringBuilder();
         StringBuilder errors = new StringBuilder();
         boolean hasErrors = false;
@@ -45,12 +42,13 @@ public class RmdirCommand extends AbstractCommand{
         if (hasErrors) {
             return CommandResult.error(errors.toString().trim());
         }
-
         // TODO ADD SOFT LINK CONTROLL
-
-
         return CommandResult.success(output.toString().trim());
     }
 
+    @Override
+    protected CommandValidator getValidator() {
+        return new RequiresArgumentsValidator(getName());
+    }
 
 }

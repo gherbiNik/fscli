@@ -1,8 +1,11 @@
 package ch.supsi.fscli.backend.business.command.commands;
 
+import ch.supsi.fscli.backend.business.command.commands.validators.CommandValidator;
+import ch.supsi.fscli.backend.business.command.commands.validators.NoArgumentsValidator;
+import ch.supsi.fscli.backend.business.command.commands.validators.NoOptionsValidator;
 import ch.supsi.fscli.backend.business.service.FileSystemService;
 
-public class PwdCommand extends AbstractCommand{
+public class PwdCommand extends AbstractValidatedCommand{
 
 
     public PwdCommand(FileSystemService fileSystemService, String name, String synopsis, String description) {
@@ -10,11 +13,13 @@ public class PwdCommand extends AbstractCommand{
     }
 
     @Override
-    public CommandResult execute(CommandContext context) {
-        if (context.getArguments() != null && (!context.getArguments().isEmpty() || !context.getOptions().isEmpty())) {
-            return CommandResult.error("pwd: doesn't need options or arguments");
-        }
+    protected CommandValidator getValidator() {
+        return new NoArgumentsValidator(getName())
+                .and(new NoOptionsValidator(getName()));
+    }
 
-        return CommandResult.success("root: "+fileSystemService.getCurrentDirectoryAbsolutePath());
+    @Override
+    protected CommandResult executeCommand(CommandContext context) {
+        return CommandResult.success("root: "+ fileSystemService.getCurrentDirectoryAbsolutePath());
     }
 }

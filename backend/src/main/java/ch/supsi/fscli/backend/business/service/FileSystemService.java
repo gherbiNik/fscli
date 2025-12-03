@@ -276,9 +276,14 @@ public class FileSystemService {
             throw new IllegalArgumentException("Directory does not exist: " + directoryName);
         }
 
-        if (!(nodeToRemove instanceof DirectoryNode)) {
-            throw new IllegalArgumentException("Specified item is a file: " + directoryName);
+        if(nodeToRemove.isSoftLink()){
+            throw new IllegalArgumentException("Specified item is a link: " + directoryName);
         }
+
+        if (!nodeToRemove.isDirectory()) {
+            throw new IllegalArgumentException("Specified item is a directory: " + directoryName);
+        }
+
 
         DirectoryNode childDir = (DirectoryNode) nodeToRemove;
         if(childDir.getNumChild() > 2) {

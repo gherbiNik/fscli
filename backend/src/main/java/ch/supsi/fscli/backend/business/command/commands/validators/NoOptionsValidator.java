@@ -1,0 +1,18 @@
+package ch.supsi.fscli.backend.business.command.commands.validators;
+
+import ch.supsi.fscli.backend.business.command.commands.CommandContext;
+import ch.supsi.fscli.backend.business.command.commands.CommandResult;
+
+public class NoOptionsValidator extends AbstractValidator implements CommandValidator{
+    public NoOptionsValidator(String commandName) {
+        super(commandName);
+    }
+
+    @Override
+    public CommandResult validate(CommandContext context) {
+        if(context.getOptions() != null || !context.getOptions().isEmpty())
+            return CommandResult.error(commandName + "");
+
+        return null; // passed
+    }
+}

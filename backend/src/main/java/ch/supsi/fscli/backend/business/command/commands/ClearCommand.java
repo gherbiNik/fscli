@@ -1,24 +1,23 @@
 package ch.supsi.fscli.backend.business.command.commands;
 
+import ch.supsi.fscli.backend.business.command.commands.validators.CommandValidator;
+import ch.supsi.fscli.backend.business.command.commands.validators.NoArgumentsValidator;
+import ch.supsi.fscli.backend.business.command.commands.validators.NoOptionsValidator;
 import ch.supsi.fscli.backend.business.service.FileSystemService;
 
-public class ClearCommand extends AbstractCommand{
+public class ClearCommand extends AbstractValidatedCommand{
     public ClearCommand(FileSystemService fileSystemService, String name, String synopsis, String description) {
         super(fileSystemService, name, synopsis, description);
     }
 
-    // clear
     @Override
-    public CommandResult execute(CommandContext context) {
-        if (context.getArguments() != null && !context.getArguments().isEmpty()) {
-            return CommandResult.error("clear: no args needed");
-        }
-        if (context.getOptions() != null && !context.getOptions().isEmpty()) {
-            return CommandResult.error("clear: no options needed");
-        }
+    protected CommandValidator getValidator() {
+        return new NoArgumentsValidator(getName())
+                .and(new NoOptionsValidator(getName()));
+    }
 
-        // in the frontend when this message arrives, the output will be cleared
+    @Override
+    protected CommandResult executeCommand(CommandContext context) {
         return CommandResult.success("Perform Clear");
-
     }
 }

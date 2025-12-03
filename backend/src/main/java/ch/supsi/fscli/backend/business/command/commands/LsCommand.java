@@ -1,5 +1,7 @@
 package ch.supsi.fscli.backend.business.command.commands;
 
+import ch.supsi.fscli.backend.business.command.commands.validators.CommandValidator;
+import ch.supsi.fscli.backend.business.command.commands.validators.NoArgsOrOptNullValidator;
 import ch.supsi.fscli.backend.business.filesystem.DirectoryNode;
 import ch.supsi.fscli.backend.business.filesystem.Inode;
 import ch.supsi.fscli.backend.business.service.FileSystemService;
@@ -9,18 +11,19 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.BiConsumer;
 
-public class LsCommand extends AbstractCommand {
+public class LsCommand extends AbstractValidatedCommand {
 
     public LsCommand(FileSystemService fileSystemService, String name, String synopsis, String description) {
         super(fileSystemService, name, synopsis, description);
     }
 
     @Override
-    public CommandResult execute(CommandContext context) {
-        if (context.getArguments() == null || context.getOptions() == null) {
-            return CommandResult.error("internal error: arguments or options null");
-        }
+    protected CommandValidator getValidator() {
+        return new NoArgsOrOptNullValidator(getName());
+    }
 
+    @Override
+    public CommandResult executeCommand(CommandContext context) {
         StringBuilder output = new StringBuilder();
         StringBuilder error = new StringBuilder();
 

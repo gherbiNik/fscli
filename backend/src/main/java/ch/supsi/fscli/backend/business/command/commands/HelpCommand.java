@@ -1,11 +1,14 @@
 package ch.supsi.fscli.backend.business.command.commands;
 
+import ch.supsi.fscli.backend.business.command.commands.validators.CommandValidator;
+import ch.supsi.fscli.backend.business.command.commands.validators.NoArgumentsValidator;
+import ch.supsi.fscli.backend.business.command.commands.validators.NoOptionsValidator;
 import ch.supsi.fscli.backend.business.service.FileSystemService;
 import ch.supsi.fscli.backend.util.BackendTranslator;
 
 import java.util.List;
 
-public class HelpCommand extends AbstractCommand {
+public class HelpCommand extends AbstractValidatedCommand {
 
     // Questa è la lista che il CommandLoader ci passerà dopo aver creato tutto
     private List<ICommand> commands;
@@ -20,14 +23,13 @@ public class HelpCommand extends AbstractCommand {
     }
 
     @Override
-    public CommandResult execute(CommandContext context) {
-        if (context.getArguments() != null && !context.getArguments().isEmpty()) {
-            return CommandResult.error("help: no args needed");
-        }
-        if (context.getOptions() != null && !context.getOptions().isEmpty()) {
-            return CommandResult.error("help: no options needed");
-        }
+    protected CommandValidator getValidator() {
+        return new NoOptionsValidator(getName())
+                .and(new NoArgumentsValidator(getName()));
+    }
 
+    @Override
+    protected CommandResult executeCommand(CommandContext context) {
         // Controllo se la lista è stata iniettata correttamente
         if (this.commands == null || this.commands.isEmpty()) {
             return CommandResult.error("help: no commands available (system error)");

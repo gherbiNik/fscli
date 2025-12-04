@@ -1,6 +1,5 @@
 package ch.supsi.fscli.frontend;
 
-// FIXME import ch.supsi.fscli.backend.application.ICommandHelpApplication;
 import ch.supsi.fscli.backend.application.TranslationApplication;
 import ch.supsi.fscli.backend.application.PreferenceApplication;
 import ch.supsi.fscli.backend.application.filesystem.FileSystemApplication;
@@ -17,11 +16,14 @@ import ch.supsi.fscli.backend.dataAccess.preferences.PreferenceDAO;
 import ch.supsi.fscli.backend.util.BackendTranslator;
 import ch.supsi.fscli.frontend.controller.CreditsController;
 import ch.supsi.fscli.frontend.controller.ExitController;
-//FIXME import ch.supsi.fscli.frontend.controller.HelpController;
 import ch.supsi.fscli.frontend.controller.PreferenceController;
 import ch.supsi.fscli.frontend.controller.filesystem.FileSystemController;
 import ch.supsi.fscli.frontend.controller.mapper.FsStateMapperController;
-//FIXME import ch.supsi.fscli.frontend.model.CommandHelpModel;
+
+import ch.supsi.fscli.frontend.controller.HelpController;
+import ch.supsi.fscli.frontend.model.CommandHelpModel;
+import ch.supsi.fscli.frontend.model.ICommandHelpModel;
+
 import ch.supsi.fscli.frontend.model.TranslationModel;
 import ch.supsi.fscli.frontend.model.PreferenceModel;
 import ch.supsi.fscli.frontend.model.filesystem.FileSystemModel;
@@ -71,8 +73,8 @@ public class MainFx extends Application {
     private final TranslationApplication creditsFacade;
     private final CreditsController creditsController;
     private final BackendTranslator backendTranslator;
-    //FIXME private final ICommandHelpModel commandHelpModel;
-    //FIXME private final HelpController helpController;
+    private final ICommandHelpModel commandHelpModel;
+    private final HelpController helpController;
     //private final ICommandHelpApplication commandHelpApplication;
     //private final CommandHelpContainer commandHelpContainer;
     private final OpenView openView;
@@ -107,6 +109,7 @@ public class MainFx extends Application {
         this.preferenceModel = PreferenceModel.getInstance(preferenceApplication);
         this.fileSystemModel = FileSystemModel.getInstance(fileSystemApplication);
 
+        this.commandHelpModel = CommandHelpModel.getInstance(fileSystemApplication);
 
         // TRANSLATOR - Backend
         this.backendTranslator = BackendTranslator.getInstance();
@@ -128,9 +131,6 @@ public class MainFx extends Application {
         this.fileSystemController = FileSystemController.getInstance(fileSystemModel, outputView,logView, i18n);
         this.exitController = ExitController.getInstance();
 
-        /* FIXME this.commandHelpApplication = CommandHelpApplication.getInstance(commandHelpContainer);
-        this.commandHelpModel = CommandHelpModel.getInstance(commandHelpApplication, i18n);*/
-
         this.jacksonSaveDataService = JacksonSaveDataService.getInstance(preferenceDAO);
         this.saveDataService = SaveDataService.getInstance(preferenceDAO, jacksonSaveDataService);
         this.fsStateMapper = FsStateMapper.getInstance(saveDataService, fileSystem); // business layer
@@ -140,6 +140,7 @@ public class MainFx extends Application {
         // VIEW
         this.preferenceView = new PreferenceView(preferenceController, i18n);
         this.helpView = new HelpView(i18n);
+        this.helpController = HelpController.getInstance(helpView, commandHelpModel);
         this.creditsView = new CreditsView(i18n);
         this.exitView = new ExitView(exitController, i18n);
         // COMMAND LINE
@@ -155,7 +156,6 @@ public class MainFx extends Application {
 
         // CONTROLLER
         this.creditsController = CreditsController.getInstance(i18n, creditsView);
-        // FIXME this.helpController = HelpController.getInstance(helpView, i18n, commandHelpModel);
 
         // ADD LISTENER
         this.fileSystemModel.addPropertyChangeListener(commandLineView);

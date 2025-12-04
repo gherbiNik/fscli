@@ -1,38 +1,29 @@
-/*
 package ch.supsi.fscli.frontend.model;
 
-import ch.supsi.fscli.backend.application.CommandHelpApplication;
-import ch.supsi.fscli.backend.application.ICommandHelpApplication;
-import ch.supsi.fscli.frontend.util.I18nManager;
-
-
+import ch.supsi.fscli.backend.application.filesystem.IFileSystemApplication;
 import java.util.List;
-import java.util.Map;
 
 public class CommandHelpModel implements ICommandHelpModel {
-    private ICommandHelpApplication commandHelpApplication;
     private static CommandHelpModel instance;
-    private I18nManager i18n;
+    private IFileSystemApplication fileSystemApplication;
 
-    private CommandHelpModel() {
-    }
+    private CommandHelpModel() {}
 
-    public static CommandHelpModel getInstance(ICommandHelpApplication commandHelpApplication, I18nManager i18n) {
+    // Singleton che richiede l'istanza dell'applicazione backend
+    public static CommandHelpModel getInstance(IFileSystemApplication fileSystemApplication) {
         if (instance == null) {
             instance = new CommandHelpModel();
-            instance.initialize(commandHelpApplication, i18n);
+            instance.initialize(fileSystemApplication);
         }
         return instance;
     }
 
-    private void initialize(ICommandHelpApplication commandHelpApplication, I18nManager i18n) {
-        this.commandHelpApplication = commandHelpApplication;
-        this.i18n = i18n;
+    private void initialize(IFileSystemApplication fileSystemApplication) {
+        this.fileSystemApplication = fileSystemApplication;
     }
 
     @Override
     public List<String> getCommandDescriptions() {
-        return commandHelpApplication.getCommandDescriptions();
+        return fileSystemApplication.getCommandsHelp();
     }
 }
-*/

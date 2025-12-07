@@ -1,11 +1,11 @@
 package ch.supsi.fscli.backend.business.command.commands;
 
-import ch.supsi.fscli.backend.business.service.FileSystemService;
+import ch.supsi.fscli.backend.business.service.IFileSystemService;
 
 public class PwdCommand extends AbstractCommand{
 
 
-    public PwdCommand(FileSystemService fileSystemService, String name, String synopsis, String description) {
+    public PwdCommand(IFileSystemService fileSystemService, String name, String synopsis, String description) {
         super(fileSystemService, name, synopsis, description);
     }
 

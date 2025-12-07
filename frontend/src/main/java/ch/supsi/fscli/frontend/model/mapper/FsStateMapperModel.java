@@ -38,20 +38,20 @@ public class FsStateMapperModel implements IFsStateMapperModel {
     @Override
     public void save() {
         iFsStateMapperApplication.toDTO();
-        support.firePropertyChange(new FileSystemSaved(this,"filesystem saved",null,null));
+        support.firePropertyChange(new FileSystemSaved(this));
     }
 
     @Override
     public void open(String fileName) {
         iFsStateMapperApplication.fromDTO(fileName);
-        support.firePropertyChange(new FileSystemOpenEvent(this,"filesystem open from file",null,null));
+        support.firePropertyChange(new FileSystemOpenEvent(this));
 
     }
 
     @Override
     public void saveAs(File file) {
         iFsStateMapperApplication.toDTOas(file);
-        support.firePropertyChange(new FileSystemSavedAs(this,"filesystem saved as",null,null));
+        support.firePropertyChange(new FileSystemSavedAs(this));
 
     }
 }

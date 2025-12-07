@@ -198,7 +198,7 @@ public class FileSystemService implements IFileSystemService{
         return false;
     }
 
-    public record PathParts(DirectoryNode parentDir, String name) {}
+
 
     private PathParts resolveParentDirectoryAndName(String path) {
         if (path == null || path.trim().isEmpty()) {

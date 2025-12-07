@@ -1,6 +1,6 @@
 package ch.supsi.fscli.backend.business.command.commands;
 
-import ch.supsi.fscli.backend.business.service.FileSystemService;
+import ch.supsi.fscli.backend.business.service.IFileSystemService;
 
 // At the moment of creation of the command, we insert the info: name - synopis and descr from the .properties file.
 // we can use the CommandHelpContainer to get the infos
@@ -10,9 +10,9 @@ public abstract class AbstractCommand  implements ICommand{
     private final String name;
     private final String synopsis;
     private final String description;
-    protected final FileSystemService fileSystemService;
+    protected final IFileSystemService fileSystemService;
 
-    public AbstractCommand(FileSystemService fileSystemService, String name, String synopsis, String description) {
+    public AbstractCommand(IFileSystemService fileSystemService, String name, String synopsis, String description) {
         this.fileSystemService = fileSystemService;
         this.name = name;
         this.synopsis = synopsis;

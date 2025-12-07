@@ -3,9 +3,7 @@ package ch.supsi.fscli.frontend.view;
 import ch.supsi.fscli.frontend.controller.filesystem.IFileSystemController;
 import ch.supsi.fscli.frontend.controller.mapper.FsStateMapperController;
 import ch.supsi.fscli.frontend.controller.mapper.IFsStateMapperController;
-import ch.supsi.fscli.frontend.event.FileSystemCreationEvent;
-import ch.supsi.fscli.frontend.event.FileSystemSaved;
-import ch.supsi.fscli.frontend.event.FileSystemToSaved;
+import ch.supsi.fscli.frontend.event.*;
 import ch.supsi.fscli.frontend.util.I18nManager;
 import javafx.scene.Node;
 import javafx.scene.control.Menu;
@@ -162,7 +160,7 @@ public class MenuBarView implements ViewComponent, PropertyChangeListener {
             this.saveAsMenuItem.setDisable(false);
             this.newMenuItem.setDisable(true);
         }
-        if (evt instanceof FileSystemSaved) {
+        if (evt instanceof FileSystemSaved || evt instanceof FileSystemSavedAs || evt instanceof FileSystemOpenEvent) {
             this.saveMenuItem.setDisable(true);
             this.saveAsMenuItem.setDisable(true);
         }

@@ -1,0 +1,74 @@
+package ch.supsi.frontend.model;
+
+import ch.supsi.fscli.backend.application.mapper.IFsStateMapperApplication;
+import ch.supsi.fscli.frontend.event.FileSystemOpenEvent;
+import ch.supsi.fscli.frontend.event.FileSystemSaved;
+import ch.supsi.fscli.frontend.event.FileSystemSavedAs;
+import ch.supsi.fscli.frontend.model.mapper.FsStateMapperModel;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+
+import java.beans.PropertyChangeListener;
+import java.io.File;
+import java.lang.reflect.Field;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.verify;
+
+class FsStateMapperModelTest {
+
+    @Mock
+    private IFsStateMapperApplication mapperApplication;
+    @Mock
+    private PropertyChangeListener listener;
+
+    private FsStateMapperModel model;
+
+    @BeforeEach
+    void setUp() throws Exception {
+        MockitoAnnotations.openMocks(this);
+        resetSingleton(FsStateMapperModel.class, "instance");
+        model = FsStateMapperModel.getInstance(mapperApplication);
+        model.addPropertyChangeListener(listener);
+    }
+
+    private void resetSingleton(Class<?> clazz, String fieldName) throws Exception {
+        Field instance = clazz.getDeclaredField(fieldName);
+        instance.setAccessible(true);
+        instance.set(null, null);
+    }
+
+    @Test
+    void testSave() {
+        model.save();
+        verify(mapperApplication).toDTO();
+
+        ArgumentCaptor<FileSystemSaved> captor = ArgumentCaptor.forClass(FileSystemSaved.class);
+        verify(listener).propertyChange(captor.capture());
+
+    }
+
+    @Test
+    void testOpen() {
+        String filename = "data.json";
+        model.open(filename);
+        verify(mapperApplication).fromDTO(filename);
+
+        ArgumentCaptor<FileSystemOpenEvent> captor = ArgumentCaptor.forClass(FileSystemOpenEvent.class);
+        verify(listener).propertyChange(captor.capture());
+
+    }
+
+    @Test
+    void testSaveAs() {
+        File file = new File("data.json");
+        model.saveAs(file);
+        verify(mapperApplication).toDTOas(file);
+
+        ArgumentCaptor<FileSystemSavedAs> captor = ArgumentCaptor.forClass(FileSystemSavedAs.class);
+        verify(listener).propertyChange(captor.capture());
+    }
+}

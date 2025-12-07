@@ -2,7 +2,7 @@ package ch.supsi.fscli.backend.business.command.commands;
 
 import ch.supsi.fscli.backend.business.filesystem.DirectoryNode;
 import ch.supsi.fscli.backend.business.filesystem.Inode;
-import ch.supsi.fscli.backend.business.service.FileSystemService;
+import ch.supsi.fscli.backend.business.service.IFileSystemService;
 
 import java.util.Collections;
 import java.util.List;
@@ -11,7 +11,7 @@ import java.util.function.BiConsumer;
 
 public class LsCommand extends AbstractCommand {
 
-    public LsCommand(FileSystemService fileSystemService, String name, String synopsis, String description) {
+    public LsCommand(IFileSystemService fileSystemService, String name, String synopsis, String description) {
         super(fileSystemService, name, synopsis, description);
     }
 

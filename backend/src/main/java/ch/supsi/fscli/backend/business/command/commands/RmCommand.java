@@ -1,10 +1,10 @@
 package ch.supsi.fscli.backend.business.command.commands;
 
-import ch.supsi.fscli.backend.business.service.FileSystemService;
+import ch.supsi.fscli.backend.business.service.IFileSystemService;
 
 public class RmCommand extends AbstractCommand {
 
-    public RmCommand(FileSystemService fileSystemService, String name, String synopsis, String description) {
+    public RmCommand(IFileSystemService fileSystemService, String name, String synopsis, String description) {
         super(fileSystemService, name, synopsis, description);
     }
 

@@ -1,6 +1,6 @@
 package ch.supsi.fscli.backend.business.command.commands;
 
-import ch.supsi.fscli.backend.business.service.FileSystemService;
+import ch.supsi.fscli.backend.business.service.IFileSystemService;
 import ch.supsi.fscli.backend.util.BackendTranslator;
 
 import java.util.List;
@@ -10,7 +10,7 @@ public class HelpCommand extends AbstractCommand {
     // Questa è la lista che il CommandLoader ci passerà dopo aver creato tutto
     private List<ICommand> commands;
 
-    public HelpCommand(FileSystemService fsService, String name, String synopsis, String description) {
+    public HelpCommand(IFileSystemService fsService, String name, String synopsis, String description) {
         super(fsService, name, synopsis, description);
     }
 

@@ -1,26 +1,31 @@
-package backend.event;
+package ch.supsi.frontend.event;
 
 import ch.supsi.fscli.frontend.event.ClearEvent;
+import ch.supsi.fscli.frontend.event.FileSystemSavedAs;
 import ch.supsi.fscli.frontend.model.filesystem.FileSystemModel;
+import ch.supsi.fscli.frontend.model.mapper.FsStateMapperModel;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class OutputEventTest {
+@ExtendWith(MockitoExtension.class)
+public class FileSystemSavedAsEventTest {
 
     @Mock
-    private FileSystemModel modelMock;
+    private FsStateMapperModel modelMock;
 
     @InjectMocks
-    private ClearEvent event;
+    private FileSystemSavedAs event;
 
     @Test
     public void constructor0() {
         IllegalArgumentException e = assertThrows(
                 IllegalArgumentException.class,
-                () -> new ClearEvent(null, null, null, null)
+                () -> new FileSystemSavedAs(null)
         );
 
         assertEquals("null source", e.getMessage());

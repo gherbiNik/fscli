@@ -1,12 +1,12 @@
 package ch.supsi.fscli.backend.business.command.commands;
 
 import ch.supsi.fscli.backend.business.filesystem.Inode;
-import ch.supsi.fscli.backend.business.service.FileSystemService;
+import ch.supsi.fscli.backend.business.service.IFileSystemService;
 
 import java.util.List;
 
 public class MvCommand extends AbstractCommand {
-    public MvCommand(FileSystemService fileSystemService, String name, String synopsis, String description) {
+    public MvCommand(IFileSystemService fileSystemService, String name, String synopsis, String description) {
         super(fileSystemService, name, synopsis, description);
     }
 

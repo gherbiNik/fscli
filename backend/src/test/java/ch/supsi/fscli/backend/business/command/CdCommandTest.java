@@ -1,7 +1,5 @@
 package ch.supsi.fscli.backend.business.command;
 
-import ch.supsi.fscli.backend.application.CommandHelpApplication;
-import ch.supsi.fscli.backend.business.command.business.CommandHelpContainer;
 import ch.supsi.fscli.backend.business.command.commands.CdCommand;
 import ch.supsi.fscli.backend.business.command.commands.CommandContext;
 import ch.supsi.fscli.backend.business.command.commands.CommandResult;

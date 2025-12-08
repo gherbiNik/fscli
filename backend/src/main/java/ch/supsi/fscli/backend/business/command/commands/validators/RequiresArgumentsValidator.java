@@ -11,7 +11,7 @@ public class RequiresArgumentsValidator extends AbstractValidator implements Com
     @Override
     public CommandResult validate(CommandContext context) {
         if (context.getArguments() == null || context.getArguments().isEmpty()) {
-            return CommandResult.error(commandName + ": ");
+            return CommandResult.error(commandName + ": " + translate("invalid.missingarguments"));
         }
         return null; // Validation passed
     }

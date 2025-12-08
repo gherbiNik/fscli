@@ -13,7 +13,7 @@ public class NoArgumentsValidator extends AbstractValidator implements CommandVa
     @Override
     public CommandResult validate(CommandContext context) {
         if((context.getArguments() != null) && (!context.getArguments().isEmpty()))
-            return CommandResult.error(commandName /*+ translate("")*/);
+            return CommandResult.error(commandName + ": " + translate("invalid.noargs"));
 
         return null; // Validation passed
     }

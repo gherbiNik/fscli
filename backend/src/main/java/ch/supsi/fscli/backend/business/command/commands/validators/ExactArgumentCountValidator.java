@@ -14,7 +14,7 @@ public class ExactArgumentCountValidator extends AbstractValidator implements Co
     @Override
     public CommandResult validate(CommandContext context) {
         if (context.getArguments().size() != expectedCount) {
-            return CommandResult.error(commandName + ": " + expectedCount + " argomento/i necessari");
+            return CommandResult.error(commandName + ": " + expectedCount + " " + translate("invalid.nargsnecessary"));
         }
         return null; // Validation passed
     }

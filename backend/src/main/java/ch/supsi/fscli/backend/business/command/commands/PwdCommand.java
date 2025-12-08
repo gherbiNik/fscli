@@ -20,6 +20,6 @@ public class PwdCommand extends AbstractValidatedCommand{
 
     @Override
     protected CommandResult executeCommand(CommandContext context) {
-        return CommandResult.success("root: "+ fileSystemService.getCurrentDirectoryAbsolutePath());
+        return CommandResult.success(translate("root") + ": " + fileSystemService.getCurrentDirectoryAbsolutePath() + "\n");
     }
 }

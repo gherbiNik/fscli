@@ -37,7 +37,7 @@ public class LsCommand extends AbstractValidatedCommand {
             } else {
                 // Se troviamo qualsiasi cosa diversa da "-i", blocchiamo tutto
                 // Rimuoviamo il trattino "-" solo per estetica nel messaggio d'errore
-                error.append("usage: ").append(getSynopsis());
+                error.append(translate("usage")).append(" ").append(getSynopsis());
                 return CommandResult.error(error.toString());
             }
         }
@@ -72,7 +72,13 @@ public class LsCommand extends AbstractValidatedCommand {
 
             // B. GESTIONE ERRORE (Non esiste)
             if (targetInode == null) {
-                error.append("ls: cannot access '").append(targetPath).append("': No such file or directory\n");
+                //error.append("ls: cannot access '").append(targetPath).append("': No such file or directory\n");
+                error.append(getName())
+                        .append(": ")
+                        .append(translate("cannot_access_prefix"))
+                        .append(targetPath)
+                        .append(translate("no_such_file_suffix"))
+                        .append("\n");
                 continue;
             }
 

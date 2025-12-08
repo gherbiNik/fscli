@@ -26,7 +26,7 @@ public class CdCommand extends AbstractValidatedCommand{
         try {
             fileSystemService.changeDirectory(newDirPath);
         } catch (IllegalArgumentException e){
-            return CommandResult.error("Error: " + e.getMessage());
+            return CommandResult.error(translate("error") + ": " + e.getMessage());
         }
 
 

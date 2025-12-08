@@ -27,9 +27,14 @@ public class MvCommand extends AbstractValidatedCommand{
 
         try {
             fileSystemService.move(source, destination);
-            return CommandResult.success("Moved '" + source + "' to '" + destination + "'");
+            // "Moved '" + source + "' to '" + destination + "'"
+            return CommandResult.success(translate("mv_success_prefix")
+                    + source
+                    + translate("mv_success_middle")
+                    + destination
+                    + translate("mv_success_suffix"));
         } catch (IllegalArgumentException e){
-            return CommandResult.error("mv: " + e.getMessage());
+            return CommandResult.error(getName() + ": " + e.getMessage());
         }
         // TODO ADD SOFT LINK CONTROL
     }

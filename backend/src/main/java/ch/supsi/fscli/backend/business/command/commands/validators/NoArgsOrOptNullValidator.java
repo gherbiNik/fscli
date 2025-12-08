@@ -11,7 +11,7 @@ public class NoArgsOrOptNullValidator extends AbstractValidator implements Comma
     @Override
     public CommandResult validate(CommandContext context) {
         if (context.getArguments() == null || context.getOptions() == null) {
-            return CommandResult.error("internal error: arguments or options null");
+            return CommandResult.error(commandName + ": " + translate("invalid.internalerror"));
         }
 
         return null; // passed

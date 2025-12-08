@@ -23,17 +23,26 @@ public class MkdirCommand extends AbstractValidatedCommand {
 
         for (String directoryName : context.getArguments()) {
             if (directoryName == null || directoryName.trim().isEmpty()) {
-                errors.append("mkdir: invalid directory name");
+                errors.append(getName()).append(": ").append(translate("invalid_directory_name"));
                 hasErrors = true;
                 continue;
             }
 
             try {
                 fileSystemService.createDirectory(directoryName);
-                output.append("Directory '").append(directoryName).append("' created successfully");
+                output.append(translate("directory_created_prefix"))
+                        .append(directoryName)
+                        .append(translate("directory_created_suffix"))
+                        .append("\n");
             } catch (Exception e) {
                 hasErrors = true;
-                errors.append("mkdir: cannot create directory '").append(directoryName).append("': ").append(e.getMessage());
+                errors.append(getName())
+                        .append(": ")
+                        .append(translate("cannot_create_dir_prefix"))
+                        .append(directoryName)
+                        .append(translate("dir_error_suffix"))
+                        .append(e.getMessage())
+                        .append("\n");
             }
 
         }

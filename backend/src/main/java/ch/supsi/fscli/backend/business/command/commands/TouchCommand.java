@@ -23,17 +23,30 @@ public class TouchCommand extends AbstractValidatedCommand{
 
         for (String fileName : context.getArguments()) {
             if (fileName == null || fileName.trim().isEmpty()) {
-                errors.append("touch: invalid file name");
+                //errors.append("touch: invalid file name");
+                errors.append(getName()).append(": ").append(translate("touch_invalid_filename"));
                 hasErrors = true;
                 continue;
             }
 
             try {
                 fileSystemService.createFile(fileName);
-                output.append("File '").append(fileName).append("' created successfully");
+                //output.append("File '").append(fileName).append("' created successfully");
+                output.append(translate("touch_file_prefix"))
+                        .append(fileName)
+                        .append(translate("touch_created_suffix"))
+                        .append("\n");
             } catch (Exception e) {
                 hasErrors = true;
-                errors.append("touch: cannot create file '").append(fileName).append("': ").append(e.getMessage());
+                //errors.append("touch: cannot create file '").append(fileName).append("': ").append(e.getMessage());
+                errors.append(getName())
+                        .append(": ")
+                        .append(translate("cannot_create_file_prefix"))
+                        .append(fileName)
+                        .append(translate("touch_error_suffix"))
+                        .append(e.getMessage())
+                        .append("\n");
+
             }
 
         }

@@ -23,16 +23,31 @@ public class RmCommand extends AbstractValidatedCommand {
 
         for (String fileName : context.getArguments()) {
             if (fileName == null || fileName.trim().isEmpty()) {
-                errors.append("rm: invalid file name\n");
+                //errors.append("rm: invalid file name\n");
+                errors.append(getName())
+                        .append(": ")
+                        .append(translate("invalid_filename"))
+                        .append("\n");
                 hasErrors = true;
                 continue;
             }
 
             try {
                 fileSystemService.removeFile(fileName);
-                output.append("File '").append(fileName).append("' deleted successfully\n");
+                //output.append("File '").append(fileName).append("' deleted successfully\n");
+                output.append(translate("rm_deleted_prefix"))
+                        .append(fileName)
+                        .append(translate("rm_deleted_suffix"))
+                        .append("\n");
             } catch (Exception e) {
-                errors.append("rm: cannot remove file '").append(fileName).append("': ").append(e.getMessage()).append("\n");
+                //errors.append("rm: cannot remove file '").append(fileName).append("': ").append(e.getMessage()).append("\n");
+                errors.append(getName())
+                        .append(": ")
+                        .append(translate("cannot_remove_file_prefix"))
+                        .append(fileName)
+                        .append(translate("rm_error_suffix")) // Contiene "': "
+                        .append(e.getMessage())
+                        .append("\n");
                 hasErrors = true;
             }
         }

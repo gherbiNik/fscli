@@ -2,12 +2,14 @@ package ch.supsi.fscli.backend.business.command.commands;
 
 import ch.supsi.fscli.backend.business.command.commands.validators.CommandValidator;
 import ch.supsi.fscli.backend.business.service.FileSystemService;
+import ch.supsi.fscli.backend.util.BackendTranslator;
 
 /*
 DESIGN PATTERN: Template
  */
 
-abstract class AbstractValidatedCommand extends AbstractCommand {
+public abstract class AbstractValidatedCommand extends AbstractCommand {
+    private static BackendTranslator i18n;
 
     public AbstractValidatedCommand(FileSystemService fileSystemService, String name,
                                     String synopsis, String description) {
@@ -27,6 +29,15 @@ abstract class AbstractValidatedCommand extends AbstractCommand {
         }
 
         return executeCommand(context); // Validation passed
+    }
+
+
+    public static void setTranslator(BackendTranslator translator) {
+        i18n = translator;
+    }
+
+    protected String translate(String key) {// To show messages when commands are executed
+        return i18n.getString(key);
     }
 
     protected abstract CommandValidator getValidator();

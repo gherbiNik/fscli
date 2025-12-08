@@ -31,7 +31,8 @@ public class LnCommand extends AbstractValidatedCommand {
             if (opt.equals("-s")) {
                 isSoftLink = true;
             } else {
-                return CommandResult.error("ln: illegal option -- " + opt.replace("-", ""));
+                //return CommandResult.error("ln: illegal option -- " + opt.replace("-", ""));
+                return CommandResult.error(getName() + ": " + translate("illegal_option") + " " + opt.replace("-", ""));
             }
         }
 
@@ -39,7 +40,8 @@ public class LnCommand extends AbstractValidatedCommand {
         // ln richiede: [OPZIONI] SOURCE DESTINATION (o DIRECTORY)
         if (args.size() != 2) {
             // Nota: su Unix standard se manca l'argomento è "missing file operand"
-            return CommandResult.error("usage: " + getSynopsis());
+            //return CommandResult.error("usage: " + getSynopsis());
+            return CommandResult.error(translate("usage") + " " + getSynopsis());
         }
 
         String sourcePath = args.get(0);
@@ -52,11 +54,13 @@ public class LnCommand extends AbstractValidatedCommand {
             // su hard link non controllo il source path perchè può essere anche sbagliato
 
             if (sourceInode == null) {
-                return CommandResult.error("ln: cannot access '" + sourcePath + "': No such file or directory");
+                //return CommandResult.error("ln: cannot access '" + sourcePath + "': No such file or directory");
+                return CommandResult.error(getName() + ": " + translate("cannot_access_prefix") + sourcePath + translate("no_such_file_suffix"));
             }
 
             if (sourceInode.isDirectory()) {
-                return CommandResult.error("ln: '" + sourcePath + "': hard link not allowed for directory");
+                //return CommandResult.error("ln: '" + sourcePath + "': hard link not allowed for directory");
+                return CommandResult.error(getName() + ": '" + sourcePath + translate("hard_link_suffix"));
             }
         }
 
@@ -80,7 +84,8 @@ public class LnCommand extends AbstractValidatedCommand {
             } else {
                 // CASO A2: Destinazione è un file esistente.
                 // Errore: non possiamo sovrascrivere
-                return CommandResult.error("ln: failed to create link '" + destinationPath + "': File exists");
+                //return CommandResult.error("ln: failed to create link '" + destinationPath + "': File exists");
+                return CommandResult.error(getName() + ": " + translate("failed_create_link_prefix") + destinationPath + translate("file_exists_suffix"));
             }
         } else {
             // CASO B: La destinazione NON esiste (è il nome del nuovo link)
@@ -90,7 +95,8 @@ public class LnCommand extends AbstractValidatedCommand {
             FileSystemService.PathParts parts = resolveParentAndName(destinationPath);
 
             if (parts.parentDir() == null) {
-                return CommandResult.error("ln: cannot create link '" + destinationPath + "': No such file or directory");
+                //return CommandResult.error("ln: cannot create link '" + destinationPath + "': No such file or directory");
+                return CommandResult.error(getName() + ": " + translate("cannot_create_link_prefix") + destinationPath + translate("no_such_file_suffix"));
             }
 
             targetDir = parts.parentDir();
@@ -101,7 +107,8 @@ public class LnCommand extends AbstractValidatedCommand {
         // Verifichiamo se dentro targetDir esiste già un file con nome linkName
         // (Questo serve per il Caso A1 e per sicurezza nel Caso B)
         if (targetDir.getChild(linkName) != null) {
-            return CommandResult.error("ln: failed to create link '" + linkName + "': File exists");
+            //return CommandResult.error("ln: failed to create link '" + linkName + "': File exists");
+            return CommandResult.error(getName() + ": " + translate("failed_create_link_prefix") + linkName + translate("file_exists_suffix"));
         }
 
         // 6. ESECUZIONE (CREAZIONE LINK)

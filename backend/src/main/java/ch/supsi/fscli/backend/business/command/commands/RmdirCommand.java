@@ -22,19 +22,38 @@ public class RmdirCommand extends AbstractValidatedCommand{
         // For each args
         for (String directoryName : context.getArguments()) {
             if (directoryName == null || directoryName.trim().isEmpty()) {
-                errors.append("rmdir: invalid directory name\n");
+                //errors.append("rmdir: invalid directory name\n");
+                errors.append(getName())
+                        .append(": ")
+                        .append(translate("rmdir_invalid_dirname"))
+                        .append("\n");
                 hasErrors = true;
                 continue;
             }
 
             try {
                 if(fileSystemService.removeDirectory(directoryName)) {
-                    output.append("Directory '").append(directoryName).append("' deleted successfully\n");
+                    //output.append("Directory '").append(directoryName).append("' deleted successfully\n");
+                    output.append(translate("rmdir_dir_prefix"))
+                            .append(directoryName)
+                            .append(translate("rmdir_deleted_suffix"))
+                            .append("\n");
                 } else {
-                    output.append("Directory '").append(directoryName).append("' cannot be deleted: it is not empty!\n");
+                    //output.append("Directory '").append(directoryName).append("' cannot be deleted: it is not empty!\n");
+                    output.append(translate("rmdir_dir_prefix"))
+                            .append(directoryName)
+                            .append(translate("rmdir_not_empty_suffix"))
+                            .append("\n");
                 }
             } catch (Exception e) {
-                errors.append("rmdir: cannot remove directory '").append(directoryName).append("': ").append(e.getMessage()).append("\n");
+                //errors.append("rmdir: cannot remove directory '").append(directoryName).append("': ").append(e.getMessage()).append("\n");
+                errors.append(getName())
+                        .append(": ")
+                        .append(translate("cannot_remove_dir_prefix"))
+                        .append(directoryName)
+                        .append(translate("rmdir_error_suffix")) // "': "
+                        .append(e.getMessage())
+                        .append("\n");
                 hasErrors = true;
             }
         }

@@ -45,6 +45,7 @@ public class FileSystemModel implements IFileSystemModel {
     @Override
     public String sendCommand(String userInput) {
         String result = application.sendCommand(userInput);
+        System.out.println("result" + result);
         if (!result.contains("ERROR-")){
             support.firePropertyChange(new FileSystemToSaved(this,"filesystem to saved", null, null));
         } else

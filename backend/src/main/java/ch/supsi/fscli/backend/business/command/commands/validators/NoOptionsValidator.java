@@ -11,7 +11,7 @@ public class NoOptionsValidator extends AbstractValidator implements CommandVali
     @Override
     public CommandResult validate(CommandContext context) {
         if((context.getOptions() != null) && (!context.getOptions().isEmpty()))
-            return CommandResult.error(commandName + "");
+            return CommandResult.error(commandName + ": " + translate("invalid.noopt"));
 
         return null; // passed
     }

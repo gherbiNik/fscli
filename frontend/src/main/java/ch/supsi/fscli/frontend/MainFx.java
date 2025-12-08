@@ -5,6 +5,8 @@ import ch.supsi.fscli.backend.application.PreferenceApplication;
 import ch.supsi.fscli.backend.application.filesystem.FileSystemApplication;
 import ch.supsi.fscli.backend.application.mapper.FsStateMapperApplication;
 import ch.supsi.fscli.backend.application.mapper.IFsStateMapperApplication;
+import ch.supsi.fscli.backend.business.command.commands.*;
+import ch.supsi.fscli.backend.business.command.commands.validators.AbstractValidator;
 import ch.supsi.fscli.backend.business.dto.FsStateMapper;
 import ch.supsi.fscli.backend.business.dto.IFsStateMapper;
 import ch.supsi.fscli.backend.business.filesystem.FileSystem;
@@ -169,6 +171,8 @@ public class MainFx extends Application {
         this.fsStateMapperModel.addPropertyChangeListener(logView);
         this.fsStateMapperModel.addPropertyChangeListener(commandLineView);
 
+        AbstractValidator.setTranslator(backendTranslator);
+        AbstractValidatedCommand.setTranslator(backendTranslator);
 
         System.out.println("Application started with language: " + loadedLocale.getLanguage());
 

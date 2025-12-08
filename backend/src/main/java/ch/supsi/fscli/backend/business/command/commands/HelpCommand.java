@@ -32,16 +32,15 @@ public class HelpCommand extends AbstractValidatedCommand {
     protected CommandResult executeCommand(CommandContext context) {
         // Controllo se la lista è stata iniettata correttamente
         if (this.commands == null || this.commands.isEmpty()) {
-            return CommandResult.error("help: no commands available (system error)");
+            return CommandResult.error(getName() + ": " + translate("system.error.nocommands"));
         }
 
-        BackendTranslator backendTranslator = BackendTranslator.getInstance();
-        StringBuilder sb = new StringBuilder(backendTranslator.getString("commandList.title") + "\n");
+        StringBuilder sb = new StringBuilder(translate("commandList.title") + "\n");
         // Iteriamo sulla lista 'this.commands' invece di usare il vecchio 'container'
         for (ICommand cmd : this.commands) {
-            sb.append(backendTranslator.getString(cmd.getSynopsis()))
+            sb.append(translate(cmd.getSynopsis()))
                     .append(" : ")
-                    .append(backendTranslator.getString(cmd.getDescription()))
+                    .append(translate(cmd.getDescription()))
                     .append("\n");
         }
 

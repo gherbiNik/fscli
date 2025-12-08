@@ -41,7 +41,7 @@ public class LnCommand extends AbstractValidatedCommand {
         if (args.size() != 2) {
             // Nota: su Unix standard se manca l'argomento è "missing file operand"
             //return CommandResult.error("usage: " + getSynopsis());
-            return CommandResult.error(translate("usage") + " " + getSynopsis());
+            return CommandResult.error(translate("usage") + " " + translate(getSynopsis()));
         }
 
         String sourcePath = args.get(0);
@@ -112,12 +112,16 @@ public class LnCommand extends AbstractValidatedCommand {
         }
 
         // 6. ESECUZIONE (CREAZIONE LINK)
+
+        // if the execution reaches this point everything went good and we
+        // alter the state of the filesystem
+        fileSystemService.setDataToSave(true);
+
+
         if (isSoftLink) {
-            // Logica Soft Link
             SoftLink softLink = new SoftLink(targetDir, sourcePath);
             targetDir.addChild(linkName, softLink);
         } else {
-            // Logica Hard Link
             targetDir.addChild(linkName, sourceInode);
         }
 

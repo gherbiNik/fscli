@@ -24,10 +24,10 @@ public class MvCommand extends AbstractValidatedCommand{
     protected CommandResult executeCommand(CommandContext context) {
         String source = context.getArguments().get(0);
         String destination = context.getArguments().get(1);
-
         try {
             fileSystemService.move(source, destination);
-            // "Moved '" + source + "' to '" + destination + "'"
+
+            fileSystemService.setDataToSave(true);
             return CommandResult.success(translate("mv_success_prefix")
                     + source
                     + translate("mv_success_middle")

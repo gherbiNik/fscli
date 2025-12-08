@@ -20,6 +20,7 @@ public class RmCommand extends AbstractValidatedCommand {
         StringBuilder output = new StringBuilder();
         StringBuilder errors = new StringBuilder();
         boolean hasErrors = false;
+        boolean any = false;
 
         for (String fileName : context.getArguments()) {
             if (fileName == null || fileName.trim().isEmpty()) {
@@ -34,7 +35,8 @@ public class RmCommand extends AbstractValidatedCommand {
 
             try {
                 fileSystemService.removeFile(fileName);
-                //output.append("File '").append(fileName).append("' deleted successfully\n");
+
+                any = true;
                 output.append(translate("rm_deleted_prefix"))
                         .append(fileName)
                         .append(translate("rm_deleted_suffix"))
@@ -52,11 +54,12 @@ public class RmCommand extends AbstractValidatedCommand {
             }
         }
 
+        if(any)
+            fileSystemService.setDataToSave(true);
+
         if (hasErrors) {
             return CommandResult.error(errors.toString().trim());
         }
-
-
         return CommandResult.success(output.toString().trim());
     }
 }

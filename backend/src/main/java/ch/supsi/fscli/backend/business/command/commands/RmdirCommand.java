@@ -18,6 +18,8 @@ public class RmdirCommand extends AbstractValidatedCommand{
         StringBuilder output = new StringBuilder();
         StringBuilder errors = new StringBuilder();
         boolean hasErrors = false;
+        boolean any = false;
+
 
         // For each args
         for (String directoryName : context.getArguments()) {
@@ -34,6 +36,7 @@ public class RmdirCommand extends AbstractValidatedCommand{
             try {
                 if(fileSystemService.removeDirectory(directoryName)) {
                     //output.append("Directory '").append(directoryName).append("' deleted successfully\n");
+                    any = true;
                     output.append(translate("rmdir_dir_prefix"))
                             .append(directoryName)
                             .append(translate("rmdir_deleted_suffix"))
@@ -57,6 +60,9 @@ public class RmdirCommand extends AbstractValidatedCommand{
                 hasErrors = true;
             }
         }
+
+        if(any)
+            fileSystemService.setDataToSave(true);
 
         if (hasErrors) {
             return CommandResult.error(errors.toString().trim());

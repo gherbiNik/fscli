@@ -20,6 +20,7 @@ public class TouchCommand extends AbstractValidatedCommand{
         StringBuilder output = new StringBuilder();
         StringBuilder errors = new StringBuilder();
         boolean hasErrors = false;
+        boolean anyFileCreated = false;
 
         for (String fileName : context.getArguments()) {
             if (fileName == null || fileName.trim().isEmpty()) {
@@ -31,7 +32,9 @@ public class TouchCommand extends AbstractValidatedCommand{
 
             try {
                 fileSystemService.createFile(fileName);
-                //output.append("File '").append(fileName).append("' created successfully");
+
+                anyFileCreated = true;
+
                 output.append(translate("touch_file_prefix"))
                         .append(fileName)
                         .append(translate("touch_created_suffix"))
@@ -50,6 +53,9 @@ public class TouchCommand extends AbstractValidatedCommand{
             }
 
         }
+        if(anyFileCreated)
+            fileSystemService.setDataToSave(true); // mods done (also partially)
+
         if(hasErrors){
             return CommandResult.error(errors.toString().trim());
         }

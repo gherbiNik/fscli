@@ -20,6 +20,7 @@ public class MkdirCommand extends AbstractValidatedCommand {
         StringBuilder output = new StringBuilder();
         StringBuilder errors = new StringBuilder();
         boolean hasErrors = false;
+        boolean any = false; // any changes
 
         for (String directoryName : context.getArguments()) {
             if (directoryName == null || directoryName.trim().isEmpty()) {
@@ -30,6 +31,8 @@ public class MkdirCommand extends AbstractValidatedCommand {
 
             try {
                 fileSystemService.createDirectory(directoryName);
+                any = true;
+
                 output.append(translate("directory_created_prefix"))
                         .append(directoryName)
                         .append(translate("directory_created_suffix"))
@@ -46,6 +49,9 @@ public class MkdirCommand extends AbstractValidatedCommand {
             }
 
         }
+        if(any)
+            fileSystemService.setDataToSave(true);
+
         if(hasErrors){
             return CommandResult.error(errors.toString().trim());
         }

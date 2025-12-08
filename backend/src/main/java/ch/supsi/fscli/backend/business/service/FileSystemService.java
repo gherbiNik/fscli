@@ -301,4 +301,9 @@ public class FileSystemService {
         return fileSystem.followLink(inode);
     }
 
+    public void setDataToSave(boolean dataToSave) {
+        this.fileSystem.setDataToSave(dataToSave);
+    }
+
+
 }

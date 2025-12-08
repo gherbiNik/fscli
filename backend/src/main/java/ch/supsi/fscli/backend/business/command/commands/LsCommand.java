@@ -37,7 +37,7 @@ public class LsCommand extends AbstractValidatedCommand {
             } else {
                 // Se troviamo qualsiasi cosa diversa da "-i", blocchiamo tutto
                 // Rimuoviamo il trattino "-" solo per estetica nel messaggio d'errore
-                error.append(translate("usage")).append(" ").append(getSynopsis());
+                error.append(translate("usage")).append(" ").append(translate(getSynopsis()));
                 return CommandResult.error(error.toString());
             }
         }

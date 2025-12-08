@@ -18,6 +18,7 @@ public class ClearCommand extends AbstractValidatedCommand{
 
     @Override
     protected CommandResult executeCommand(CommandContext context) {
+        System.out.println("WDJNRNFREFNRENIERNNWIENENIJFNIRENJIEWRNI");
         return CommandResult.success("Perform Clear");
     }
 }

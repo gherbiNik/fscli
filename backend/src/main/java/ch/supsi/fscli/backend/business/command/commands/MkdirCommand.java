@@ -3,10 +3,11 @@ package ch.supsi.fscli.backend.business.command.commands;
 import ch.supsi.fscli.backend.business.command.commands.validators.CommandValidator;
 import ch.supsi.fscli.backend.business.command.commands.validators.RequiresArgumentsValidator;
 import ch.supsi.fscli.backend.business.service.FileSystemService;
+import ch.supsi.fscli.backend.business.service.IFileSystemService;
 
 public class MkdirCommand extends AbstractValidatedCommand {
 
-    public MkdirCommand(FileSystemService fileSystemService, String name, String synopsis, String description) {
+    public MkdirCommand(IFileSystemService fileSystemService, String name, String synopsis, String description) {
         super(fileSystemService, name, synopsis, description);
     }
 

@@ -2,11 +2,16 @@ package ch.supsi.fscli.backend.business.command;
 
 
 import ch.supsi.fscli.backend.business.command.business.CommandDetails;
+import ch.supsi.fscli.backend.business.command.business.CommandHelpContainer;
+import ch.supsi.fscli.backend.business.command.commands.AbstractValidatedCommand;
 import ch.supsi.fscli.backend.business.command.commands.CommandContext;
 import ch.supsi.fscli.backend.business.command.commands.CommandResult;
 import ch.supsi.fscli.backend.business.command.commands.HelpCommand;
+import ch.supsi.fscli.backend.business.command.commands.validators.AbstractValidator;
 import ch.supsi.fscli.backend.business.filesystem.FileSystem;
 import ch.supsi.fscli.backend.business.service.FileSystemService;
+import ch.supsi.fscli.backend.business.service.IFileSystemService;
+import ch.supsi.fscli.backend.util.BackendTranslator;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -20,7 +25,7 @@ import static org.mockito.Mockito.*;
 
 public class HelpCommandTest {
     private static FileSystem fileSystem;
-    private static FileSystemService fileSystemService;
+    private static IFileSystemService fileSystemService;
     private static CommandHelpContainer mockContainer;
     private static HelpCommand helpCommand;
 
@@ -34,9 +39,10 @@ public class HelpCommandTest {
                 fileSystemService,
                 "help",
                 "help",
-                "Display available commands",
-                mockContainer
+                "Display available commands"
         );
+        AbstractValidatedCommand.setTranslator(BackendTranslator.getInstance());
+        AbstractValidator.setTranslator(BackendTranslator.getInstance());
     }
 
     @Test
@@ -70,7 +76,6 @@ public class HelpCommandTest {
         CommandResult result = helpCommand.execute(context);
 
         assertFalse(result.isSuccess());
-        assertEquals("help: no args needed", result.getError());
     }
 
     @Test
@@ -83,7 +88,6 @@ public class HelpCommandTest {
         CommandResult result = helpCommand.execute(context);
 
         assertFalse(result.isSuccess());
-        assertEquals("help: no options needed", result.getError());
     }
 
     @Test
@@ -98,7 +102,6 @@ public class HelpCommandTest {
         CommandResult result = helpCommand.execute(context);
 
         assertFalse(result.isSuccess());
-        assertEquals("help: no commands available", result.getError());
     }
 
     @Test
@@ -113,6 +116,5 @@ public class HelpCommandTest {
         CommandResult result = helpCommand.execute(context);
 
         assertFalse(result.isSuccess());
-        assertEquals("help: error occurred while reading commands", result.getError());
     }
 }

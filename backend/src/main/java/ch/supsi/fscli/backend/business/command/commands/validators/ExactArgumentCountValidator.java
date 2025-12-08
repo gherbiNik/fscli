@@ -2,6 +2,7 @@ package ch.supsi.fscli.backend.business.command.commands.validators;
 
 import ch.supsi.fscli.backend.business.command.commands.CommandContext;
 import ch.supsi.fscli.backend.business.command.commands.CommandResult;
+import ch.supsi.fscli.backend.util.BackendTranslator;
 
 public class ExactArgumentCountValidator extends AbstractValidator implements CommandValidator{
     private final int expectedCount;

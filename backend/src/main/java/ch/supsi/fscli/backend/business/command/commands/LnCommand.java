@@ -5,13 +5,14 @@ import ch.supsi.fscli.backend.business.command.commands.validators.NoArgsOrOptNu
 import ch.supsi.fscli.backend.business.filesystem.DirectoryNode;
 import ch.supsi.fscli.backend.business.filesystem.Inode;
 import ch.supsi.fscli.backend.business.filesystem.SoftLink;
-import ch.supsi.fscli.backend.business.service.FileSystemService;
+import ch.supsi.fscli.backend.business.service.IFileSystemService;
+import ch.supsi.fscli.backend.business.service.PathParts;
 
 import java.util.List;
 
 public class LnCommand extends AbstractValidatedCommand {
 
-    public LnCommand(FileSystemService fileSystemService, String name, String synopsis, String description) {
+    public LnCommand(IFileSystemService fileSystemService, String name, String synopsis, String description) {
         super(fileSystemService, name, synopsis, description);
     }
 
@@ -92,7 +93,7 @@ public class LnCommand extends AbstractValidatedCommand {
             // Dobbiamo trovare la cartella padre e il nome del nuovo file
 
             // Logica manuale di split del path (simile a quella nel Service, ma qui serve lato Command)
-            FileSystemService.PathParts parts = resolveParentAndName(destinationPath);
+            PathParts parts = resolveParentAndName(destinationPath);
 
             if (parts.parentDir() == null) {
                 //return CommandResult.error("ln: cannot create link '" + destinationPath + "': No such file or directory");
@@ -119,7 +120,8 @@ public class LnCommand extends AbstractValidatedCommand {
 
 
         if (isSoftLink) {
-            SoftLink softLink = new SoftLink(targetDir, sourcePath);
+            // Logica Soft Link
+            SoftLink softLink = new SoftLink(sourcePath);
             targetDir.addChild(linkName, softLink);
         } else {
             targetDir.addChild(linkName, sourceInode);
@@ -140,7 +142,7 @@ public class LnCommand extends AbstractValidatedCommand {
         return cleanPath.substring(lastSlashIndex + 1);
     }
 
-    private FileSystemService.PathParts resolveParentAndName(String path) {
+    private PathParts resolveParentAndName(String path) {
         String parentPath;
         String name;
 
@@ -154,17 +156,17 @@ public class LnCommand extends AbstractValidatedCommand {
             if (parentPath.isEmpty()) parentPath = "/";
         } else {
             // Path semplice (es. link) -> parent è la current dir
-            return new FileSystemService.PathParts(fileSystemService.getCurrentDirectory(), path);
+            return new PathParts(fileSystemService.getCurrentDirectory(), path);
         }
 
         // Risolviamo il parent path usando il service
         Inode parentNode = fileSystemService.getInode(parentPath);
 
         if (parentNode instanceof DirectoryNode) {
-            return new FileSystemService.PathParts((DirectoryNode) parentNode, name);
+            return new PathParts((DirectoryNode) parentNode, name);
         }
 
         // Parent non trovato o non è una directory
-        return new FileSystemService.PathParts(null, name);
+        return new PathParts(null, name);
     }
 }

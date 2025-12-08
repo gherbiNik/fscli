@@ -8,10 +8,10 @@ move a file/directory to a new file/directory
 
 import ch.supsi.fscli.backend.business.command.commands.validators.CommandValidator;
 import ch.supsi.fscli.backend.business.command.commands.validators.ExactArgumentCountValidator;
-import ch.supsi.fscli.backend.business.service.FileSystemService;
+import ch.supsi.fscli.backend.business.service.IFileSystemService;
 
 public class MvCommand extends AbstractValidatedCommand{
-    public MvCommand(FileSystemService fileSystemService, String name, String synopsis, String description) {
+    public MvCommand(IFileSystemService fileSystemService, String name, String synopsis, String description) {
         super(fileSystemService, name, synopsis, description);
     }
 
@@ -33,7 +33,7 @@ public class MvCommand extends AbstractValidatedCommand{
                     + translate("mv_success_middle")
                     + destination
                     + translate("mv_success_suffix"));
-        } catch (IllegalArgumentException e){
+        } catch (IllegalArgumentException e) {
             return CommandResult.error(getName() + ": " + e.getMessage());
         }
         // TODO ADD SOFT LINK CONTROL

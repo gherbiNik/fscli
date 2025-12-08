@@ -5,11 +5,14 @@ import ch.supsi.fscli.backend.business.command.commands.validators.ExactArgument
 import ch.supsi.fscli.backend.business.command.commands.validators.NoOptionsValidator;
 import ch.supsi.fscli.backend.business.command.commands.validators.RequiresArgumentsValidator;
 import ch.supsi.fscli.backend.business.service.FileSystemService;
+import ch.supsi.fscli.backend.business.service.IFileSystemService;
+import ch.supsi.fscli.backend.util.BackendTranslator;
 
 public class CdCommand extends AbstractValidatedCommand{
 
-    public CdCommand(FileSystemService fileSystemService, String name, String synopsis, String description) {
+    public CdCommand(IFileSystemService fileSystemService, String name, String synopsis, String description) {
         super(fileSystemService, name, synopsis, description);
+
     }
 
     @Override

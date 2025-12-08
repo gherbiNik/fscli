@@ -4,7 +4,7 @@ import ch.supsi.fscli.backend.business.command.commands.CommandContext;
 import ch.supsi.fscli.backend.business.command.commands.CommandResult;
 import ch.supsi.fscli.backend.business.command.commands.ICommand;
 import ch.supsi.fscli.backend.business.filesystem.DirectoryNode;
-import ch.supsi.fscli.backend.business.service.FileSystemService;
+import ch.supsi.fscli.backend.business.service.IFileSystemService;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -15,11 +15,11 @@ public class CommandExecutor {
     private Map<String, ICommand> commandList;
     private CommandParser commandParser;
     private static CommandExecutor instance;
-    private FileSystemService fileSystemService;
+    private IFileSystemService fileSystemService;
 
     private CommandExecutor() {}
 
-    public static CommandExecutor getInstance(FileSystemService fileSystemService, CommandParser commandParser, List<ICommand> commandList){
+    public static CommandExecutor getInstance(IFileSystemService fileSystemService, CommandParser commandParser, List<ICommand> commandList){
         if(instance == null){
             instance = new CommandExecutor();
             instance.initialize(fileSystemService, commandParser, commandList);
@@ -27,7 +27,7 @@ public class CommandExecutor {
         return instance;
     }
 
-    private void initialize(FileSystemService fileSystemService, CommandParser commandParser, List<ICommand> commands){
+    private void initialize(IFileSystemService fileSystemService, CommandParser commandParser, List<ICommand> commands){
         this.fileSystemService = fileSystemService;
         this.commandParser = commandParser;
 

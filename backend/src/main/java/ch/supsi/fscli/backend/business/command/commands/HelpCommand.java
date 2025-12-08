@@ -3,8 +3,7 @@ package ch.supsi.fscli.backend.business.command.commands;
 import ch.supsi.fscli.backend.business.command.commands.validators.CommandValidator;
 import ch.supsi.fscli.backend.business.command.commands.validators.NoArgumentsValidator;
 import ch.supsi.fscli.backend.business.command.commands.validators.NoOptionsValidator;
-import ch.supsi.fscli.backend.business.service.FileSystemService;
-import ch.supsi.fscli.backend.util.BackendTranslator;
+import ch.supsi.fscli.backend.business.service.IFileSystemService;
 
 import java.util.List;
 
@@ -13,7 +12,7 @@ public class HelpCommand extends AbstractValidatedCommand {
     // Questa è la lista che il CommandLoader ci passerà dopo aver creato tutto
     private List<ICommand> commands;
 
-    public HelpCommand(FileSystemService fsService, String name, String synopsis, String description) {
+    public HelpCommand(IFileSystemService fsService, String name, String synopsis, String description) {
         super(fsService, name, synopsis, description);
     }
 
@@ -32,6 +31,8 @@ public class HelpCommand extends AbstractValidatedCommand {
     protected CommandResult executeCommand(CommandContext context) {
         // Controllo se la lista è stata iniettata correttamente
         if (this.commands == null || this.commands.isEmpty()) {
+            // TODO chiedere a diego
+            System.out.println("DEBUG: "+commands);
             return CommandResult.error(getName() + ": " + translate("system.error.nocommands"));
         }
 

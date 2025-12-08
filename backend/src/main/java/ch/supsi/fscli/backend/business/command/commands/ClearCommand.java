@@ -1,12 +1,12 @@
 package ch.supsi.fscli.backend.business.command.commands;
 
+import ch.supsi.fscli.backend.business.service.IFileSystemService;
 import ch.supsi.fscli.backend.business.command.commands.validators.CommandValidator;
 import ch.supsi.fscli.backend.business.command.commands.validators.NoArgumentsValidator;
 import ch.supsi.fscli.backend.business.command.commands.validators.NoOptionsValidator;
-import ch.supsi.fscli.backend.business.service.FileSystemService;
 
 public class ClearCommand extends AbstractValidatedCommand{
-    public ClearCommand(FileSystemService fileSystemService, String name, String synopsis, String description) {
+    public ClearCommand(IFileSystemService fileSystemService, String name, String synopsis, String description) {
         super(fileSystemService, name, synopsis, description);
     }
 

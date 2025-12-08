@@ -95,6 +95,6 @@ public class PreferenceModel implements IPreferenceModel{
         setPreferences("font-command-line", commandLineFontComboBox);
         setPreferences("font-output-area", outputAreaFontComboBox);
         setPreferences("font-log-area", logAreaFontComboBox);
-        support.firePropertyChange(new PreferenceSavedEvent(this, "savePreferencesEvent", null, null));
+        support.firePropertyChange(new PreferenceSavedEvent(this));
     }
 }

@@ -3,13 +3,14 @@ package ch.supsi.fscli.backend.business.command.commands;
 import ch.supsi.fscli.backend.business.command.commands.validators.CommandValidator;
 import ch.supsi.fscli.backend.business.command.commands.validators.RequiresArgumentsValidator;
 import ch.supsi.fscli.backend.business.service.FileSystemService;
+import ch.supsi.fscli.backend.business.service.IFileSystemService;
 
 // Removes an empty dir
 public class RmdirCommand extends AbstractValidatedCommand{
 
     // used to create a dir
 
-    public RmdirCommand(FileSystemService fileSystemService, String name, String synopsis, String description) {
+    public RmdirCommand(IFileSystemService fileSystemService, String name, String synopsis, String description) {
         super(fileSystemService, name, synopsis, description);
     }
 

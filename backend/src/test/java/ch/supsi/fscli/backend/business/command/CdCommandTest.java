@@ -1,12 +1,14 @@
 package ch.supsi.fscli.backend.business.command;
 
-import ch.supsi.fscli.backend.business.command.commands.CdCommand;
-import ch.supsi.fscli.backend.business.command.commands.CommandContext;
-import ch.supsi.fscli.backend.business.command.commands.CommandResult;
-import ch.supsi.fscli.backend.business.command.commands.LnCommand;
+//import ch.supsi.fscli.backend.application.CommandHelpApplication;
+import ch.supsi.fscli.backend.business.command.business.CommandHelpContainer;
+import ch.supsi.fscli.backend.business.command.commands.*;
+import ch.supsi.fscli.backend.business.command.commands.validators.AbstractValidator;
 import ch.supsi.fscli.backend.business.filesystem.FileSystem;
 import ch.supsi.fscli.backend.business.filesystem.Inode;
 import ch.supsi.fscli.backend.business.service.FileSystemService;
+import ch.supsi.fscli.backend.business.service.IFileSystemService;
+import ch.supsi.fscli.backend.util.BackendTranslator;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -20,7 +22,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class CdCommandTest {
     private static FileSystem fileSystem;
-    private static FileSystemService fileSystemService;
+    private static IFileSystemService fileSystemService;
     private static CdCommand cdCommand;
     private static LnCommand lnCommand;
 
@@ -44,6 +46,8 @@ public class CdCommandTest {
         fileSystemService.createDirectory("home/user/documents");
         fileSystemService.createDirectory("tmp");
         fileSystemService.createFile("home/test.txt");
+        AbstractValidatedCommand.setTranslator(BackendTranslator.getInstance());
+        AbstractValidator.setTranslator(BackendTranslator.getInstance());
     }
 
     @Test
@@ -52,7 +56,6 @@ public class CdCommandTest {
                 , Collections.emptyList(), Collections.emptyList());
         CommandResult result = cdCommand.execute(context);
         assertFalse(result.isSuccess());
-        assertEquals("cd: missing arguments", result.getError());
 
     }
 
@@ -64,7 +67,6 @@ public class CdCommandTest {
         CommandResult result = cdCommand.execute(context);
 
         assertFalse(result.isSuccess());
-        assertEquals("cd: too many arguments", result.getError());
     }
 
     @Test

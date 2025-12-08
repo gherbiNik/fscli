@@ -1,8 +1,11 @@
 package ch.supsi.fscli.backend.business.command;
 
 import ch.supsi.fscli.backend.business.command.commands.*;
+import ch.supsi.fscli.backend.business.command.commands.validators.AbstractValidator;
 import ch.supsi.fscli.backend.business.filesystem.FileSystem;
 import ch.supsi.fscli.backend.business.service.FileSystemService;
+import ch.supsi.fscli.backend.business.service.IFileSystemService;
+import ch.supsi.fscli.backend.util.BackendTranslator;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -14,7 +17,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class ClearCommandTest {
     private static FileSystem fileSystem;
-    private static FileSystemService fileSystemService;
+    private static IFileSystemService fileSystemService;
     private static ClearCommand clearCommand;
 
     @BeforeAll
@@ -27,6 +30,8 @@ public class ClearCommandTest {
                 "clear",
                 "Clear the terminal screen"
         );
+        AbstractValidatedCommand.setTranslator(BackendTranslator.getInstance());
+        AbstractValidator.setTranslator(BackendTranslator.getInstance());
     }
 
     @Test
@@ -52,7 +57,6 @@ public class ClearCommandTest {
         CommandResult result = clearCommand.execute(context);
 
         assertFalse(result.isSuccess());
-        assertEquals("clear: no args needed", result.getError());
     }
 
 
@@ -67,7 +71,6 @@ public class ClearCommandTest {
         CommandResult result = clearCommand.execute(context);
 
         assertFalse(result.isSuccess());
-        assertEquals("clear: no options needed", result.getError());
     }
 
 

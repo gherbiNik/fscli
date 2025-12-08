@@ -2,10 +2,12 @@ package ch.supsi.fscli.backend.business.command.commands.validators;
 
 import ch.supsi.fscli.backend.business.command.commands.CommandContext;
 import ch.supsi.fscli.backend.business.command.commands.CommandResult;
+import ch.supsi.fscli.backend.util.BackendTranslator;
 
 public class NoOptionsValidator extends AbstractValidator implements CommandValidator{
     public NoOptionsValidator(String commandName) {
         super(commandName);
+
     }
 
     @Override

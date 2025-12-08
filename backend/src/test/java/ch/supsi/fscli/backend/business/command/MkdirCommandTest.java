@@ -2,13 +2,16 @@ package ch.supsi.fscli.backend.business.command;
 
 import ch.supsi.fscli.backend.business.command.business.CommandDetails;
 import ch.supsi.fscli.backend.business.command.business.CommandHelpContainer;
+import ch.supsi.fscli.backend.business.command.commands.AbstractValidatedCommand;
 import ch.supsi.fscli.backend.business.command.commands.CommandContext;
 import ch.supsi.fscli.backend.business.command.commands.CommandResult;
 import ch.supsi.fscli.backend.business.command.commands.MkdirCommand;
+import ch.supsi.fscli.backend.business.command.commands.validators.AbstractValidator;
 import ch.supsi.fscli.backend.business.filesystem.DirectoryNode;
 import ch.supsi.fscli.backend.business.filesystem.FileSystem;
 import ch.supsi.fscli.backend.business.filesystem.Inode;
 import ch.supsi.fscli.backend.business.service.FileSystemService;
+import ch.supsi.fscli.backend.business.service.IFileSystemService;
 import ch.supsi.fscli.backend.util.BackendTranslator;
 import ch.supsi.fscli.backend.business.command.business.CommandExecutor;
 import ch.supsi.fscli.backend.business.command.business.CommandParser;
@@ -23,7 +26,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class MkdirCommandTest {
 
     private MkdirCommand mkdirCommand;
-    private FileSystemService fileSystemService;
+    private IFileSystemService fileSystemService;
     private FileSystem fileSystem;
     private CommandHelpContainer commandHelpContainer;
 
@@ -51,6 +54,8 @@ class MkdirCommandTest {
         String synopsis = m.get("mkdir").synopsis();
         String descr = m.get("mkdir").description();
         mkdirCommand = new MkdirCommand(fileSystemService, "mkdir", synopsis, descr);
+        AbstractValidatedCommand.setTranslator(BackendTranslator.getInstance());
+        AbstractValidator.setTranslator(BackendTranslator.getInstance());
     }
 
     private void resetSingleton(Class<?> aClass) {
@@ -131,7 +136,7 @@ class MkdirCommandTest {
 
         assertTrue(result.isSuccess());
         Inode docsNode = fileSystem.resolveNode("/docs");
-        assertTrue(docsNode instanceof DirectoryNode);
+        assertInstanceOf(DirectoryNode.class, docsNode);
         assertNotNull(((DirectoryNode) docsNode).getChild("newDir"));
     }
 

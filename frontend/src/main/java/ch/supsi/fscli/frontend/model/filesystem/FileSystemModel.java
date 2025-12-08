@@ -38,7 +38,7 @@ public class FileSystemModel implements IFileSystemModel {
     @Override
     public void createFileSystem() {
         application.createFileSystem();
-        support.firePropertyChange(new FileSystemCreationEvent(this,"createFileSystemEvent", null, null));
+        support.firePropertyChange(new FileSystemCreationEvent(this));
 
     }
 
@@ -47,7 +47,7 @@ public class FileSystemModel implements IFileSystemModel {
         String result = application.sendCommand(userInput);
         System.out.println("result" + result);
         if (!result.contains("ERROR-")){
-            support.firePropertyChange(new FileSystemToSaved(this,"filesystem to saved", null, null));
+            support.firePropertyChange(new FileSystemToSaved(this));
         } else
             result = result.replace("ERROR-","");
         // Costruiamo il messaggio formattato
@@ -55,7 +55,7 @@ public class FileSystemModel implements IFileSystemModel {
 
         // Il model non sa chi c'è dall'altra parte. Se c'è la GUI, bene. Se non c'è, amen.
         if (result.equals("Perform Clear")) {
-            support.firePropertyChange(new ClearEvent(this, "ClearEvent", null, null));
+            support.firePropertyChange(new ClearEvent(this));
         } else {
             support.firePropertyChange(new OutputEvent(this, "OutputEvent", null, formattedOutput));
         }

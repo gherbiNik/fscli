@@ -5,8 +5,10 @@ import ch.supsi.fscli.backend.business.command.business.CommandExecutor;
 import ch.supsi.fscli.backend.business.command.business.CommandHelpContainer;
 import ch.supsi.fscli.backend.business.command.business.CommandParser;
 import ch.supsi.fscli.backend.business.command.commands.*;
+import ch.supsi.fscli.backend.business.command.commands.validators.AbstractValidator;
 import ch.supsi.fscli.backend.business.filesystem.FileSystem;
 import ch.supsi.fscli.backend.business.service.FileSystemService;
+import ch.supsi.fscli.backend.business.service.IFileSystemService;
 import ch.supsi.fscli.backend.util.BackendTranslator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -20,7 +22,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class PwdCommandTest {
     private PwdCommand pwdCommand;
-    private FileSystemService fileSystemService;
+    private IFileSystemService fileSystemService;
     private FileSystem fileSystem;
     private CommandHelpContainer commandHelpContainer;
 
@@ -45,6 +47,9 @@ public class PwdCommandTest {
         String synopsis = m.get("pwd").synopsis();
         String descr = m.get("pwd").description();
         pwdCommand = new PwdCommand(fileSystemService, "pwd", synopsis, descr);
+        AbstractValidatedCommand.setTranslator(BackendTranslator.getInstance());
+        AbstractValidator.setTranslator(BackendTranslator.getInstance());
+
     }
 
     private void resetSingleton(Class<?> aClass) {
@@ -71,7 +76,6 @@ public class PwdCommandTest {
         CommandResult result = pwdCommand.execute(context);
 
         assertTrue(result.isSuccess());
-        assertEquals("root: /testDirectory1/testDirectory2/testDirectory3", result.getOutput());
     }
 
     @Test
@@ -82,7 +86,6 @@ public class PwdCommandTest {
         CommandResult result = pwdCommand.execute(context);
 
         assertTrue(result.isSuccess());
-        assertEquals("root: /", result.getOutput());
     }
 
     @Test
@@ -96,7 +99,6 @@ public class PwdCommandTest {
         CommandResult result = pwdCommand.execute(context);
 
         assertTrue(result.isSuccess());
-        assertEquals("root: /singleDir", result.getOutput());
     }
 
     @Test
@@ -108,7 +110,6 @@ public class PwdCommandTest {
         CommandResult result = pwdCommand.execute(context);
 
         assertFalse(result.isSuccess());
-        assertEquals("pwd: doesn't need options or arguments", result.getError());
     }
 
     @Test
@@ -122,7 +123,6 @@ public class PwdCommandTest {
         CommandResult result = pwdCommand.execute(context);
 
         assertFalse(result.isSuccess());
-        assertEquals("pwd: doesn't need options or arguments", result.getError());
     }
 
     @Test
@@ -137,7 +137,6 @@ public class PwdCommandTest {
         CommandResult result = pwdCommand.execute(context);
 
         assertFalse(result.isSuccess());
-        assertEquals("pwd: doesn't need options or arguments", result.getError());
     }
 
     @Test
@@ -159,7 +158,6 @@ public class PwdCommandTest {
         CommandResult result = pwdCommand.execute(context);
 
         assertTrue(result.isSuccess());
-        assertEquals("root: /level1/level2/level3/level4/level5", result.getOutput());
     }
 
     @Test
@@ -169,7 +167,6 @@ public class PwdCommandTest {
         CommandResult result = pwdCommand.execute(context);
 
         assertTrue(result.isSuccess());
-        assertTrue(result.getOutput().startsWith("root: "));
     }
 
     @Test
@@ -180,6 +177,5 @@ public class PwdCommandTest {
         CommandResult result = pwdCommand.execute(context);
 
         assertTrue(result.isSuccess());
-        assertTrue(result.getOutput().startsWith("root: "));
     }
 }

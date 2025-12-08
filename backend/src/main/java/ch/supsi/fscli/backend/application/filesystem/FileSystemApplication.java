@@ -7,6 +7,7 @@ import ch.supsi.fscli.backend.business.command.commands.ICommand;
 import ch.supsi.fscli.backend.business.filesystem.FileSystem;
 import ch.supsi.fscli.backend.business.filesystem.IFileSystem;
 import ch.supsi.fscli.backend.business.service.FileSystemService;
+import ch.supsi.fscli.backend.business.service.IFileSystemService;
 import ch.supsi.fscli.backend.dataAccess.ICommandDAO;
 import ch.supsi.fscli.backend.dataAccess.JsonCommandDAO;
 import ch.supsi.fscli.backend.util.BackendTranslator;
@@ -36,7 +37,7 @@ public class FileSystemApplication implements IFileSystemApplication {
         System.out.println("File System initialized.");
 
         // 2. Inizializziamo il Service
-        FileSystemService fsService = FileSystemService.getInstance((FileSystem) fileSystem);
+        IFileSystemService fsService = FileSystemService.getInstance((FileSystem) fileSystem);
 
         // 3. Prepariamo il DAO e il Loader
         ICommandDAO commandDAO = new JsonCommandDAO("commands.json");

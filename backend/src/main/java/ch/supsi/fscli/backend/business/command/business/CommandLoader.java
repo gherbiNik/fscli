@@ -1,7 +1,7 @@
 package ch.supsi.fscli.backend.business.command.business;
 
 import ch.supsi.fscli.backend.business.command.commands.ICommand;
-import ch.supsi.fscli.backend.business.service.FileSystemService;
+import ch.supsi.fscli.backend.business.service.IFileSystemService;
 import ch.supsi.fscli.backend.dataAccess.ICommandDAO;
 import ch.supsi.fscli.backend.dataAccess.JsonCommandDTO;
 
@@ -12,12 +12,12 @@ import java.util.List;
 public class CommandLoader {
 
     private final ICommandDAO commandDAO;
-    private final FileSystemService fileSystemService;
+    private final IFileSystemService fileSystemService;
 
     // Package dove risiedono le classi dei comandi
     private static final String COMMANDS_PACKAGE = "ch.supsi.fscli.backend.business.command.commands.";
 
-    public CommandLoader(ICommandDAO commandDAO, FileSystemService fileSystemService) {
+    public CommandLoader(ICommandDAO commandDAO, IFileSystemService fileSystemService) {
         this.commandDAO = commandDAO;
         this.fileSystemService = fileSystemService;
     }
@@ -33,7 +33,7 @@ public class CommandLoader {
 
                 // Cerchiamo SEMPRE il costruttore standard a 4 parametri
                 Constructor<?> constructor = commandClass.getConstructor(
-                        FileSystemService.class,
+                        IFileSystemService.class,
                         String.class,
                         String.class,
                         String.class

@@ -4,7 +4,7 @@ import ch.supsi.fscli.backend.business.filesystem.*;
 
 import java.util.Map;
 
-public class FileSystemService {
+public class FileSystemService implements IFileSystemService{
 
     private static FileSystemService instance;
     private FileSystem fileSystem;
@@ -109,54 +109,82 @@ public class FileSystemService {
     }
 
     public void move(String sourcePath, String destinationPath) {
-        // resolves source node
+        // 1. Risoluzione Nodo Sorgente
+        // Nota: resolveNode restituisce il Link stesso se la sorgente è un link (corretto per mv)
         Inode nodeToMove = fileSystem.resolveNode(sourcePath);
+
         if(nodeToMove == null) {
-            throw new IllegalArgumentException("Source not found: " + sourcePath);
+            throw new IllegalArgumentException("mv: cannot stat '" + sourcePath + "': No such file or directory");
         }
+
+        // Otteniamo il genitore e il nome attuale per poterlo rimuovere dopo
         PathParts sourceParts = resolveParentDirectoryAndName(sourcePath);
         DirectoryNode sourceParent = sourceParts.parentDir();
         String sourceName = sourceParts.name();
 
-        // resolves destination
-        Inode destination = fileSystem.resolveNode(destinationPath);
-        DirectoryNode targetDir;
-        String newName;
-        
-        if(destination != null && destination.isDirectory()){
-            // Case 1: the destination directory exists
-            targetDir = (DirectoryNode) destination;
-            newName = sourceName;
-        } else if (destination == null) {
-            // Case 2: Destination doesn't exist.
-            // Could be RENAME or MOVE with new name
-            PathParts destinationParts = resolveParentDirectoryAndName(destinationPath);
-            targetDir = destinationParts.parentDir();
-            newName = destinationParts.name();
+        // 2. Risoluzione Nodo Destinazione
+        Inode rawDestNode = fileSystem.resolveNode(destinationPath);
 
-            if(targetDir.getChild(newName) != null){
-                // target already exists
-                throw new IllegalArgumentException("Destination already exists: " + destinationPath);
+        DirectoryNode targetDir = null;
+        String newName = "";
+        boolean moveIntoDirectory = false;
+
+        // Analizziamo la destinazione per capire se è una cartella (o link a cartella)
+        if (rawDestNode != null) {
+            Inode effectiveDest = rawDestNode;
+
+            // Se è un link, vediamo cosa c'è dietro SOLO per capire se è una directory
+            if (rawDestNode instanceof SoftLink) {
+                Inode resolved = followLink(rawDestNode);
+                if (resolved != null) {
+                    effectiveDest = resolved;
+                }
+                // Se resolved è null (broken link), trattiamo rawDestNode come un file da sovrascrivere
             }
-        } else {
-            // Case 3: destination exists but is a file
-            throw new IllegalArgumentException("Cannot overwrite non-directory: " + destinationPath);
+
+            if (effectiveDest.isDirectory()) {
+                // CASO A: Spostamento DENTRO una directory esistente
+                moveIntoDirectory = true;
+                targetDir = (DirectoryNode) effectiveDest;
+                newName = sourceName; // Mantiene il nome originale
+            }
         }
 
-        // Prevent moving a directory into itself or its subdirectory
-        if (nodeToMove.isDirectory() && isSubdirectory((DirectoryNode) nodeToMove, targetDir)) {
-            throw new IllegalArgumentException("Cannot move directory into itself or its subdirectory");
+        if (!moveIntoDirectory) {
+            // CASO B: Rename o Overwrite (Destinazione è un file, un link a file, o non esiste)
+            PathParts destParts = resolveParentDirectoryAndName(destinationPath);
+            targetDir = destParts.parentDir();
+            newName = destParts.name();
         }
 
-        // Perform the move/rename
+        // 3. Controllo Cicli (Non spostare una directory dentro se stessa)
+        if (nodeToMove instanceof DirectoryNode && isSubdirectory((DirectoryNode) nodeToMove, targetDir)) {
+            throw new IllegalArgumentException("mv: cannot move '" + sourcePath + "' to a subdirectory of itself");
+        }
+
+        // 4. Gestione Sovrascrittura (Overwrite)
+        Inode existingNode = targetDir.getChild(newName);
+        if (existingNode != null) {
+            if (existingNode == nodeToMove) {
+                return; // Stesso file, non fare nulla
+            }
+            if (existingNode.isDirectory()) {
+                // Non si può sovrascrivere una directory con un file (o altra dir)
+                throw new IllegalArgumentException("mv: cannot overwrite directory '" + newName + "' with non-directory");
+            }
+
+            // Rimuovi il file/link esistente per far spazio al nuovo
+            targetDir.removeChild(newName, existingNode);
+        }
+
+        // 5. Esecuzione Spostamento Atomic-like
         sourceParent.removeChild(sourceName, nodeToMove);
         targetDir.addChild(newName, nodeToMove);
 
-        // Update parent reference (if it's a directory)
+        // Opzionale: Aggiornamento parent se il nodo spostato è una directory
         if (nodeToMove instanceof DirectoryNode) {
-            //((DirectoryNode) nodeToMove).setParent(targetDir);
+            ((DirectoryNode) nodeToMove).setParent(targetDir);
         }
-
     }
 
     private boolean isSubdirectory(DirectoryNode parent, DirectoryNode potentialChild) {
@@ -170,7 +198,7 @@ public class FileSystemService {
         return false;
     }
 
-    public record PathParts(DirectoryNode parentDir, String name) {}
+
 
     private PathParts resolveParentDirectoryAndName(String path) {
         if (path == null || path.trim().isEmpty()) {

@@ -36,7 +36,9 @@ class JacksonSaveTest {
 
         // Mock PreferenceDAO
         preferenceDAO = mock(PreferenceDAO.class);
-        when(preferenceDAO.getUserPreferencesFilePath()).thenReturn(tempDir);
+        // Mock a full file path (e.g. "preferences.properties") inside the tempDir.
+        // When the service calls .getParent(), it will correctly resolve to 'tempDir'.
+        when(preferenceDAO.getUserPreferencesFilePath()).thenReturn(tempDir.resolve("preferences.properties"));
 
         // Create service instance
         service = JacksonSaveDataService.getInstance(preferenceDAO);

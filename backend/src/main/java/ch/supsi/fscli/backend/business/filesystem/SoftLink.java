@@ -3,8 +3,8 @@ package ch.supsi.fscli.backend.business.filesystem;
 public class SoftLink extends Inode implements ISoftLink{
     private String targetPath;
 
-    public SoftLink(DirectoryNode parent, String targetPath) {
-        super(parent, InodeType.SOFTLINK);
+    public SoftLink(String targetPath) {
+        super(InodeType.SOFTLINK);
         this.targetPath = targetPath;
     }
 
@@ -14,10 +14,6 @@ public class SoftLink extends Inode implements ISoftLink{
     }
 
     public String getTargetPath() {
-        return targetPath;
-    }
-
-    public String getPath() {
         return targetPath;
     }
 

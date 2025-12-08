@@ -1,14 +1,17 @@
 package ch.supsi.fscli.backend.business.command;
 
+import ch.supsi.fscli.backend.business.command.commands.AbstractValidatedCommand;
 import ch.supsi.fscli.backend.business.command.commands.RmCommand;
 import ch.supsi.fscli.backend.business.command.business.CommandDetails;
 import ch.supsi.fscli.backend.business.command.business.CommandHelpContainer;
 import ch.supsi.fscli.backend.business.command.commands.CommandContext;
 import ch.supsi.fscli.backend.business.command.commands.CommandResult;
+import ch.supsi.fscli.backend.business.command.commands.validators.AbstractValidator;
 import ch.supsi.fscli.backend.business.filesystem.DirectoryNode;
 import ch.supsi.fscli.backend.business.filesystem.FileSystem;
 import ch.supsi.fscli.backend.business.filesystem.Inode;
 import ch.supsi.fscli.backend.business.service.FileSystemService;
+import ch.supsi.fscli.backend.business.service.IFileSystemService;
 import ch.supsi.fscli.backend.util.BackendTranslator;
 import ch.supsi.fscli.backend.business.command.business.CommandExecutor;
 import ch.supsi.fscli.backend.business.command.business.CommandParser;
@@ -23,7 +26,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class RmCommandTest {
 
     private RmCommand rmCommand;
-    private FileSystemService fileSystemService;
+    private IFileSystemService fileSystemService;
     private FileSystem fileSystem;
     private CommandHelpContainer commandHelpContainer;
 
@@ -48,6 +51,8 @@ class RmCommandTest {
         String synopsis = m.get("rm").synopsis();
         String descr = m.get("rm").description();
         rmCommand = new RmCommand(fileSystemService, "rm", synopsis, descr);
+        AbstractValidatedCommand.setTranslator(BackendTranslator.getInstance());
+        AbstractValidator.setTranslator(BackendTranslator.getInstance());
     }
 
     private void resetSingleton(Class<?> aClass) {

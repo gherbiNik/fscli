@@ -25,8 +25,8 @@ public class LogView implements ViewComponent, PropertyChangeListener {
     }
 
     public void createLayout() {
-
         this.logView = new TextArea();
+        this.logView.setEditable(false);
         this.logView.setId("logView");
 
             //Example code

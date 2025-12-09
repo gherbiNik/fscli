@@ -3,6 +3,7 @@ package ch.supsi.fscli.backend.business.filesystem;
 import ch.supsi.fscli.backend.business.command.business.CommandExecutor;
 import ch.supsi.fscli.backend.business.command.commands.CommandResult;
 import ch.supsi.fscli.backend.business.command.commands.ICommand;
+import ch.supsi.fscli.backend.util.BackendTranslator;
 
 import java.util.List;
 import java.util.Map;
@@ -15,6 +16,7 @@ public class FileSystem implements FileSystemComponent, IFileSystem
     private CommandExecutor commandExecutor;
     private List<ICommand> commandList;
     private boolean dataToSave;
+    private static BackendTranslator i18n;
 
 
     public static FileSystem getInstance() {
@@ -138,7 +140,8 @@ public class FileSystem implements FileSystemComponent, IFileSystem
         // Continua a seguire finché è un SoftLink
         while (current instanceof SoftLink) {
             if (depth > maxDepth) {
-                throw new IllegalArgumentException("Too many levels of symbolic links");
+                //throw new IllegalArgumentException("Too many levels of symbolic links");
+                throw new IllegalArgumentException(i18n.getString("too_many_symlinks"));
             }
 
             // Recupera il path salvato nel SoftLink
@@ -207,6 +210,10 @@ public class FileSystem implements FileSystemComponent, IFileSystem
     @Override
     public void setDataToSave(boolean dataToSave) {
         this.dataToSave = dataToSave;
+    }
+
+    public static void setTranslator(BackendTranslator translator) {
+        FileSystem.i18n = translator;
     }
 
     public void setCurrentDirectory(DirectoryNode currentDirectory) {

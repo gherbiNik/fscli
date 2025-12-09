@@ -11,6 +11,7 @@ import ch.supsi.fscli.backend.business.dto.FsStateMapper;
 import ch.supsi.fscli.backend.business.dto.IFsStateMapper;
 import ch.supsi.fscli.backend.business.filesystem.FileSystem;
 import ch.supsi.fscli.backend.business.preferences.PreferenceBusiness;
+import ch.supsi.fscli.backend.business.service.FileSystemService;
 import ch.supsi.fscli.backend.business.service.ISaveDataService;
 import ch.supsi.fscli.backend.business.service.SaveDataService;
 import ch.supsi.fscli.backend.dataAccess.filesystem.JacksonSaveDataService;
@@ -173,6 +174,8 @@ public class MainFx extends Application {
 
         AbstractValidator.setTranslator(backendTranslator);
         AbstractValidatedCommand.setTranslator(backendTranslator);
+        FileSystem.setTranslator(backendTranslator);
+        FileSystemService.setTranslator(backendTranslator);
 
         System.out.println("Application started with language: " + loadedLocale.getLanguage());
 

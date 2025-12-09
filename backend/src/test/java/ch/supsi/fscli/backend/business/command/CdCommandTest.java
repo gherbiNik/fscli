@@ -17,6 +17,7 @@ import org.junit.jupiter.api.Test;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -28,8 +29,15 @@ public class CdCommandTest {
 
     @BeforeAll
     public static void setUp() {
+        BackendTranslator backendTranslator = BackendTranslator.getInstance();
+        backendTranslator.setLocaleDefault(Locale.US);
+
+        AbstractValidatedCommand.setTranslator(backendTranslator);
+        AbstractValidator.setTranslator(backendTranslator);
+
         fileSystem = FileSystem.getInstance();
         fileSystemService = FileSystemService.getInstance(fileSystem);
+
         cdCommand = new CdCommand(
                 fileSystemService,
                 "cd",
@@ -37,7 +45,6 @@ public class CdCommandTest {
                 "Change the current directory"
         );
 
-        // Init Comandi
         lnCommand = new LnCommand(fileSystemService, "ln", "ln usage", "desc");
 
         // Crea una struttura di directory per i test
@@ -46,8 +53,6 @@ public class CdCommandTest {
         fileSystemService.createDirectory("home/user/documents");
         fileSystemService.createDirectory("tmp");
         fileSystemService.createFile("home/test.txt");
-        AbstractValidatedCommand.setTranslator(BackendTranslator.getInstance());
-        AbstractValidator.setTranslator(BackendTranslator.getInstance());
     }
 
     @Test

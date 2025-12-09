@@ -1,6 +1,7 @@
 package ch.supsi.fscli.backend.business.service;
 
 import ch.supsi.fscli.backend.business.filesystem.*;
+import ch.supsi.fscli.backend.util.BackendTranslator;
 
 import java.util.Map;
 
@@ -8,6 +9,7 @@ public class FileSystemService implements IFileSystemService{
 
     private static FileSystemService instance;
     private FileSystem fileSystem;
+    private static BackendTranslator i18n;
 
     private FileSystemService() {
     }
@@ -28,23 +30,30 @@ public class FileSystemService implements IFileSystemService{
         return fileSystem.getCurrentDirectory();
     }
 
+    public static void setTranslator(BackendTranslator translator) {
+        FileSystemService.i18n = translator;
+    }
+
     public void changeDirectory(String newDirPath) {
         // 1. Risoluzione Inode dal path stringa
         Inode target = getInode(newDirPath);
 
         if (target == null) {
-            throw new IllegalArgumentException("No such file or directory: " + newDirPath);
+            // "No such file or directory: path"
+            throw new IllegalArgumentException(i18n.getString("no_such_file_or_directory") + ": " + newDirPath);
         }
 
         // 2. Seguiamo i link (se presenti)
         Inode resolved = followLink(target);
         if (resolved == null) {
-            throw new IllegalArgumentException("No such file or directory (broken link)");
+            // "No such file or directory (broken link)"
+            throw new IllegalArgumentException(i18n.getString("no_such_file_or_directory") + " (" + i18n.getString("broken_link") + ")");
         }
 
         // 3. Verifica fondamentale: DEVE essere una Directory
         if (!resolved.isDirectory()) {
-            throw new IllegalArgumentException("Not a directory: " + newDirPath);
+            // "Not a directory: path"
+            throw new IllegalArgumentException(i18n.getString("not_a_directory") + ": " + newDirPath);
         }
 
         // 4. Casting sicuro a DirectoryNode
@@ -114,7 +123,8 @@ public class FileSystemService implements IFileSystemService{
         Inode nodeToMove = fileSystem.resolveNode(sourcePath);
 
         if(nodeToMove == null) {
-            throw new IllegalArgumentException("mv: cannot stat '" + sourcePath + "': No such file or directory");
+            //throw new IllegalArgumentException("cannot stat '" + sourcePath + "': No such file or directory");
+            throw new IllegalArgumentException(i18n.getString("cannot_stat_prefix") + sourcePath + i18n.getString("no_such_file_suffix"));
         }
 
         // Otteniamo il genitore e il nome attuale per poterlo rimuovere dopo
@@ -159,7 +169,8 @@ public class FileSystemService implements IFileSystemService{
 
         // 3. Controllo Cicli (Non spostare una directory dentro se stessa)
         if (nodeToMove instanceof DirectoryNode && isSubdirectory((DirectoryNode) nodeToMove, targetDir)) {
-            throw new IllegalArgumentException("mv: cannot move '" + sourcePath + "' to a subdirectory of itself");
+            //throw new IllegalArgumentException("cannot move '" + sourcePath + "' to a subdirectory of itself");
+            throw new IllegalArgumentException(i18n.getString("cannot_move_prefix") + sourcePath + i18n.getString("subdirectory_of_itself_suffix"));
         }
 
         // 4. Gestione Sovrascrittura (Overwrite)
@@ -170,7 +181,8 @@ public class FileSystemService implements IFileSystemService{
             }
             if (existingNode.isDirectory()) {
                 // Non si può sovrascrivere una directory con un file (o altra dir)
-                throw new IllegalArgumentException("mv: cannot overwrite directory '" + newName + "' with non-directory");
+                //throw new IllegalArgumentException("cannot overwrite directory '" + newName + "' with non-directory");
+                throw new IllegalArgumentException(i18n.getString("cannot_overwrite_directory_prefix") + newName + i18n.getString("with_non_directory_suffix"));
             }
 
             // Rimuovi il file/link esistente per far spazio al nuovo
@@ -202,7 +214,8 @@ public class FileSystemService implements IFileSystemService{
 
     private PathParts resolveParentDirectoryAndName(String path) {
         if (path == null || path.trim().isEmpty()) {
-            throw new IllegalArgumentException("Path cannot be empty");
+            throw new IllegalArgumentException(i18n.getString("path_cannot_be_empty"));
+            //throw new IllegalArgumentException("Path cannot be empty");
         }
 
         String name;
@@ -220,10 +233,12 @@ public class FileSystemService implements IFileSystemService{
             Inode parentNode = fileSystem.resolveNode(parentPath);
 
             if (parentNode == null) {
-                throw new IllegalArgumentException("Directory not found: " + parentPath);
+                //throw new IllegalArgumentException("Directory not found: " + parentPath);
+                throw new IllegalArgumentException(i18n.getString("directory_not_found_prefix") + parentPath);
             }
             if (!(parentNode instanceof DirectoryNode)) {
-                throw new IllegalArgumentException("Path is not a directory: " + parentPath);
+                //throw new IllegalArgumentException("Path is not a directory: " + parentPath);
+                throw new IllegalArgumentException(i18n.getString("path_not_directory_prefix") + parentPath);
             }
             parentDir = (DirectoryNode) parentNode;
 
@@ -235,7 +250,8 @@ public class FileSystemService implements IFileSystemService{
 
         // Il nome non può essere vuoto o un operatore di navigazione
         if (name.isEmpty() || name.equals(".") || name.equals("..")) {
-            throw new IllegalArgumentException("Invalid name: " + name);
+            //throw new IllegalArgumentException("Invalid name: " + name);
+            throw new IllegalArgumentException(i18n.getString("invalid_name_prefix") + name);
         }
 
         return new PathParts(parentDir, name);
@@ -249,7 +265,8 @@ public class FileSystemService implements IFileSystemService{
 
         // 2. Esegui la logica (ora sulla directory corretta)
         if (targetDir.getChild(fileName) != null) {
-            throw new IllegalArgumentException("File already exists: " + fileName);
+            //throw new IllegalArgumentException("File already exists: " + fileName);
+            throw new IllegalArgumentException(i18n.getString("file_already_exists_prefix") + fileName);
         }
 
         FileNode newFile = new FileNode(targetDir);
@@ -266,11 +283,13 @@ public class FileSystemService implements IFileSystemService{
         Inode nodeToRemove = targetDir.getChild(fileName);
 
         if (nodeToRemove == null) {
-            throw new IllegalArgumentException("File does not exist: " + fileName);
+            throw new IllegalArgumentException(i18n.getString("file_does_not_exist_prefix") + fileName);
+            //throw new IllegalArgumentException("File does not exist: " + fileName);
         }
 
         if (nodeToRemove instanceof DirectoryNode) {
-            throw new IllegalArgumentException("Specified item is a directory");
+            throw new IllegalArgumentException(i18n.getString("item_is_directory"));
+            //throw new IllegalArgumentException("Specified item is a directory");
         }
 
         targetDir.removeChild(fileName, nodeToRemove);
@@ -284,7 +303,8 @@ public class FileSystemService implements IFileSystemService{
 
         // 2. Esegui la logica (ora sulla directory corretta)
         if (targetDir.getChild(directoryName) != null) {
-            throw new IllegalArgumentException("Directory already exists: " + directoryName);
+            throw new IllegalArgumentException(i18n.getString("directory_already_exists_prefix") + directoryName);
+            //throw new IllegalArgumentException("Directory already exists: " + directoryName);
         }
 
         DirectoryNode newDirectory = new DirectoryNode(targetDir);
@@ -301,15 +321,18 @@ public class FileSystemService implements IFileSystemService{
         Inode nodeToRemove = targetDir.getChild(directoryName);
 
         if(nodeToRemove == null) {
-            throw new IllegalArgumentException("Directory does not exist: " + directoryName);
+            throw new IllegalArgumentException(i18n.getString("directory_does_not_exist_prefix") + directoryName);
+            //throw new IllegalArgumentException("Directory does not exist: " + directoryName);
         }
 
         if(nodeToRemove.isSoftLink()){
-            throw new IllegalArgumentException("Specified item is a link: " + directoryName);
+            throw new IllegalArgumentException(i18n.getString("item_is_link_prefix") + directoryName);
+            //throw new IllegalArgumentException("Specified item is a link: " + directoryName);
         }
 
         if (!nodeToRemove.isDirectory()) {
-            throw new IllegalArgumentException("Specified item is a directory: " + directoryName);
+            throw new IllegalArgumentException(i18n.getString("item_is_directory_prefix") + directoryName);
+            //throw new IllegalArgumentException("Specified item is a directory: " + directoryName);
         }
 
 

@@ -8,4 +8,6 @@ public interface ISaveDataService {
     void save(IFsStateDto iFsStateDto);
     void saveAs(IFsStateDto iFsStateDto, File file);
     IFsStateDto load(String fileName);
+
+    String getCurrentFileAbsolutePath();
 }

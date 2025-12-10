@@ -14,6 +14,7 @@ public class FsStateMapper implements IFsStateMapper{
     private FileSystem fileSystem;
 
 
+
     private FsStateMapper() {
     }
 
@@ -46,6 +47,11 @@ public class FsStateMapper implements IFsStateMapper{
     public void toDTOas(File file) {
         IFsStateDto state = mapper();
         saveDataService.saveAs(state, file);
+    }
+
+    @Override
+    public String getCurrentFileAbsolutePath() {
+        return saveDataService.getCurrentFileAbsolutePath();
     }
 
     /**

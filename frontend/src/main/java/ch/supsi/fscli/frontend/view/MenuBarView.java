@@ -158,11 +158,12 @@ public class MenuBarView implements ViewComponent, PropertyChangeListener {
         if (evt instanceof FileSystemCreationEvent) {
             this.saveMenuItem.setDisable(false);
             this.saveAsMenuItem.setDisable(false);
-            this.newMenuItem.setDisable(true);
+
         }
         if (evt instanceof FileSystemSaved || evt instanceof FileSystemSavedAs || evt instanceof FileSystemOpenEvent) {
             this.saveMenuItem.setDisable(true);
             this.saveAsMenuItem.setDisable(true);
+            this.newMenuItem.setDisable(true);
         }
         if (evt instanceof FileSystemToSaved) {
             this.saveMenuItem.setDisable(false);

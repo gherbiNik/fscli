@@ -59,13 +59,13 @@ public class LogView implements ViewComponent, PropertyChangeListener {
         }
 
         if (evt instanceof FileSystemSaved)
-            log("DA TRADURRE: fs salvato");
+            log(i18n.getString("log.fileSaved")+evt.getNewValue());
 
         if (evt instanceof FileSystemSavedAs)
-            log("DA TRADURRE: fs salvato come...");
+            log(i18n.getString("log.fileSavedAs")+evt.getNewValue());
 
         if (evt instanceof FileSystemOpenEvent)
-            log("DA TRADURRE: fs open");
+            log(i18n.getString("log.fileOpen")+evt.getNewValue());
 
 
 

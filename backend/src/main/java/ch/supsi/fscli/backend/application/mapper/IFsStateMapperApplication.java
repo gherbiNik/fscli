@@ -6,4 +6,6 @@ public interface IFsStateMapperApplication {
     void toDTO();
     void fromDTO(String fileName);
     void toDTOas(File file);
+
+    String getCurrentFileAbsolutePath();
 }

@@ -41,4 +41,9 @@ public class FsStateMapperApplication implements IFsStateMapperApplication{
     public void toDTOas(File file) {
         iFsStateMapper.toDTOas(file);
     }
+
+    @Override
+    public String getCurrentFileAbsolutePath() {
+        return iFsStateMapper.getCurrentFileAbsolutePath();
+    }
 }

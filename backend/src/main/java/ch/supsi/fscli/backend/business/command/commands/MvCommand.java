@@ -4,6 +4,7 @@ import ch.supsi.fscli.backend.business.command.commands.validators.CommandValida
 import ch.supsi.fscli.backend.business.command.commands.validators.NoOptionsValidator;
 import ch.supsi.fscli.backend.business.command.commands.validators.RequiresArgumentsValidator;
 import ch.supsi.fscli.backend.business.command.commands.validators.RequiresAtLeastArgumentsValidator;
+import ch.supsi.fscli.backend.business.filesystem.Inode;
 import ch.supsi.fscli.backend.business.service.IFileSystemService;
 
 import java.util.List;
@@ -31,6 +32,28 @@ public class MvCommand extends AbstractValidatedCommand{
         String destination = args.get(args.size() - 1);
 
         try {
+            if (args.size() > 2) {
+                Inode destInode = fileSystemService.getInode(destination);
+                boolean isDir = false;
+
+                if (destInode != null) {
+                    // Controlla se è una directory o un link che punta a una directory
+                    if (destInode.isDirectory()) {
+                        isDir = true;
+                    } else if (destInode.isSoftLink()) {
+                        Inode resolved = fileSystemService.followLink(destInode);
+                        if (resolved != null && resolved.isDirectory()) {
+                            isDir = true;
+                        }
+                    }
+                }
+
+                if (!isDir) {
+                    // Se la destinazione non esiste o non è una directory, mv multiplo deve fallire
+                    return CommandResult.error(getName()+": " + translate("target") +" "+ destination+" " + translate("not_a_directory"));
+                }
+            }
+
             if (args.size() == 2) {
                 String source = args.get(0);
                 fileSystemService.move(source, destination);

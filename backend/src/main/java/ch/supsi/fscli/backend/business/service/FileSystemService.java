@@ -119,11 +119,8 @@ public class FileSystemService implements IFileSystemService{
 
     public void move(String sourcePath, String destinationPath) {
         // 1. Risoluzione Nodo Sorgente
-        // Nota: resolveNode restituisce il Link stesso se la sorgente è un link (corretto per mv)
         Inode nodeToMove = fileSystem.resolveNode(sourcePath);
-
-        if(nodeToMove == null) {
-            //throw new IllegalArgumentException("cannot stat '" + sourcePath + "': No such file or directory");
+        if (nodeToMove == null) {
             throw new IllegalArgumentException(i18n.getString("cannot_stat_prefix") + sourcePath + i18n.getString("no_such_file_suffix"));
         }
 
@@ -136,36 +133,31 @@ public class FileSystemService implements IFileSystemService{
         Inode rawDestNode = fileSystem.resolveNode(destinationPath);
 
         DirectoryNode targetDir = null;
-        String newName = "";
+        String newName = null;
         boolean moveIntoDirectory = false;
 
-        // Analizziamo la destinazione per capire se è una cartella (o link a cartella)
+        // Verifichiamo se la destinazione esiste e se è una directory (o un link a una directory)
         if (rawDestNode != null) {
             Inode effectiveDest = rawDestNode;
-
-            // Se è un link, vediamo cosa c'è dietro SOLO per capire se è una directory
+            // Se è un link, lo seguiamo per vedere se punta a una directory
             if (rawDestNode instanceof SoftLink) {
                 Inode resolved = followLink(rawDestNode);
                 if (resolved != null) {
                     effectiveDest = resolved;
                 }
-                // Se resolved è null (broken link), trattiamo rawDestNode come un file da sovrascrivere
             }
-            else if (effectiveDest.isDirectory()) {
-                // CASO A: Spostamento DENTRO una directory esistente
+
+            if (effectiveDest.isDirectory()) {
+                // CASO A: Spostamento DENTRO una directory esistente (es: mv file.txt /home/user/)
                 moveIntoDirectory = true;
                 targetDir = (DirectoryNode) effectiveDest;
                 newName = sourceName; // Mantiene il nome originale
             }
-            else { // is a file
-                PathParts destParts = resolveParentDirectoryAndName(destinationPath);
-                String destname = destParts.name();
-                throw new IllegalArgumentException(i18n.getString("item_is_file_prefix") + destname);
-            }
         }
 
         if (!moveIntoDirectory) {
-            // CASO B: Rename o Overwrite (Destinazione è un file, un link a file, o non esiste)
+            // CASO B: Rename o Overwrite (La destinazione è un file esistente, oppure non esiste ancora)
+            // (es: mv file.txt nuovoNome.txt  OPPURE mv file.txt fileEsistenteDaSovrascrivere.txt)
             PathParts destParts = resolveParentDirectoryAndName(destinationPath);
             targetDir = destParts.parentDir();
             newName = destParts.name();
@@ -173,34 +165,54 @@ public class FileSystemService implements IFileSystemService{
 
         // 3. Controllo Cicli (Non spostare una directory dentro se stessa)
         if (nodeToMove instanceof DirectoryNode && isSubdirectory((DirectoryNode) nodeToMove, targetDir)) {
-            //throw new IllegalArgumentException("cannot move '" + sourcePath + "' to a subdirectory of itself");
             throw new IllegalArgumentException(i18n.getString("cannot_move_prefix") + sourcePath + i18n.getString("subdirectory_of_itself_suffix"));
         }
 
-        // 4. Gestione Sovrascrittura (Overwrite)
+        // 4. Gestione Collisioni / Sovrascrittura
         Inode existingNode = targetDir.getChild(newName);
+
         if (existingNode != null) {
+            // Se stiamo provando a spostare il file su se stesso (es: mv a ./a)
             if (existingNode == nodeToMove) {
-                return; // Stesso file, non fare nulla
+                return;
             }
-            if (existingNode.isDirectory()) {
-                // Non si può sovrascrivere una directory con un file (o altra dir)
-                //throw new IllegalArgumentException("cannot overwrite directory '" + newName + "' with non-directory");
+
+            // CONTROLLI DI COMPATIBILITÀ TIPO
+
+            // 1. Sorgente Directory -> Destinazione File (VIETATO)
+            if (nodeToMove.isDirectory() && !existingNode.isDirectory()) {
+                // "cannot overwrite non-directory '...' with directory '...'"
+                throw new IllegalArgumentException(i18n.getString("cannot_overwrite_prefix") + newName + i18n.getString("already_exists_prefix")+sourcePath);
+            }
+
+            // 2. Sorgente File -> Destinazione Directory (VIETATO)
+            if (!nodeToMove.isDirectory() && existingNode.isDirectory()) {
                 throw new IllegalArgumentException(i18n.getString("cannot_overwrite_directory_prefix") + newName + i18n.getString("with_non_directory_suffix"));
             }
 
+            // 3. Sorgente Directory -> Destinazione Directory (VIETATO se esiste già)
+            if (nodeToMove.isDirectory() && existingNode.isDirectory()) {
+                // Solitamente mv fallisce se la directory target non è vuota.
+                // Per sicurezza qui impediamo l'overwrite di directory su directory.
+                throw new IllegalArgumentException(i18n.getString("directory_already_exists_prefix") + newName);
+            }
+
+            // 4. Sorgente File -> Destinazione File (PERMESSO: Sovrascrittura)
             // Rimuovi il file/link esistente per far spazio al nuovo
             targetDir.removeChild(newName, existingNode);
         }
 
-        // 5. Esecuzione Spostamento Atomic-like
+        // 5. Esecuzione Spostamento
         sourceParent.removeChild(sourceName, nodeToMove);
         targetDir.addChild(newName, nodeToMove);
 
-        // Opzionale: Aggiornamento parent se il nodo spostato è una directory
+        // Aggiornamento riferimento parent se il nodo spostato è una directory
         if (nodeToMove instanceof DirectoryNode) {
             ((DirectoryNode) nodeToMove).setParent(targetDir);
         }
+
+        // Segnaliamo che ci sono dati da salvare
+        setDataToSave(true);
     }
 
     private boolean isSubdirectory(DirectoryNode parent, DirectoryNode potentialChild) {

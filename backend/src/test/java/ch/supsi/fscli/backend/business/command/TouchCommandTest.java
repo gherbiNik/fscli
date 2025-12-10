@@ -1,11 +1,9 @@
 package ch.supsi.fscli.backend.business.command;
 
 import ch.supsi.fscli.backend.business.command.commands.AbstractValidatedCommand;
-import ch.supsi.fscli.backend.business.command.commands.TouchCommand;
-import ch.supsi.fscli.backend.business.command.business.CommandDetails;
-import ch.supsi.fscli.backend.business.command.business.CommandHelpContainer;
 import ch.supsi.fscli.backend.business.command.commands.CommandContext;
 import ch.supsi.fscli.backend.business.command.commands.CommandResult;
+import ch.supsi.fscli.backend.business.command.commands.TouchCommand;
 import ch.supsi.fscli.backend.business.command.commands.validators.AbstractValidator;
 import ch.supsi.fscli.backend.business.filesystem.DirectoryNode;
 import ch.supsi.fscli.backend.business.filesystem.FileSystem;
@@ -13,13 +11,13 @@ import ch.supsi.fscli.backend.business.filesystem.Inode;
 import ch.supsi.fscli.backend.business.service.FileSystemService;
 import ch.supsi.fscli.backend.business.service.IFileSystemService;
 import ch.supsi.fscli.backend.util.BackendTranslator;
-import ch.supsi.fscli.backend.business.command.business.CommandExecutor;
-import ch.supsi.fscli.backend.business.command.business.CommandParser;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -28,41 +26,27 @@ class TouchCommandTest {
     private TouchCommand touchCommand;
     private IFileSystemService fileSystemService;
     private FileSystem fileSystem;
-    private CommandHelpContainer commandHelpContainer;
 
     @BeforeEach
     void setUp() {
-        resetSingleton(CommandExecutor.class);
-        resetSingleton(CommandHelpContainer.class);
-        resetSingleton(FileSystemService.class);
-        resetSingleton(BackendTranslator.class);
-        resetSingleton(CommandParser.class);
-        resetSingleton(FileSystem.class);
-
-        fileSystem = FileSystem.getInstance();
-        fileSystemService = FileSystemService.getInstance(fileSystem);
-
-        BackendTranslator translator = BackendTranslator.getInstance();
+        // 1. Setup Manuale delle dipendenze
+        BackendTranslator translator = new BackendTranslator();
         translator.setLocaleDefault(Locale.US);
 
-        commandHelpContainer = CommandHelpContainer.getInstance(translator);
+        AbstractValidatedCommand.setTranslator(translator);
+        AbstractValidator.setTranslator(translator);
 
-        Map<String, CommandDetails> m = commandHelpContainer.getCommandDetailsMap();
-        String synopsis = m.get("touch").synopsis();
-        String descr = m.get("touch").description();
-        touchCommand = new TouchCommand(fileSystemService, "touch", synopsis, descr);
-        AbstractValidatedCommand.setTranslator(BackendTranslator.getInstance());
-        AbstractValidator.setTranslator(BackendTranslator.getInstance());
-    }
+        // 2. Creazione istanze fresche
+        fileSystem = new FileSystem();
+        fileSystemService = new FileSystemService(fileSystem, translator);
 
-    private void resetSingleton(Class<?> aClass) {
-        try {
-            java.lang.reflect.Field instance = aClass.getDeclaredField("instance");
-            instance.setAccessible(true);
-            instance.set(null, null);
-        } catch (Exception e) {
-            fail("Could not reset singleton for: " + aClass.getName());
-        }
+        // 3. Creazione del comando
+        touchCommand = new TouchCommand(
+                fileSystemService,
+                "touch",
+                "touch synopsis",
+                "touch description"
+        );
     }
 
     @Test
@@ -70,8 +54,10 @@ class TouchCommandTest {
         List<String> arguments = new ArrayList<>();
         arguments.add("testFile.txt");
         List<String> options = new ArrayList<>();
+
         CommandContext context = new CommandContext(fileSystemService.getCurrentDirectory(), arguments, options);
         CommandResult result = touchCommand.execute(context);
+
         assertTrue(result.isSuccess());
         assertNotNull(fileSystemService.getCurrentDirectory().getChild("testFile.txt"));
     }
@@ -99,6 +85,7 @@ class TouchCommandTest {
         arguments.add("existingDir");
         List<String> options = new ArrayList<>();
         fileSystemService.createDirectory("existingDir");
+
         CommandContext context = new CommandContext(fileSystemService.getCurrentDirectory(), arguments, options);
         CommandResult result = touchCommand.execute(context);
         assertFalse(result.isSuccess());

@@ -6,32 +6,40 @@ import ch.supsi.fscli.backend.business.filesystem.FileSystem;
 import ch.supsi.fscli.backend.business.service.FileSystemService;
 import ch.supsi.fscli.backend.business.service.IFileSystemService;
 import ch.supsi.fscli.backend.util.BackendTranslator;
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 public class ClearCommandTest {
-    private static FileSystem fileSystem;
-    private static IFileSystemService fileSystemService;
-    private static ClearCommand clearCommand;
+    // 1. Niente più static
+    private FileSystem fileSystem;
+    private IFileSystemService fileSystemService;
+    private ClearCommand clearCommand;
 
-    @BeforeAll
-    public static void setUp() {
-        fileSystem = FileSystem.getInstance();
-        fileSystemService = FileSystemService.getInstance(fileSystem);
+    @BeforeEach // 2. Eseguiamo prima di OGNI test
+    public void setUp() {
+        // 3. Manual Injection
+        BackendTranslator backendTranslator = new BackendTranslator();
+        backendTranslator.setLocaleDefault(Locale.US);
+
+        AbstractValidatedCommand.setTranslator(backendTranslator);
+        AbstractValidator.setTranslator(backendTranslator);
+
+        fileSystem = new FileSystem();
+        // Iniettiamo le dipendenze nel costruttore
+        fileSystemService = new FileSystemService(fileSystem, backendTranslator);
+
         clearCommand = new ClearCommand(
                 fileSystemService,
                 "clear",
                 "clear",
                 "Clear the terminal screen"
         );
-        AbstractValidatedCommand.setTranslator(BackendTranslator.getInstance());
-        AbstractValidator.setTranslator(BackendTranslator.getInstance());
     }
 
     @Test
@@ -59,8 +67,6 @@ public class ClearCommandTest {
         assertFalse(result.isSuccess());
     }
 
-
-
     @Test
     public void testExecute_WithOptions_ShouldReturnError() {
         CommandContext context = new CommandContext(
@@ -72,8 +78,4 @@ public class ClearCommandTest {
 
         assertFalse(result.isSuccess());
     }
-
-
-
-
 }

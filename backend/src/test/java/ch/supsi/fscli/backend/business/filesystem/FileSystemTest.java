@@ -2,13 +2,17 @@ package ch.supsi.fscli.backend.business.filesystem;
 
 import ch.supsi.fscli.backend.business.command.commands.CommandContext;
 import ch.supsi.fscli.backend.business.command.commands.LnCommand;
+import ch.supsi.fscli.backend.business.command.commands.AbstractValidatedCommand;
+import ch.supsi.fscli.backend.business.command.commands.validators.AbstractValidator;
 import ch.supsi.fscli.backend.business.service.FileSystemService;
+import ch.supsi.fscli.backend.util.BackendTranslator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import java.lang.reflect.Field;
+import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -26,20 +30,28 @@ class FileSystemTest {
 
     @BeforeEach
     void setUp() {
-        // Reset dei singleton dipendenti
-        resetSingleton(FileSystemService.class);
-        resetSingleton(FileSystem.class);
+        // 1. Setup dipendenze base
+        BackendTranslator translator = new BackendTranslator();
+        translator.setLocaleDefault(Locale.US);
 
-        // Setup del FileSystem
-        fileSystem = FileSystem.getInstance();
-        fileSystemService = FileSystemService.getInstance(fileSystem);
+        // Configuriamo i componenti statici legacy
+        AbstractValidatedCommand.setTranslator(translator);
+        AbstractValidator.setTranslator(translator);
+
+        // 2. Creiamo le istanze (Manual Injection)
+        fileSystem = new FileSystem();
+        fileSystemService = new FileSystemService(fileSystem, translator);
+
         root = fileSystem.getRoot();
 
-        // Crea una struttura di test: /home/user/docs e /home/user/file.txt
+        // 3. Inizializziamo il comando per i test sui link
+        lnCommand = new LnCommand(fileSystemService, "ln", "ln usage", "desc");
+
+        // 4. Creiamo la struttura di test: /home/user/docs e /home/user/file.txt
         fileSystemService.createDirectory("home");
         home = (DirectoryNode) root.getChild("home");
 
-        // Usiamo changeDirectory per testare anche il CWD
+        // Usiamo changeDirectory per testare anche il CWD e spostarci mentre creiamo
         fileSystem.changeDirectory("/home");
 
         fileSystemService.createDirectory("user");
@@ -57,22 +69,8 @@ class FileSystemTest {
         fileSystem.changeDirectory("/");
     }
 
-    private void resetSingleton(Class<?> aClass) {
-        try {
-            Field instance = aClass.getDeclaredField("instance");
-            instance.setAccessible(true);
-            instance.set(null, null);
-        } catch (Exception e) {
-            fail("Could not reset singleton for: " + aClass.getName());
-        }
-    }
-
-    @Test
-    @DisplayName("FileSystem should be singleton")
-    void testSingleton() {
-        FileSystem fs1 = FileSystem.getInstance();
-        assertSame(fs1, fileSystem);
-    }
+    // Nota: Ho rimosso 'testSingleton' perché getInstance() non esiste più.
+    // In questo contesto (test unitario) non è un Singleton, ed è corretto così.
 
     @Test
     @DisplayName("Current directory should be root initially")
@@ -146,7 +144,8 @@ class FileSystemTest {
         // documents <- link1 <- link2
         fileSystemService.createDirectory("documents");
         Inode documents = fileSystemService.getInode("documents");
-        lnCommand = new LnCommand(fileSystemService, "ln", "ln usage", "desc");
+
+        // (Nota: lnCommand è già inizializzato nel setUp)
 
         createSoftLink("documents", "link1");
         createSoftLink("link1", "link2");

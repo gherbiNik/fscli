@@ -10,15 +10,11 @@ public class FileSystemApplicationTest {
 
     @BeforeEach
     void setUp() {
-        // Reset singletons
+        // Reset solo del Singleton "root" (l'Application)
         try {
             java.lang.reflect.Field fsAppInstance = FileSystemApplication.class.getDeclaredField("instance");
             fsAppInstance.setAccessible(true);
             fsAppInstance.set(null, null);
-
-            java.lang.reflect.Field fsInstance = FileSystem.class.getDeclaredField("instance");
-            fsInstance.setAccessible(true);
-            fsInstance.set(null, null);
         } catch (Exception e) {
             fail("Could not reset singletons");
         }
@@ -43,10 +39,14 @@ public class FileSystemApplicationTest {
     @DisplayName("Created file system should be accessible")
     void testFileSystemAccessibility() {
         FileSystemApplication app = FileSystemApplication.getInstance();
+
+        // Prima della creazione deve essere false
+        assertFalse(app.isFileSystemCreated());
+
         app.createFileSystem();
 
-        FileSystem fs = FileSystem.getInstance();
-        assertNotNull(fs);
-        assertNotNull(fs.getRoot());
+        // Dopo la creazione deve essere true
+        assertTrue(app.isFileSystemCreated());
+
     }
 }

@@ -13,18 +13,10 @@ public class DirectoryNodeTest {
 
     @BeforeEach
     void setUp() {
-        // Aggiunto reset per sicurezza, anche se i test non usano getInstance()
-        try {
-            java.lang.reflect.Field instance = FileSystem.class.getDeclaredField("instance");
-            instance.setAccessible(true);
-            instance.set(null, null);
-        } catch (Exception e) {
-            fail("Could not reset singleton");
-        }
-
+        // Niente più reflection! DirectoryNode è un oggetto semplice e isolato.
         root = new DirectoryNode(null);
         subDir = new DirectoryNode(root);
-        root.addChild("subDir",subDir);
+        root.addChild("subDir", subDir);
     }
 
     @Test

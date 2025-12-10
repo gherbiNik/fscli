@@ -1,9 +1,5 @@
 package ch.supsi.fscli.backend.business.command;
 
-import ch.supsi.fscli.backend.business.command.business.CommandDetails;
-import ch.supsi.fscli.backend.business.command.business.CommandExecutor;
-import ch.supsi.fscli.backend.business.command.business.CommandHelpContainer;
-import ch.supsi.fscli.backend.business.command.business.CommandParser;
 import ch.supsi.fscli.backend.business.command.commands.*;
 import ch.supsi.fscli.backend.business.command.commands.validators.AbstractValidator;
 import ch.supsi.fscli.backend.business.filesystem.FileSystem;
@@ -16,7 +12,6 @@ import org.junit.jupiter.api.Test;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -24,42 +19,27 @@ public class PwdCommandTest {
     private PwdCommand pwdCommand;
     private IFileSystemService fileSystemService;
     private FileSystem fileSystem;
-    private CommandHelpContainer commandHelpContainer;
 
     @BeforeEach
     void setUp() {
-        resetSingleton(CommandExecutor.class);
-        resetSingleton(CommandHelpContainer.class);
-        resetSingleton(FileSystemService.class);
-        resetSingleton(BackendTranslator.class);
-        resetSingleton(CommandParser.class);
-        resetSingleton(FileSystem.class);
-
-        fileSystem = FileSystem.getInstance();
-        fileSystemService = FileSystemService.getInstance(fileSystem);
-
-        BackendTranslator translator = BackendTranslator.getInstance();
+        // 1. Setup Manuale delle dipendenze
+        BackendTranslator translator = new BackendTranslator();
         translator.setLocaleDefault(Locale.US);
 
-        commandHelpContainer = CommandHelpContainer.getInstance(translator);
+        AbstractValidatedCommand.setTranslator(translator);
+        AbstractValidator.setTranslator(translator);
 
-        Map<String, CommandDetails> m = commandHelpContainer.getCommandDetailsMap();
-        String synopsis = m.get("pwd").synopsis();
-        String descr = m.get("pwd").description();
-        pwdCommand = new PwdCommand(fileSystemService, "pwd", synopsis, descr);
-        AbstractValidatedCommand.setTranslator(BackendTranslator.getInstance());
-        AbstractValidator.setTranslator(BackendTranslator.getInstance());
+        // 2. Creazione istanze fresche
+        fileSystem = new FileSystem();
+        fileSystemService = new FileSystemService(fileSystem, translator);
 
-    }
-
-    private void resetSingleton(Class<?> aClass) {
-        try {
-            java.lang.reflect.Field instance = aClass.getDeclaredField("instance");
-            instance.setAccessible(true);
-            instance.set(null, null);
-        } catch (Exception e) {
-            fail("Could not reset singleton for: " + aClass.getName());
-        }
+        // 3. Creazione del comando con stringhe dirette (niente CommandHelpContainer)
+        pwdCommand = new PwdCommand(
+                fileSystemService,
+                "pwd",
+                "pwd synopsis",
+                "pwd description"
+        );
     }
 
     @Test

@@ -7,47 +7,43 @@ import ch.supsi.fscli.backend.business.filesystem.Inode;
 import ch.supsi.fscli.backend.business.service.FileSystemService;
 import ch.supsi.fscli.backend.business.service.IFileSystemService;
 import ch.supsi.fscli.backend.util.BackendTranslator;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 public class MvCommandTest {
-    private static FileSystem fileSystem;
-    private static IFileSystemService fileSystemService;
-    private static MvCommand mvCommand;
+    // 1. Niente più static
+    private FileSystem fileSystem;
+    private IFileSystemService fileSystemService;
+    private MvCommand mvCommand;
 
-    @BeforeAll
-    public static void setUp() {
-        fileSystem = FileSystem.getInstance();
-        fileSystemService = FileSystemService.getInstance(fileSystem);
+    @BeforeEach // 2. Eseguiamo prima di OGNI test
+    public void setUp() {
+        // 3. Manual Injection e Setup
+        BackendTranslator translator = new BackendTranslator();
+        translator.setLocaleDefault(Locale.US);
+
+        AbstractValidatedCommand.setTranslator(translator);
+        AbstractValidator.setTranslator(translator);
+
+        fileSystem = new FileSystem();
+        fileSystemService = new FileSystemService(fileSystem, translator);
+
         mvCommand = new MvCommand(
                 fileSystemService,
                 "mv",
                 "mv [SOURCE] [DESTINATION]",
                 "Move or rename a file or directory"
         );
-        AbstractValidatedCommand.setTranslator(BackendTranslator.getInstance());
-        AbstractValidator.setTranslator(BackendTranslator.getInstance());
-        fileSystemService.setTranslator(BackendTranslator.getInstance());
-    }
 
-    @BeforeEach
-    public void resetFileSystem() {
-        // Reset to root directory before each test
-        fileSystemService.changeDirectory("/");
-
-        // Clean up existing structure recursively
-        cleanupDirectory("home");
-        cleanupDirectory("tmp");
-
-        // Create fresh test directory structure
+        // 4. Creiamo la struttura base (su un FS vuoto)
+        // Non serve cleanup perché il FS è nuovo!
         fileSystemService.createDirectory("home");
         fileSystemService.createDirectory("home/user");
         fileSystemService.createDirectory("home/user/documents");
@@ -55,30 +51,9 @@ public class MvCommandTest {
         fileSystemService.createFile("home/test.txt");
         fileSystemService.createFile("home/user/file1.txt");
         fileSystemService.createFile("home/user/file2.txt");
-    }
 
-    private void cleanupDirectory(String dirName) {
-        try {
-            Inode node = fileSystemService.getInode(dirName);
-            if (node != null) {
-                if (node.isDirectory()) {
-                    // Remove all children first
-                    var children = fileSystemService.getChildInodeTable(dirName);
-                    if (children != null) {
-                        for (String childName : children.keySet().toArray(new String[0])) {
-                            if (childName.equals(".") || childName.equals("..")) {
-                                continue;
-                            }
-                            cleanupDirectory(dirName + "/" + childName);
-                        }
-                    }
-                    fileSystemService.removeDirectory(dirName);
-                } else {
-                    fileSystemService.removeFile(dirName);
-                }
-            }
-        } catch (Exception ignored) {
-        }
+        // Posizioniamoci alla root
+        fileSystem.changeDirectory("/");
     }
 
     @Test
@@ -270,7 +245,7 @@ public class MvCommandTest {
         // Setup: crea /tmp/realDir e un link /home/link -> /tmp/realDir
         fileSystemService.createDirectory("tmp/realDir");
 
-        // Creazione manuale link per il test (o usare lnCommand se disponibile)
+        // Creazione manuale link per il test
         List<String> args = List.of("/tmp/realDir", "home/linkToDir");
         List<String> opts = List.of("-s");
         LnCommand ln = new LnCommand(fileSystemService, "ln", "", "");
@@ -329,7 +304,6 @@ public class MvCommandTest {
 
         CommandResult result = mvCommand.execute(context);
 
-        // TODO nik controlla validator
         assertTrue(result.isSuccess());
 
         // Verifica che i file siano spariti dalla root

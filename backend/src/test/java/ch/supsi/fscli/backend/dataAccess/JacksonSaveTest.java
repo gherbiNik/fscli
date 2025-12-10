@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 import java.io.File;
-import java.lang.reflect.Field;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
@@ -29,19 +29,15 @@ class JacksonSaveTest {
 
     @BeforeEach
     void setUp() throws Exception {
-        // Reset singleton
-        Field instanceField = JacksonSaveDataService.class.getDeclaredField("myself");
-        instanceField.setAccessible(true);
-        instanceField.set(null, null);
-
-        // Mock PreferenceDAO
+        // 1. Mock delle dipendenze
         preferenceDAO = mock(PreferenceDAO.class);
-        // Mock a full file path (e.g. "preferences.properties") inside the tempDir.
-        // When the service calls .getParent(), it will correctly resolve to 'tempDir'.
+
+        // Configuriamo il mock per restituire un percorso valido nella cartella temporanea
         when(preferenceDAO.getUserPreferencesFilePath()).thenReturn(tempDir.resolve("preferences.properties"));
 
-        // Create service instance
-        service = JacksonSaveDataService.getInstance(preferenceDAO);
+        // 2. Creazione dell'istanza da testare (Manual Injection)
+        // Niente più reflection o getInstance!
+        service = new JacksonSaveDataService(preferenceDAO);
     }
 
     @Test
@@ -120,7 +116,7 @@ class JacksonSaveTest {
 
         // Debug: Print the saved JSON
         try {
-            String content = new String(java.nio.file.Files.readAllBytes(saveFile.toPath()));
+            String content = new String(Files.readAllBytes(saveFile.toPath()));
             System.out.println("Saved JSON:\n" + content);
         } catch (Exception e) {
             e.printStackTrace();

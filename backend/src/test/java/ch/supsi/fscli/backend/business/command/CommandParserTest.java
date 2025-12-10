@@ -9,20 +9,17 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class CommandParserTest {
-    CommandParser parser;
+
+    private CommandParser parser;
 
     @BeforeEach
     void setup(){
-        this.parser = CommandParser.getInstance();
+        // Niente più getInstance(), creiamo un'istanza fresca per ogni test
+        this.parser = new CommandParser();
     }
 
-    @Test
-    void testGetInstance() {
-        CommandParser parser1 = CommandParser.getInstance();
-        CommandParser parser2 = CommandParser.getInstance();
-        assertNotNull(parser1);
-        assertSame(parser1, parser2); // Singleton check
-    }
+    // Il test testGetInstance() è stato rimosso perché la classe non è più
+    // responsabile della propria unicità (ci pensa Guice).
 
     @Test
     void testParseEmptyCommand() {

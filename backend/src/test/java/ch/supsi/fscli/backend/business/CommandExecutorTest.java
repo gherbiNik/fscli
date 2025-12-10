@@ -1,10 +1,9 @@
 package ch.supsi.fscli.backend.business;
 
-import ch.supsi.fscli.backend.business.command.business.CommandDetails;
 import ch.supsi.fscli.backend.business.command.business.CommandExecutor;
-import ch.supsi.fscli.backend.business.command.business.CommandHelpContainer;
 import ch.supsi.fscli.backend.business.command.business.CommandParser;
 import ch.supsi.fscli.backend.business.command.commands.*;
+import ch.supsi.fscli.backend.business.command.commands.validators.AbstractValidator;
 import ch.supsi.fscli.backend.business.filesystem.FileSystem;
 import ch.supsi.fscli.backend.business.service.FileSystemService;
 import ch.supsi.fscli.backend.util.BackendTranslator;
@@ -26,45 +25,28 @@ class CommandExecutorTest {
 
     @BeforeEach
     void setUp() {
-        // Reset di tutti i singleton per un test di integrazione pulito
-        resetSingleton(CommandExecutor.class);
-        resetSingleton(CommandHelpContainer.class);
-        resetSingleton(FileSystemService.class);
-        resetSingleton(BackendTranslator.class);
-        resetSingleton(CommandParser.class);
-        resetSingleton(FileSystem.class);
-
-        // Inizializza le dipendenze
-        BackendTranslator translator = BackendTranslator.getInstance();
+        // 1. Creiamo le dipendenze base manualmente (Manual Injection)
+        // Non servono resetSingleton perché ogni test avrà le sue nuove istanze!
+        BackendTranslator translator = new BackendTranslator();
         translator.setLocaleDefault(Locale.US);
-        CommandHelpContainer container = CommandHelpContainer.getInstance(translator);
 
-        fileSystem = FileSystem.getInstance();
-        fileSystemService = FileSystemService.getInstance(fileSystem);
-        CommandParser parser = CommandParser.getInstance();
+        // Configuriamo i componenti statici legacy (se non ancora refactorizzati)
+        AbstractValidatedCommand.setTranslator(translator);
+        AbstractValidator.setTranslator(translator);
 
-        // Per testare l'executor, dobbiamo fornirgli comandi reali
+        // 2. Creiamo il "mondo" (FileSystem e Service)
+        fileSystem = new FileSystem();
+        fileSystemService = new FileSystemService(fileSystem, translator);
+
+        CommandParser parser = new CommandParser();
+
+        // 3. Prepariamo la lista dei comandi per il test
         List<ICommand> commands = new ArrayList<>();
-        Map<String, CommandDetails> m = container.getCommandDetailsMap();
+        // Possiamo passare stringhe fittizie per synopsis/desc, non influenzano la logica del test
+        commands.add(new RmCommand(fileSystemService, "rm", "rm [FILE]...", "remove files"));
 
-        commands.add(new RmCommand(fileSystemService, "rm", m.get("rm").synopsis(), m.get("rm").description()));
-        // Resettiamo CommandExecutor perché FileSystem.getInstance() ne ha creato uno vuoto
-        // che impedirebbe l'inizializzazione corretta con la nostra lista 'commands'.
-        resetSingleton(CommandExecutor.class);
-        commandExecutor = CommandExecutor.getInstance(fileSystemService, parser, commands);
-    }
-
-    /**
-     * Helper utility per resettare un campo 'instance' statico e privato.
-     */
-    private void resetSingleton(Class<?> aClass) {
-        try {
-            java.lang.reflect.Field instance = aClass.getDeclaredField("instance");
-            instance.setAccessible(true);
-            instance.set(null, null);
-        } catch (Exception e) {
-            fail("Could not reset singleton for: " + aClass.getName());
-        }
+        // 4. Creiamo l'Executor iniettando le dipendenze nel costruttore
+        commandExecutor = new CommandExecutor(fileSystemService, parser, commands);
     }
 
     @Test

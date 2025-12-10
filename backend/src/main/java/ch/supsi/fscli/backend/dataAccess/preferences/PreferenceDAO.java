@@ -1,6 +1,8 @@
 package ch.supsi.fscli.backend.dataAccess.preferences;
 
 
+import com.google.inject.Singleton;
+
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -8,32 +10,20 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Properties;
 
+@Singleton
 public class PreferenceDAO implements IPreferenceDAO {
-    private static String userHomeDirectory = System.getProperty("user.home");
-
-
-
-    ////////////////
-    /// CONSTANT ///
-    ////////////////
+    // Costanti
     private static final String preferencesDirectory = ".fscli";
     private static final String preferencesFile = "preferences.properties";
     private static final String DEFAULT_FONT_NAME = "System";
     private static final int DEFAULT_COLUMN = 80;
     private static final int DEFAULT_OUTPUT_AREA_ROW = 10;
     private static final int DEFAULT_LOG_AREA_ROW = 5;
-    
-    private static PreferenceDAO instance;
+
+    private final String userHomeDirectory = System.getProperty("user.home");
     private Properties preferences;
 
-    private PreferenceDAO() {}
-    
-    public static PreferenceDAO getInstance() {
-        if (instance == null) {
-            instance = new PreferenceDAO();
-        }
-        return instance;
-    }
+    public PreferenceDAO() {}
 
     public Path getUserPreferencesFilePath() {
         return Path.of(userHomeDirectory, preferencesDirectory, preferencesFile);

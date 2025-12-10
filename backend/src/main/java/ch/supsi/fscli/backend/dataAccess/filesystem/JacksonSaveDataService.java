@@ -5,6 +5,8 @@ import ch.supsi.fscli.backend.business.dto.IFsStateDto;
 import ch.supsi.fscli.backend.dataAccess.preferences.PreferenceDAO;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
 
 import java.io.File;
 import java.io.IOException;
@@ -14,9 +16,9 @@ import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
+@Singleton
 public class JacksonSaveDataService implements ISaveData {
 
-    private static JacksonSaveDataService myself;
     private final ObjectMapper objectMapper;
     private final String saveDirectory = "saves";
     private final String saveFileName = "filesystemSaved";
@@ -25,17 +27,13 @@ public class JacksonSaveDataService implements ISaveData {
     // Campo aggiunto per tracciare il file corrente
     private File currentFile;
 
-    private JacksonSaveDataService() {
+    @Inject
+    public JacksonSaveDataService(PreferenceDAO preferenceDAO) {
+        this.preferenceDAO = preferenceDAO;
+
+        // L'ObjectMapper è un dettaglio interno, lo creiamo qui (oppure potremmo iniettarlo se volessimo essere puristi, ma va bene così per ora)
         this.objectMapper = new ObjectMapper();
         this.objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
-    }
-
-    public static JacksonSaveDataService getInstance(PreferenceDAO preferenceDAO) {
-        if (myself == null) {
-            myself = new JacksonSaveDataService();
-            myself.preferenceDAO = preferenceDAO;
-        }
-        return myself;
     }
 
     private void createSaveDirectoryIfNotExists() {

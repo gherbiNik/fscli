@@ -28,6 +28,19 @@
             <version>5.14.2</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>net.bytebuddy</groupId>
+            <artifactId>byte-buddy</artifactId>
+            <version>1.15.11</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>net.bytebuddy</groupId>
+            <artifactId>byte-buddy-agent</artifactId>
+            <version>1.15.11</version>
+            <scope>test</scope>
+        </dependency>
+
         <!-- JSON parsing -->
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>

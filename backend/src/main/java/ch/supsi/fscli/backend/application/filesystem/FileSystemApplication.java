@@ -38,6 +38,7 @@ public class FileSystemApplication implements IFileSystemApplication {
 
         // 2. Inizializziamo il Service
         IFileSystemService fsService = FileSystemService.getInstance((FileSystem) fileSystem);
+        fsService.setTranslator(BackendTranslator.getInstance());
 
         // 3. Prepariamo il DAO e il Loader
         ICommandDAO commandDAO = new JsonCommandDAO("commands.json");

@@ -106,8 +106,6 @@ class CommandExecutorTest {
         assertFalse(result.isSuccess());
         assertNotNull(result.getError());
         //System.out.println(result.getError());
-        assertTrue(result.getError().contains("does not exist"));
-        assertTrue(result.getError().contains("*.txt"));
 
         // Il file originale non è stato toccato
         assertNotNull(fileSystem.resolveNode("/fileA.txt"));

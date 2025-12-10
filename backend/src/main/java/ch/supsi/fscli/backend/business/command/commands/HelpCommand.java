@@ -35,7 +35,7 @@ public class HelpCommand extends AbstractValidatedCommand {
             System.out.println("DEBUG: "+commands);
             return CommandResult.error(getName() + ": " + translate("system.error.nocommands"));
         }
-
+        System.out.println("DEBUG: "+commands);
         StringBuilder sb = new StringBuilder(translate("commandList.title") + "\n");
         // Iteriamo sulla lista 'this.commands' invece di usare il vecchio 'container'
         for (ICommand cmd : this.commands) {

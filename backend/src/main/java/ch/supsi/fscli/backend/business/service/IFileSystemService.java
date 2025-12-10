@@ -2,6 +2,7 @@ package ch.supsi.fscli.backend.business.service;
 
 import ch.supsi.fscli.backend.business.filesystem.DirectoryNode;
 import ch.supsi.fscli.backend.business.filesystem.Inode;
+import ch.supsi.fscli.backend.util.BackendTranslator;
 
 import java.util.Map;
 
@@ -33,4 +34,6 @@ public interface IFileSystemService {
     void createFile(String fileName);
 
     void setDataToSave(boolean b);
+
+    void setTranslator(BackendTranslator translator);
 }

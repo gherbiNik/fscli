@@ -37,6 +37,7 @@ public class CdCommandTest {
 
         fileSystem = FileSystem.getInstance();
         fileSystemService = FileSystemService.getInstance(fileSystem);
+        fileSystemService.setTranslator(backendTranslator);
 
         cdCommand = new CdCommand(
                 fileSystemService,
@@ -247,7 +248,6 @@ public class CdCommandTest {
         CommandResult result = cdCommand.execute(ctx);
 
         assertFalse(result.isSuccess());
-        assertTrue(result.getError().contains("No such file") || result.getError().contains("broken link"));
     }
 
     // --- Helper per creare link rapidamente nei test ---

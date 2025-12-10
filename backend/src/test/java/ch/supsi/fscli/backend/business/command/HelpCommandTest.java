@@ -51,6 +51,7 @@ public class HelpCommandTest {
         commands.put("cd", new CommandDetails("cd [DIR]", "Change directory"));
         commands.put("ls", new CommandDetails("ls [OPTIONS]", "List files"));
 
+        // FIXME
         when(mockContainer.getCommandDetailsMap()).thenReturn(commands);
 
         CommandContext context = new CommandContext(

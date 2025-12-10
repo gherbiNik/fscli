@@ -175,7 +175,6 @@ public class MainFx extends Application {
         AbstractValidator.setTranslator(backendTranslator);
         AbstractValidatedCommand.setTranslator(backendTranslator);
         FileSystem.setTranslator(backendTranslator);
-        FileSystemService.setTranslator(backendTranslator);
 
         System.out.println("Application started with language: " + loadedLocale.getLanguage());
 

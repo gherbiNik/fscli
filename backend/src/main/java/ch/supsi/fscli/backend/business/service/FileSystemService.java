@@ -9,7 +9,7 @@ public class FileSystemService implements IFileSystemService{
 
     private static FileSystemService instance;
     private FileSystem fileSystem;
-    private static BackendTranslator i18n;
+    private BackendTranslator i18n;
 
     private FileSystemService() {
     }
@@ -30,8 +30,8 @@ public class FileSystemService implements IFileSystemService{
         return fileSystem.getCurrentDirectory();
     }
 
-    public static void setTranslator(BackendTranslator translator) {
-        FileSystemService.i18n = translator;
+    public void setTranslator(BackendTranslator translator) {
+        i18n = translator;
     }
 
     public void changeDirectory(String newDirPath) {

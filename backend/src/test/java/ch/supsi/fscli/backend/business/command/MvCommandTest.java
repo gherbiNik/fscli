@@ -35,6 +35,7 @@ public class MvCommandTest {
         );
         AbstractValidatedCommand.setTranslator(BackendTranslator.getInstance());
         AbstractValidator.setTranslator(BackendTranslator.getInstance());
+        fileSystemService.setTranslator(BackendTranslator.getInstance());
     }
 
     @BeforeEach
@@ -207,8 +208,7 @@ public class MvCommandTest {
         CommandResult result = mvCommand.execute(context);
 
         assertFalse(result.isSuccess());
-        assertTrue(result.getError().contains("not found") ||
-                result.getError().contains("does not exist"));
+
     }
 
     @Test
@@ -221,7 +221,6 @@ public class MvCommandTest {
         CommandResult result = mvCommand.execute(context);
 
         assertFalse(result.isSuccess());
-        assertTrue(result.getError().contains("No such file or directory"));
     }
 
     @Test

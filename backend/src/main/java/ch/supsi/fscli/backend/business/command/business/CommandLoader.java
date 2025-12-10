@@ -4,11 +4,14 @@ import ch.supsi.fscli.backend.business.command.commands.ICommand;
 import ch.supsi.fscli.backend.business.service.IFileSystemService;
 import ch.supsi.fscli.backend.dataAccess.ICommandDAO;
 import ch.supsi.fscli.backend.dataAccess.JsonCommandDTO;
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
 
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.List;
 
+@Singleton
 public class CommandLoader {
 
     private final ICommandDAO commandDAO;
@@ -17,6 +20,7 @@ public class CommandLoader {
     // Package dove risiedono le classi dei comandi
     private static final String COMMANDS_PACKAGE = "ch.supsi.fscli.backend.business.command.commands.";
 
+    @Inject
     public CommandLoader(ICommandDAO commandDAO, IFileSystemService fileSystemService) {
         this.commandDAO = commandDAO;
         this.fileSystemService = fileSystemService;

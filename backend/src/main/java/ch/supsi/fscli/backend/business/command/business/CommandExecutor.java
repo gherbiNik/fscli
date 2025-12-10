@@ -5,38 +5,29 @@ import ch.supsi.fscli.backend.business.command.commands.CommandResult;
 import ch.supsi.fscli.backend.business.command.commands.ICommand;
 import ch.supsi.fscli.backend.business.filesystem.DirectoryNode;
 import ch.supsi.fscli.backend.business.service.IFileSystemService;
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@Singleton
 public class CommandExecutor {
-    private Map<String, ICommand> commandList;
-    private CommandParser commandParser;
-    private static CommandExecutor instance;
-    private IFileSystemService fileSystemService;
+    private final Map<String, ICommand> commandList;
+    private final CommandParser commandParser;
+    private final  IFileSystemService fileSystemService;
 
-    private CommandExecutor() {}
-
-    public static CommandExecutor getInstance(IFileSystemService fileSystemService, CommandParser commandParser, List<ICommand> commandList){
-        if(instance == null){
-            instance = new CommandExecutor();
-            instance.initialize(fileSystemService, commandParser, commandList);
-        }
-        return instance;
-    }
-
-    private void initialize(IFileSystemService fileSystemService, CommandParser commandParser, List<ICommand> commands){
+    @Inject
+    public CommandExecutor( IFileSystemService fileSystemService, CommandParser commandParser, List<ICommand> commandList) {
         this.fileSystemService = fileSystemService;
         this.commandParser = commandParser;
-
         this.commandList = new HashMap<>();
 
-        if (commands != null) {
-            //FIXME DEBUGGING
+        if (commandList != null) {
             System.out.println("DEBUGGING: sto mappando la mappa");
-            for (ICommand c : commands) {
+            for (ICommand c : commandList) {
                 if (c != null && c.getName() != null) {
                     this.commandList.put(c.getName(), c);
                 }

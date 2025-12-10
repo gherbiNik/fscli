@@ -1,5 +1,6 @@
 package ch.supsi.fscli.backend.application.filesystem;
 
+import ch.supsi.fscli.backend.application.module.BackendModule;
 import ch.supsi.fscli.backend.business.command.business.CommandExecutor;
 import ch.supsi.fscli.backend.business.command.business.CommandLoader;
 import ch.supsi.fscli.backend.business.command.business.CommandParser;
@@ -11,6 +12,10 @@ import ch.supsi.fscli.backend.business.service.IFileSystemService;
 import ch.supsi.fscli.backend.dataAccess.ICommandDAO;
 import ch.supsi.fscli.backend.dataAccess.JsonCommandDAO;
 import ch.supsi.fscli.backend.util.BackendTranslator;
+import com.google.inject.Guice;
+import com.google.inject.Injector;
+import com.google.inject.Key;
+import com.google.inject.TypeLiteral;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,6 +25,9 @@ public class FileSystemApplication implements IFileSystemApplication {
     private static FileSystemApplication instance;
     private IFileSystem fileSystem;
     private List<ICommand> loadedCommands;
+
+    // Teniamo l'injector nel caso servisse ad altri
+    private Injector injector;
 
     private FileSystemApplication() {}
 
@@ -32,29 +40,35 @@ public class FileSystemApplication implements IFileSystemApplication {
 
     @Override
     public void createFileSystem() {
-        // 1. Inizializziamo il FileSystem
-        fileSystem = FileSystem.getInstance();
-        System.out.println("File System initialized.");
+        // 1. BOOTSTRAP: Accendiamo il robot con le istruzioni del modulo!
+        this.injector = Guice.createInjector(new BackendModule());
+        System.out.println("Guice Injector created.");
 
-        // 2. Inizializziamo il Service
-        IFileSystemService fsService = FileSystemService.getInstance((FileSystem) fileSystem);
-        fsService.setTranslator(BackendTranslator.getInstance());
+        // 2. RECUPERO AUTOMATICO
+        // Chiediamo l'IFileSystem: Guice crea automaticamente a cascata
+        // FileSystem -> Service -> DAO -> ecc.
+        this.fileSystem = injector.getInstance(IFileSystem.class);
 
-        // 3. Prepariamo il DAO e il Loader
-        ICommandDAO commandDAO = new JsonCommandDAO("commands.json");
-        CommandLoader loader = new CommandLoader(commandDAO, fsService);
+        // Chiediamo il CommandExecutor: Guice attiverà il Loader e userà il metodo @Provides
+        // per passargli la lista dei comandi.
+        CommandExecutor executor = injector.getInstance(CommandExecutor.class);
 
-        // 4. Carichiamo i comandi dal JSON tramite Reflection
-        System.out.println("Loading commands...");
-        this.loadedCommands = loader.loadCommands();
+        // 3. WIRING MANUALE (Setter Injection)
+        // Dobbiamo inserire l'executor nel filesystem manualmente perché FileSystem
+        // non può dipendere da Executor nel costruttore (ciclo).
+        if (fileSystem instanceof FileSystem) {
+            ((FileSystem) fileSystem).setCommandExecutor(executor);
+        }
 
-        // 5. Inizializziamo il CommandExecutor con la lista di comandi caricati
-        CommandParser parser = CommandParser.getInstance();
-        CommandExecutor executor = CommandExecutor.getInstance(fsService, parser, this.loadedCommands);
+        // 4. RECUPERO DELLA LISTA
+        // Per chiedere "List<ICommand>" serve questa sintassi speciale (TypeLiteral)
+        // perché in Java i generici vengono cancellati a runtime.
+        // ↓ Approccio più purista ↓
+        //this.loadedCommands = injector.getInstance(Key.get(new TypeLiteral<List<ICommand>>(){}));
+        CommandLoader commandLoader = injector.getInstance(CommandLoader.class);
+        this.loadedCommands = commandLoader.loadCommands();
 
-        // 6. Ora che l'Executor è pronto e pieno di comandi, lo diamo al FileSystem
-        ((FileSystem) fileSystem).setCommandExecutor(executor);
-
+        System.out.println("File System initialized (via Guice).");
         System.out.println("Commands loaded: " + this.loadedCommands.size());
     }
 
@@ -83,21 +97,18 @@ public class FileSystemApplication implements IFileSystemApplication {
         // FIX: Se i comandi non sono ancora stati caricati (perché non ho fatto "Nuovo"),
         // li carichiamo ora per poter mostrare l'Help.
         if (loadedCommands == null) {
-            // 1. Recuperiamo le dipendenze minime necessarie
-            FileSystem fs = FileSystem.getInstance();
-            FileSystemService fsService = FileSystemService.getInstance(fs);
-            ICommandDAO commandDAO = new JsonCommandDAO("commands.json");
-            CommandLoader loader = new CommandLoader(commandDAO, fsService);
-
-            // 2. Carichiamo i comandi
-            this.loadedCommands = loader.loadCommands();
+            // Se serve ricaricare al volo, usiamo l'injector già esistente o ne creiamo uno
+            if (injector == null) {
+                createFileSystem(); // Questo inizializza tutto
+            }
+            // La logica di reload è già in createFileSystem, quindi qui siamo a posto
         }
 
         List<String> descriptions = new ArrayList<>();
         // Se per qualche motivo ancora null, ritorna vuoto
         if (loadedCommands == null) return descriptions;
 
-        BackendTranslator translator = BackendTranslator.getInstance();
+        BackendTranslator translator = injector.getInstance(BackendTranslator.class);
 
         for (ICommand cmd : loadedCommands) {
             String synopsis = translator.getString(cmd.getSynopsis());

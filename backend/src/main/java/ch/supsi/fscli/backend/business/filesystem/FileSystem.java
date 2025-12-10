@@ -4,13 +4,14 @@ import ch.supsi.fscli.backend.business.command.business.CommandExecutor;
 import ch.supsi.fscli.backend.business.command.commands.CommandResult;
 import ch.supsi.fscli.backend.business.command.commands.ICommand;
 import ch.supsi.fscli.backend.util.BackendTranslator;
+import com.google.inject.Singleton;
 
 import java.util.List;
 import java.util.Map;
 
+@Singleton
 public class FileSystem implements FileSystemComponent, IFileSystem
 {
-    private static FileSystem instance;
     private final DirectoryNode root;
     private DirectoryNode currentDirectory;
     private CommandExecutor commandExecutor;
@@ -19,14 +20,7 @@ public class FileSystem implements FileSystemComponent, IFileSystem
     private static BackendTranslator i18n;
 
 
-    public static FileSystem getInstance() {
-        if (instance == null) {
-            instance = new FileSystem();
-        }
-        return instance;
-    }
-
-    private FileSystem(){
+    public FileSystem(){
         root = new DirectoryNode(null);
         dataToSave = true;
         currentDirectory = root;

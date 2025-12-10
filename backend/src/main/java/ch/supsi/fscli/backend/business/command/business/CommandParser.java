@@ -1,22 +1,13 @@
 package ch.supsi.fscli.backend.business.command.business;
 
+import com.google.inject.Singleton;
+
 import java.util.*;
 
+@Singleton
 public class CommandParser {
 
-    private static CommandParser instance;
-
-    private CommandParser(){}
-
-    public static CommandParser getInstance(){
-        if(instance == null){
-            instance = new CommandParser();
-            instance.initialize();
-        }
-        return instance;
-    }
-
-    private void initialize(){}
+    public CommandParser(){}
 
     public ParsedCommand parse(String input) throws InvalidCommandException {
         if (input == null || input.trim().isEmpty()) {

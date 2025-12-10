@@ -4,24 +4,19 @@ import ch.supsi.fscli.backend.business.dto.IFsStateDto;
 import ch.supsi.fscli.backend.dataAccess.filesystem.ISaveData;
 import ch.supsi.fscli.backend.dataAccess.filesystem.JacksonSaveDataService;
 import ch.supsi.fscli.backend.dataAccess.preferences.PreferenceDAO;
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
 
 import java.io.File;
 
+@Singleton
 public class SaveDataService implements ISaveDataService{
-    private static SaveDataService myself = null;
-    private ISaveData jacksonSaveDataService;
+    private final ISaveData jacksonSaveDataService;
 
-    private SaveDataService() {
+    @Inject
+    public SaveDataService(ISaveData jacksonSaveDataService) {
+        this.jacksonSaveDataService = jacksonSaveDataService;
     }
-
-    public static SaveDataService getInstance(PreferenceDAO preferenceDAO,ISaveData jacksonSaveDataService) {
-        if (myself == null) {
-            myself = new SaveDataService();
-            myself.jacksonSaveDataService = jacksonSaveDataService;
-        }
-        return myself;
-    }
-
 
     @Override
     public void save(IFsStateDto iFsStateDto) {

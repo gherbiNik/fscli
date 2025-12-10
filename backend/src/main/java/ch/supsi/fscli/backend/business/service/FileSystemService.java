@@ -151,12 +151,16 @@ public class FileSystemService implements IFileSystemService{
                 }
                 // Se resolved è null (broken link), trattiamo rawDestNode come un file da sovrascrivere
             }
-
-            if (effectiveDest.isDirectory()) {
+            else if (effectiveDest.isDirectory()) {
                 // CASO A: Spostamento DENTRO una directory esistente
                 moveIntoDirectory = true;
                 targetDir = (DirectoryNode) effectiveDest;
                 newName = sourceName; // Mantiene il nome originale
+            }
+            else { // is a file
+                PathParts destParts = resolveParentDirectoryAndName(destinationPath);
+                String destname = destParts.name();
+                throw new IllegalArgumentException(i18n.getString("item_is_file_prefix") + destname);
             }
         }
 

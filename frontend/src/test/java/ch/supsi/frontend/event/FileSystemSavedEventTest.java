@@ -25,7 +25,7 @@ public class FileSystemSavedEventTest {
     public void constructor0() {
         IllegalArgumentException e = assertThrows(
                 IllegalArgumentException.class,
-                () -> new FileSystemSaved(null)
+                () -> new FileSystemSaved(null, null, null, null)
         );
 
         assertEquals("null source", e.getMessage());

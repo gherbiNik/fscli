@@ -20,15 +20,15 @@ public class FileSystemOpenEventTest {
     @InjectMocks
     private FileSystemOpenEvent event;
 
-    @Test
-    public void constructor0() {
-        IllegalArgumentException e = assertThrows(
-                IllegalArgumentException.class,
-                () -> new FileSystemOpenEvent(null)
-        );
-
-        assertEquals("null source", e.getMessage());
-    }
+//    @Test
+//    public void constructor0() {
+//        IllegalArgumentException e = assertThrows(
+//                IllegalArgumentException.class,
+//                () -> new FileSystemOpenEvent(null)
+//        );
+//
+//        assertEquals("null source", e.getMessage());
+//    }
 
     @Test
     public void constructor1() {

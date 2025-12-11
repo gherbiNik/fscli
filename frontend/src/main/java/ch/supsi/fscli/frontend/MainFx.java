@@ -80,6 +80,9 @@ public class MainFx extends Application {
         PreferenceModel preferenceModel = injector.getInstance(PreferenceModel.class);
         FsStateMapperModel fsStateMapperModel = injector.getInstance(FsStateMapperModel.class);
 
+        injector.getInstance(ch.supsi.fscli.frontend.controller.HelpController.class);
+        injector.getInstance(ch.supsi.fscli.frontend.controller.CreditsController.class);
+
         // 4. WIRING MANUALE DEI LISTENER (Pattern Observer/MVC)
         // Nonostante Guice, questo passaggio è necessario per collegare gli Observable (Model)
         // agli Observer (View/Controller).

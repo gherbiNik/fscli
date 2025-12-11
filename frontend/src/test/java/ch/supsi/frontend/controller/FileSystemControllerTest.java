@@ -11,9 +11,8 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import java.lang.reflect.Field;
-
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
 
 class FileSystemControllerTest {
@@ -32,18 +31,14 @@ class FileSystemControllerTest {
     private FileSystemController controller;
 
     @BeforeEach
-    void setUp() throws Exception {
+    void setUp() {
         MockitoAnnotations.openMocks(this);
-        resetSingleton(FileSystemController.class, "instance");
-        controller = FileSystemController.getInstance(fileSystemModel, outputView, logView, i18n);
-    }
 
-    private void resetSingleton(Class<?> clazz, String fieldName) throws Exception {
-        Field instance = clazz.getDeclaredField(fieldName);
-        instance.setAccessible(true);
-        instance.set(null, null);
-    }
+        controller = new FileSystemController(fileSystemModel, outputView, logView, i18n);
 
+        // Simulare la Setter Injection per CommandLineView (che ha @Inject sul setter)
+        controller.setCommandLineView(commandLineView);
+    }
     @Test
     void testCreateFileSystem() {
         controller.createFileSystem();
@@ -64,12 +59,5 @@ class FileSystemControllerTest {
 
         when(fileSystemModel.isDataToSave()).thenReturn(false);
         assertFalse(controller.hasDataToSave());
-    }
-
-    @Test
-    void testSetCommandLineView() {
-        controller.setCommandLineView(commandLineView);
-        // Verify no exception, internal state set
-        assertNotNull(controller);
     }
 }

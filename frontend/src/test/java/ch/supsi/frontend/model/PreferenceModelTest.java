@@ -11,7 +11,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import java.beans.PropertyChangeListener;
-import java.lang.reflect.Field;
+// Rimuoviamo l'import java.lang.reflect.Field;
 import java.nio.file.Path;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -27,17 +27,12 @@ class PreferenceModelTest {
     private PreferenceModel preferenceModel;
 
     @BeforeEach
-    void setUp() throws Exception {
+    void setUp() {
         MockitoAnnotations.openMocks(this);
-        resetSingleton(PreferenceModel.class, "instance");
-        preferenceModel = PreferenceModel.getInstance(preferenceApplication);
-        preferenceModel.addPropertyChangeListener(propertyChangeListener);
-    }
+        preferenceModel = new PreferenceModel(preferenceApplication);
 
-    private void resetSingleton(Class<?> clazz, String fieldName) throws Exception {
-        Field instance = clazz.getDeclaredField(fieldName);
-        instance.setAccessible(true);
-        instance.set(null, null);
+        // Il wiring del listener resta manuale
+        preferenceModel.addPropertyChangeListener(propertyChangeListener);
     }
 
     @Test
@@ -55,11 +50,14 @@ class PreferenceModelTest {
 
     @Test
     void testFontRetrieval() {
+        // Nota: I PreferenceModel converte la stringa font in un oggetto Font.
+        // Dobbiamo mockare la stringa come farebbe l'Application Layer.
         when(preferenceApplication.getCommandLineFont()).thenReturn("Arial");
         when(preferenceApplication.getOutputAreaFont()).thenReturn("Verdana");
         when(preferenceApplication.getLogAreaFont()).thenReturn("Arial");
 
         Font cmdFont = preferenceModel.getCommandLineFont();
+        // Verifichiamo il nome che è l'unica cosa che possiamo garantire su Font
         assertEquals("Arial", cmdFont.getName());
 
         Font outFont = preferenceModel.getOutputAreaFont();
@@ -97,6 +95,5 @@ class PreferenceModelTest {
 
         ArgumentCaptor<PreferenceSavedEvent> captor = ArgumentCaptor.forClass(PreferenceSavedEvent.class);
         verify(propertyChangeListener).propertyChange(captor.capture());
-
     }
 }

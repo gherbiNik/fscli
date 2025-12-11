@@ -13,7 +13,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import java.beans.PropertyChangeListener;
-import java.lang.reflect.Field;
+// Rimosso import java.lang.reflect.Field;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -29,18 +29,14 @@ class FileSystemModelTest {
     private FileSystemModel model;
 
     @BeforeEach
-    void setUp() throws Exception {
+    void setUp() {
         MockitoAnnotations.openMocks(this);
-        resetSingleton(FileSystemModel.class, "instance");
-        model = FileSystemModel.getInstance(fileSystemApplication);
+        model = new FileSystemModel(fileSystemApplication);
+
+        // Il wiring del listener resta manuale, perché non è gestito da Guice
         model.addPropertyChangeListener(listener);
     }
 
-    private void resetSingleton(Class<?> clazz, String fieldName) throws Exception {
-        Field instance = clazz.getDeclaredField(fieldName);
-        instance.setAccessible(true);
-        instance.set(null, null);
-    }
 
     @Test
     void testCreateFileSystem() {

@@ -13,9 +13,8 @@ import org.mockito.MockitoAnnotations;
 
 import java.beans.PropertyChangeListener;
 import java.io.File;
-import java.lang.reflect.Field;
+// Rimuoviamo l'import java.lang.reflect.Field;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.verify;
 
 class FsStateMapperModelTest {
@@ -28,17 +27,12 @@ class FsStateMapperModelTest {
     private FsStateMapperModel model;
 
     @BeforeEach
-    void setUp() throws Exception {
+    void setUp() {
         MockitoAnnotations.openMocks(this);
-        resetSingleton(FsStateMapperModel.class, "instance");
-        model = FsStateMapperModel.getInstance(mapperApplication);
-        model.addPropertyChangeListener(listener);
-    }
+        model = new FsStateMapperModel(mapperApplication);
 
-    private void resetSingleton(Class<?> clazz, String fieldName) throws Exception {
-        Field instance = clazz.getDeclaredField(fieldName);
-        instance.setAccessible(true);
-        instance.set(null, null);
+        // Il wiring del listener resta manuale
+        model.addPropertyChangeListener(listener);
     }
 
     @Test

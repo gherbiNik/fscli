@@ -1,7 +1,7 @@
 package ch.supsi.frontend.controller;
 
 import ch.supsi.fscli.frontend.controller.mapper.FsStateMapperController;
-import ch.supsi.fscli.frontend.model.filesystem.FileSystemModel;
+import ch.supsi.fscli.frontend.model.filesystem.IFileSystemModel;
 import ch.supsi.fscli.frontend.model.mapper.IFsStateMapperModel;
 import ch.supsi.fscli.frontend.view.LogView;
 import ch.supsi.fscli.frontend.view.MenuBarView;
@@ -9,9 +9,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import com.google.inject.Provider;
 
 import java.io.File;
-import java.lang.reflect.Field;
 
 import static org.mockito.Mockito.*;
 
@@ -20,26 +20,24 @@ class FsStateMapperControllerTest {
     @Mock
     private IFsStateMapperModel fsStateMapperModel;
     @Mock
-    private FileSystemModel fileSystemModel;
+    private IFileSystemModel fileSystemModel;
     @Mock
     private LogView logView;
     @Mock
     private MenuBarView menuBarView;
+    // Mockiamo il Provider, che Guice inietterà nel setter.
+    @Mock
+    private Provider<MenuBarView> menuBarViewProvider;
 
     private FsStateMapperController controller;
 
     @BeforeEach
-    void setUp() throws Exception {
+    void setUp() {
         MockitoAnnotations.openMocks(this);
-        resetSingleton(FsStateMapperController.class, "instance");
-        controller = FsStateMapperController.getInstance(fsStateMapperModel, fileSystemModel);
-        controller.initialize(logView, menuBarView);
-    }
 
-    private void resetSingleton(Class<?> clazz, String fieldName) throws Exception {
-        Field instance = clazz.getDeclaredField(fieldName);
-        instance.setAccessible(true);
-        instance.set(null, null);
+        controller = new FsStateMapperController(fsStateMapperModel, fileSystemModel, logView);
+
+        controller.setMenuBarView(menuBarViewProvider);
     }
 
     @Test

@@ -61,8 +61,9 @@ public class FileSystemApplication implements IFileSystemApplication {
 
     @Override
     public boolean isFileSystemCreated() {
-        return fileSystem!=null;
+        return fileSystem != null;
     }
+
 
     @Override
     public List<String> getCommandsHelp() {

@@ -8,12 +8,11 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import java.lang.reflect.Field;
+// Abbiamo rimosso import java.lang.reflect.Field; e static org.junit.jupiter.api.Assertions.assertSame;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 class CreditsControllerTest {
 
@@ -25,31 +24,19 @@ class CreditsControllerTest {
     private CreditsController creditsController;
 
     @BeforeEach
-    void setUp() throws Exception {
+    void setUp() {
         MockitoAnnotations.openMocks(this);
-        resetSingleton(CreditsController.class, "instance");
 
         // Mock I18nManager returns
         when(i18nManager.getString(anyString())).thenAnswer(inv -> "translated_" + inv.getArgument(0));
 
-        creditsController = CreditsController.getInstance(i18nManager, creditsView);
-    }
-
-    private void resetSingleton(Class<?> clazz, String fieldName) throws Exception {
-        Field instance = clazz.getDeclaredField(fieldName);
-        instance.setAccessible(true);
-        instance.set(null, null);
-    }
-
-    @Test
-    void testGetInstance() {
-        assertNotNull(creditsController);
-        assertSame(creditsController, CreditsController.getInstance(i18nManager, creditsView));
+        // FIX: Chiamiamo il costruttore direttamente per iniettare i mock.
+        creditsController = new CreditsController(i18nManager, creditsView);
     }
 
     @Test
     void testInitializationUpdatesView() {
-        // Initialization happens in getInstance. Verify interactions.
+        // L'inizializzazione avviene nel costruttore (@Inject). Verifichiamo le interazioni.
         verify(creditsView).setStageTitle("translated_credits.name");
         verify(creditsView).setAppName("translated_credits.appname");
         verify(creditsView).setFrontendVersion("translated_credits.version");

@@ -6,9 +6,11 @@ import ch.supsi.fscli.frontend.view.CommandLineView;
 import ch.supsi.fscli.frontend.view.LogView;
 import ch.supsi.fscli.frontend.view.OutputView;
 import ch.supsi.fscli.frontend.view.ViewComponent;
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
 
+@Singleton
 public class FileSystemController implements IFileSystemController {
-    private static FileSystemController instance;
     private final IFileSystemModel fileSystemModel;
     private final I18nManager i18n;
 
@@ -16,20 +18,17 @@ public class FileSystemController implements IFileSystemController {
     private final LogView logView;
     private CommandLineView commandLineView;
 
-    public static FileSystemController getInstance(IFileSystemModel fileSystemModel, OutputView outputView, LogView logView, I18nManager i18n) {
-        if (instance == null) {
-            instance = new FileSystemController(fileSystemModel, outputView, logView, i18n);
-        }
-        return instance;
-    }
-
-    private FileSystemController(IFileSystemModel fileSystemModel, OutputView outputView, LogView logView, I18nManager i18n) {
+    @Inject
+    public FileSystemController(IFileSystemModel fileSystemModel, OutputView outputView, LogView logView, I18nManager i18n) {
         this.fileSystemModel = fileSystemModel;
         this.outputView = outputView;
         this.logView = logView;
         this.i18n = i18n;
     }
 
+    // Setter Injection per rompere la dipendenza circolare
+    // Guice chiamerà questo metodo automaticamente dopo aver costruito l'oggetto!
+    @Inject
     public void setCommandLineView(CommandLineView commandLineView) {
         this.commandLineView = commandLineView;
     }

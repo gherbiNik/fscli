@@ -2,29 +2,23 @@ package ch.supsi.fscli.frontend.view;
 
 import ch.supsi.fscli.frontend.controller.mapper.IFsStateMapperController;
 import ch.supsi.fscli.frontend.model.IPreferenceModel;
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import javafx.stage.FileChooser;
 
 import java.io.File;
 
+@Singleton
 public class OpenView implements ShowView{
-    private static OpenView myself;
-    private IFsStateMapperController iFsStateMapperController;
-    private IPreferenceModel preferencesModel;
 
-    private OpenView() {}
+    private final IFsStateMapperController iFsStateMapperController;
+    private final IPreferenceModel preferencesModel;
 
-    public static OpenView getInstance(IFsStateMapperController fsStateMapper, IPreferenceModel preferencesModel) {
-        if (myself == null) {
-            myself = new OpenView();
-            myself.initialize(fsStateMapper, preferencesModel);
-        }
-        return myself;
-    }
-    private void initialize(IFsStateMapperController fsStateMapper, IPreferenceModel preferencesModel){
+    @Inject
+    public OpenView(IFsStateMapperController fsStateMapper, IPreferenceModel preferencesModel) {
         this.iFsStateMapperController = fsStateMapper;
         this.preferencesModel = preferencesModel;
     }
-
 
     @Override
     public void show() {
@@ -47,7 +41,7 @@ public class OpenView implements ShowView{
             iFsStateMapperController.open(selectedFile.toString());
 
         } else {
-            System.out.println("DOVE???\nNessun file selezionato");
+            System.out.println("Nessun file selezionato");
         }
 
     }

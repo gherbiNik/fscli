@@ -1,5 +1,11 @@
-package ch.supsi.fscli.backend.application.module;
+package ch.supsi.fscli.backend.module;
 
+import ch.supsi.fscli.backend.application.IPreferenceApplication;
+import ch.supsi.fscli.backend.application.PreferenceApplication;
+import ch.supsi.fscli.backend.application.filesystem.FileSystemApplication;
+import ch.supsi.fscli.backend.application.filesystem.IFileSystemApplication;
+import ch.supsi.fscli.backend.application.mapper.FsStateMapperApplication;
+import ch.supsi.fscli.backend.application.mapper.IFsStateMapperApplication;
 import ch.supsi.fscli.backend.business.command.business.CommandExecutor;
 import ch.supsi.fscli.backend.business.command.business.CommandLoader;
 import ch.supsi.fscli.backend.business.command.business.CommandParser;
@@ -44,6 +50,11 @@ public class BackendModule extends AbstractModule {
         bind(ISaveDataService.class).to(SaveDataService.class);
         bind(IPreferenceBusiness.class).to(PreferenceBusiness.class);
         bind(IFsStateMapper.class).to(FsStateMapper.class);
+
+        // Application Layer Bindings
+        bind(IPreferenceApplication.class).to(PreferenceApplication.class).in(Singleton.class);
+        bind(IFileSystemApplication.class).to(FileSystemApplication.class).in(Singleton.class);
+        bind(IFsStateMapperApplication.class).to(FsStateMapperApplication.class).in(Singleton.class);
 
         // Classi concrete
         bind(CommandParser.class).asEagerSingleton();

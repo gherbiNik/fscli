@@ -1,6 +1,8 @@
 package ch.supsi.fscli.frontend.view;
 
 import ch.supsi.fscli.frontend.util.I18nManager;
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
@@ -14,14 +16,15 @@ import javafx.stage.Stage;
 
 import java.util.List;
 
+@Singleton
 public class HelpView implements ShowView{
-    private I18nManager i18nManager;
+    private final I18nManager i18nManager;
     private List<String> commandDescriptions;
     private Stage stage = new Stage();
     private VBox root;
 
 
-
+    @Inject
     public HelpView(I18nManager i18nManager) {
         this.i18nManager = i18nManager;
         createLayout();

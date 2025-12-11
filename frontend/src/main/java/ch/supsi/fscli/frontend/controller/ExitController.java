@@ -1,31 +1,21 @@
 package ch.supsi.fscli.frontend.controller;
 
-import ch.supsi.fscli.frontend.view.ExitView;
-import javafx.application.Platform;
-import javafx.stage.Stage;
 import ch.supsi.fscli.frontend.MainFx;
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
+import javafx.stage.Stage;
 
+@Singleton
 public class ExitController implements IExitController {
 
-    private static ExitController instance;
-
-    private ExitController() {}
-
-    public static ExitController getInstance() {
-        if (instance == null) {
-            instance = new ExitController();
-        }
-        instance.initialize();
-        return instance;
+    @Inject
+    public ExitController() {
+        // In futuro qui potrai iniettare IFileSystemController per controllare i salvataggi!
     }
 
-    private void initialize() {
-    }
-
+    @Override
     public void quit() {
-
         //TODO: check if there is something to save
-
 
         Stage stageToClose = MainFx.getStageToClose();
         if (stageToClose != null) {

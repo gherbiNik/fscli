@@ -2,38 +2,29 @@ package ch.supsi.fscli.frontend.model.mapper;
 
 import ch.supsi.fscli.backend.application.mapper.IFsStateMapperApplication;
 import ch.supsi.fscli.frontend.event.*;
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
+
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 
 import java.io.File;
 
+@Singleton
 public class FsStateMapperModel implements IFsStateMapperModel {
-    private static FsStateMapperModel instance;
-    private IFsStateMapperApplication iFsStateMapperApplication;
+    private final IFsStateMapperApplication iFsStateMapperApplication;
     private final PropertyChangeSupport support;
 
-
-    private FsStateMapperModel() {
-        this.support = new PropertyChangeSupport(this);
-    }
-
-    public static FsStateMapperModel getInstance(IFsStateMapperApplication iFsStateMapperApplication) {
-        if (instance == null) {
-            instance = new FsStateMapperModel();
-            instance.initialize(iFsStateMapperApplication);
-        }
-        return instance;
-    }
-
-    private void initialize(IFsStateMapperApplication iFsStateMapperApplication) {
+    @Inject
+    public FsStateMapperModel(IFsStateMapperApplication iFsStateMapperApplication) {
         this.iFsStateMapperApplication = iFsStateMapperApplication;
+        this.support = new PropertyChangeSupport(this);
     }
 
     public void addPropertyChangeListener(PropertyChangeListener pcl) {
         support.addPropertyChangeListener(pcl);
     }
-
 
     @Override
     public void save() {

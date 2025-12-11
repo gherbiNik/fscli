@@ -2,31 +2,27 @@ package ch.supsi.fscli.frontend.model;
 
 import ch.supsi.fscli.backend.application.IPreferenceApplication;
 import ch.supsi.fscli.frontend.event.PreferenceSavedEvent;
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import javafx.scene.text.Font;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.nio.file.Path;
 
+@Singleton
 public class PreferenceModel implements IPreferenceModel{
 
-    private static PreferenceModel instance;
-    private IPreferenceApplication preferenceApplication;
+    private final IPreferenceApplication preferenceApplication;
     private final PropertyChangeSupport support;
-
 
     private static final double DEFAULT_FONT_SIZE = Font.getDefault().getSize();
 
-    private PreferenceModel() {
+    @Inject
+    public PreferenceModel(IPreferenceApplication preferenceApplication) {
+        this.preferenceApplication = preferenceApplication;
         support = new PropertyChangeSupport(this);
     }
 
-    public static PreferenceModel getInstance(IPreferenceApplication preferenceApplication) {
-        if (instance == null) {
-            instance = new PreferenceModel();
-            instance.initialize(preferenceApplication);
-        }
-        return instance;
-    }
     //FIXME capire se fare interfaccia observable
     public void addPropertyChangeListener(PropertyChangeListener pcl) {
         support.addPropertyChangeListener(pcl);
@@ -35,15 +31,9 @@ public class PreferenceModel implements IPreferenceModel{
         support.removePropertyChangeListener(pcl);
     }
 
-
-    private void initialize(IPreferenceApplication preferenceApplication) {
-        this.preferenceApplication = preferenceApplication;
-    }
-
     @Override
     public void setPreferences(String key, String value) {
         preferenceApplication.setPreference(key, value);
-
     }
 
     @Override
@@ -95,6 +85,8 @@ public class PreferenceModel implements IPreferenceModel{
         setPreferences("font-command-line", commandLineFontComboBox);
         setPreferences("font-output-area", outputAreaFontComboBox);
         setPreferences("font-log-area", logAreaFontComboBox);
+
+        // Passiamo 'this' come source
         support.firePropertyChange(new PreferenceSavedEvent(this));
     }
 }

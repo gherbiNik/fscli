@@ -5,24 +5,20 @@ import ch.supsi.fscli.frontend.event.ClearEvent;
 import ch.supsi.fscli.frontend.event.FileSystemCreationEvent;
 import ch.supsi.fscli.frontend.event.FileSystemToSaved;
 import ch.supsi.fscli.frontend.event.OutputEvent;
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 
+@Singleton
 public class FileSystemModel implements IFileSystemModel {
 
-    private static FileSystemModel instance;
     private final IFileSystemApplication application;
     private final PropertyChangeSupport support;
 
-    public static FileSystemModel getInstance(IFileSystemApplication application) {
-        if (instance == null) {
-            instance = new FileSystemModel(application);
-        }
-        return instance;
-    }
-
-    private FileSystemModel(IFileSystemApplication application) {
+    @Inject
+    public FileSystemModel(IFileSystemApplication application) {
         this.application = application;
         this.support = new PropertyChangeSupport(this);
     }

@@ -1,19 +1,22 @@
 package ch.supsi.fscli.frontend.view;
 
 import ch.supsi.fscli.frontend.util.I18nManager;
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.Separator;
 import javafx.scene.layout.VBox;
-import javafx.stage.Stage;
 import javafx.stage.Modality;
-import javafx.geometry.Insets;
-import javafx.geometry.Pos;
+import javafx.stage.Stage;
 
+@Singleton
 public class CreditsView implements ShowView {
 
     private Stage stage;
-    private I18nManager i18nManager;
+    private final I18nManager i18nManager;
 
     private Label titleLabel;
     private Label frontendVersionLabel;
@@ -23,8 +26,7 @@ public class CreditsView implements ShowView {
     private Label backendBuildDateLabel;
     private Label authorLabel;
 
-
-
+    @Inject
     public CreditsView(I18nManager i18nManager) {
         this.i18nManager = i18nManager;
         createLayout();

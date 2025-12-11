@@ -1,44 +1,23 @@
 package ch.supsi.fscli.frontend;
 
-import ch.supsi.fscli.backend.application.TranslationApplication;
-import ch.supsi.fscli.backend.application.PreferenceApplication;
-import ch.supsi.fscli.backend.application.filesystem.FileSystemApplication;
-import ch.supsi.fscli.backend.application.mapper.FsStateMapperApplication;
-import ch.supsi.fscli.backend.application.mapper.IFsStateMapperApplication;
-import ch.supsi.fscli.backend.business.command.commands.*;
+import ch.supsi.fscli.backend.application.IPreferenceApplication;
+import ch.supsi.fscli.backend.business.command.commands.AbstractValidatedCommand;
 import ch.supsi.fscli.backend.business.command.commands.validators.AbstractValidator;
-import ch.supsi.fscli.backend.business.dto.FsStateMapper;
-import ch.supsi.fscli.backend.business.dto.IFsStateMapper;
 import ch.supsi.fscli.backend.business.filesystem.FileSystem;
-import ch.supsi.fscli.backend.business.preferences.PreferenceBusiness;
-import ch.supsi.fscli.backend.business.service.FileSystemService;
-import ch.supsi.fscli.backend.business.service.ISaveDataService;
-import ch.supsi.fscli.backend.business.service.SaveDataService;
-import ch.supsi.fscli.backend.dataAccess.filesystem.JacksonSaveDataService;
-import ch.supsi.fscli.backend.dataAccess.preferences.PreferenceDAO;
 import ch.supsi.fscli.backend.util.BackendTranslator;
-import ch.supsi.fscli.frontend.controller.CreditsController;
-import ch.supsi.fscli.frontend.controller.ExitController;
-import ch.supsi.fscli.frontend.controller.PreferenceController;
-import ch.supsi.fscli.frontend.controller.filesystem.FileSystemController;
-import ch.supsi.fscli.frontend.controller.mapper.FsStateMapperController;
-
-import ch.supsi.fscli.frontend.controller.HelpController;
-import ch.supsi.fscli.frontend.model.CommandHelpModel;
-import ch.supsi.fscli.frontend.model.ICommandHelpModel;
-
-import ch.supsi.fscli.frontend.model.TranslationModel;
-import ch.supsi.fscli.frontend.model.PreferenceModel;
 import ch.supsi.fscli.frontend.model.filesystem.FileSystemModel;
+import ch.supsi.fscli.frontend.model.PreferenceModel;
 import ch.supsi.fscli.frontend.model.mapper.FsStateMapperModel;
-import ch.supsi.fscli.frontend.model.mapper.IFsStateMapperModel;
+import ch.supsi.fscli.frontend.module.FrontendModule;
 import ch.supsi.fscli.frontend.util.I18nManager;
 import ch.supsi.fscli.frontend.view.*;
+import com.google.inject.Guice;
+import com.google.inject.Injector;
 import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
@@ -50,149 +29,78 @@ import java.util.Locale;
 public class MainFx extends Application {
     private static final int PREF_INSETS_SIZE = 7;
     private static final int PREF_COMMAND_SPACER_WIDTH = 11;
-
-    private final String applicationTitle;
     private static Stage stageToClose;
 
+    private CommandLineView commandLineView;
+    private OutputView outputView;
+    private LogView logView;
+    private ExitView exitView;
 
-    private final MenuBarView menuBarView;
-    private final CommandLineView commandLineView;
-    private final OutputView outputView;
-    private final LogView logView;
-    private final PreferenceView preferenceView;
-    private final PreferenceController preferenceController;
-    private final PreferenceModel preferenceModel;
-    private final PreferenceApplication preferenceApplication;
-    private final PreferenceDAO preferenceDAO;
-    private final PreferenceBusiness preferenceBusiness;
-    private final HelpView helpView;
-    private final CreditsView creditsView;
-    private final ExitView exitView;
-    private final ExitController exitController;
-    private final FileSystemController fileSystemController;
-    private final FileSystemModel  fileSystemModel;
-    private final FileSystemApplication fileSystemApplication;
-    private final TranslationModel translationModel;
-    private final TranslationApplication creditsFacade;
-    private final CreditsController creditsController;
-    private final BackendTranslator backendTranslator;
-    private final ICommandHelpModel commandHelpModel;
-    private final HelpController helpController;
-    //private final ICommandHelpApplication commandHelpApplication;
-    //private final CommandHelpContainer commandHelpContainer;
-    private final OpenView openView;
-    private final SaveAsView saveAsView;
-    private final IFsStateMapperApplication fsStateMapperApplication;
-    private final IFsStateMapper fsStateMapper;
-    private final ISaveDataService saveDataService;
-    private final JacksonSaveDataService jacksonSaveDataService;
-    private final FileSystem fileSystem = FileSystem.getInstance();
-    private final FsStateMapperController fsStateMapperController;
-    private final IFsStateMapperModel fsStateMapperModel;
-
-
+    // Costruttore vuoto richiesto da JavaFX
     public MainFx() {
-
-
-        // DAO
-        this.preferenceDAO = PreferenceDAO.getInstance();
-
-        // BUSINESS
-        this.preferenceBusiness = PreferenceBusiness.getInstance(preferenceDAO);
-
-        // APPLICATION
-        this.preferenceApplication = PreferenceApplication.getInstance(preferenceBusiness);
-        this.fileSystemApplication = FileSystemApplication.getInstance();
-
-        // --- I18N INITIALIZATION ---
-        Locale loadedLocale = this.preferenceApplication.loadLanguagePreference();
-        
-
-        // MODEL
-        this.preferenceModel = PreferenceModel.getInstance(preferenceApplication);
-        this.fileSystemModel = FileSystemModel.getInstance(fileSystemApplication);
-
-        this.commandHelpModel = CommandHelpModel.getInstance(fileSystemApplication);
-
-        // TRANSLATOR - Backend
-        this.backendTranslator = BackendTranslator.getInstance();
-        backendTranslator.setLocale(loadedLocale);
-
-        this.creditsFacade = TranslationApplication.getInstance(backendTranslator);
-        this.translationModel = TranslationModel.getInstance(creditsFacade);
-
-        I18nManager i18n = I18nManager.getInstance(translationModel);
-        i18n.setLocale(loadedLocale);
-
-
-        // CONTROLLER
-        this.preferenceController = PreferenceController.getInstance(preferenceModel);
-        // OUTPUT VIEW (to be encapsulated properly)
-        this.outputView = new OutputView(i18n, preferenceController);
-        // LOG VIEW (to be encapsulated properly)
-        this.logView = new LogView(i18n, preferenceController);
-        this.fileSystemController = FileSystemController.getInstance(fileSystemModel, outputView,logView, i18n);
-        this.exitController = ExitController.getInstance();
-
-        this.jacksonSaveDataService = JacksonSaveDataService.getInstance(preferenceDAO);
-        this.saveDataService = SaveDataService.getInstance(preferenceDAO, jacksonSaveDataService);
-        this.fsStateMapper = FsStateMapper.getInstance(saveDataService, fileSystem); // business layer
-        this.fsStateMapperApplication = FsStateMapperApplication.getInstance(fsStateMapper, fileSystemApplication); // application layer
-        this.fsStateMapperModel = FsStateMapperModel.getInstance(fsStateMapperApplication);
-
-        // VIEW
-        this.preferenceView = new PreferenceView(preferenceController, i18n);
-        this.helpView = new HelpView(i18n);
-        this.helpController = HelpController.getInstance(helpView, commandHelpModel);
-        this.creditsView = new CreditsView(i18n);
-        this.exitView = new ExitView(exitController, i18n);
-        // COMMAND LINE
-        this.commandLineView = new CommandLineView(fileSystemController, preferenceController, i18n);
-        this.fileSystemController.setCommandLineView(this.commandLineView);
-        this.fsStateMapperController = FsStateMapperController.getInstance(fsStateMapperModel, fileSystemModel);
-        this.openView = OpenView.getInstance(fsStateMapperController, preferenceModel);
-        this.saveAsView = SaveAsView.getInstance(fsStateMapperController, preferenceModel);
-        this.menuBarView = new MenuBarView(i18n, exitView, creditsView, openView, saveAsView, helpView, preferenceView,  fileSystemController, fsStateMapperController);
-
-        fsStateMapperController.initialize(logView, menuBarView);
-
-
-        // CONTROLLER
-        this.creditsController = CreditsController.getInstance(i18n, creditsView);
-
-        // ADD LISTENER
-        this.fileSystemModel.addPropertyChangeListener(commandLineView);
-        this.fileSystemModel.addPropertyChangeListener(logView);
-        this.fileSystemModel.addPropertyChangeListener(outputView);
-        this.fileSystemModel.addPropertyChangeListener(menuBarView);
-
-        this.preferenceModel.addPropertyChangeListener(logView);
-
-        this.fsStateMapperModel.addPropertyChangeListener(menuBarView);
-        this.fsStateMapperModel.addPropertyChangeListener(logView);
-        this.fsStateMapperModel.addPropertyChangeListener(commandLineView);
-
-        AbstractValidator.setTranslator(backendTranslator);
-        AbstractValidatedCommand.setTranslator(backendTranslator);
-        FileSystem.setTranslator(backendTranslator);
-
-        System.out.println("Application started with language: " + loadedLocale.getLanguage());
-
-        this.applicationTitle = i18n.getString("app.title");
-
+        // La logica di costruzione è in start(Stage)
     }
 
     public static Stage getStageToClose() {
         return stageToClose;
     }
 
-
     @Override
     public void start(Stage primaryStage) throws Exception {
         stageToClose = primaryStage;
 
-        // command line
-        //this.commandLine.setPrefColumnCount(COMMAND_LINE_PREF_COLUMN_COUNT);
+        // 1. COMPOSITION ROOT: Crea l'Injector usando il FrontendModule
+        Injector injector = Guice.createInjector(new FrontendModule());
+
+        // 2. SETUP INIZIALE (Lingua)
+        // Recuperiamo i componenti essenziali per l'inizializzazione
+        IPreferenceApplication preferenceApplication = injector.getInstance(IPreferenceApplication.class);
+        I18nManager i18n = injector.getInstance(I18nManager.class);
+        BackendTranslator backendTranslator = injector.getInstance(BackendTranslator.class);
+
+        Locale loadedLocale = preferenceApplication.loadLanguagePreference();
+
+        // Configura i traduttori
+        backendTranslator.setLocale(loadedLocale);
+        i18n.setLocale(loadedLocale);
+
+        System.out.println("Application started with language: " + loadedLocale.getLanguage());
+
+        // 3. FETCH COMPONENTI PRINCIPALI
+        // Guice assembla e ci restituisce tutti i componenti (Model, Controller e View)
+        // Campi per le View principali (necessari per il layout e i listener)
+        MenuBarView menuBarView = injector.getInstance(MenuBarView.class);
+        this.commandLineView = injector.getInstance(CommandLineView.class);
+        this.outputView = injector.getInstance(OutputView.class);
+        this.logView = injector.getInstance(LogView.class);
+        this.exitView = injector.getInstance(ExitView.class);
+
+        // Fetch i Model per collegare i listener
+        FileSystemModel fileSystemModel = injector.getInstance(FileSystemModel.class);
+        PreferenceModel preferenceModel = injector.getInstance(PreferenceModel.class);
+        FsStateMapperModel fsStateMapperModel = injector.getInstance(FsStateMapperModel.class);
+
+        // 4. WIRING MANUALE DEI LISTENER (Pattern Observer/MVC)
+        // Nonostante Guice, questo passaggio è necessario per collegare gli Observable (Model)
+        // agli Observer (View/Controller).
+        fileSystemModel.addPropertyChangeListener(commandLineView);
+        fileSystemModel.addPropertyChangeListener(logView);
+        fileSystemModel.addPropertyChangeListener(outputView);
+        fileSystemModel.addPropertyChangeListener(menuBarView);
+
+        preferenceModel.addPropertyChangeListener(logView);
+
+        fsStateMapperModel.addPropertyChangeListener(menuBarView);
+        fsStateMapperModel.addPropertyChangeListener(logView);
+        fsStateMapperModel.addPropertyChangeListener(commandLineView);
+
+        // 5. SETUP STATICHE BACKEND (Legacy)
+        // Mantenute perché la struttura backend le richiede ancora.
+        AbstractValidator.setTranslator(backendTranslator);
+        AbstractValidatedCommand.setTranslator(backendTranslator);
+        FileSystem.setTranslator(backendTranslator);
+
+        // 6. LAYOUT JAVA FX
 
         // horizontal box to hold the command line
         HBox commandLinePane = new HBox();
@@ -213,13 +121,9 @@ public class MainFx extends Application {
 
         // vertical pane to hold the menu bar and the command line
         VBox top = new VBox(
-                this.menuBarView.getNode(),
+                menuBarView.getNode(),
                 commandLinePane
         );
-
-        // output view
-        //this.outputView.setPrefRowCount(PREF_OUTPUT_VIEW_ROW_COUNT);
-        //this.outputView.setEditable(false);
 
         // scroll pane to hold the output view
         ScrollPane centerPane = new ScrollPane();
@@ -227,10 +131,6 @@ public class MainFx extends Application {
         centerPane.setFitToWidth(true);
         centerPane.setPadding(new Insets(PREF_INSETS_SIZE));
         centerPane.setContent(this.outputView.getNode());
-
-        // log view
-        //this.logView.setPrefRowCount(PREF_LOG_VIEW_ROW_COUNT);
-        //this.logView.setEditable(false);
 
         // scroll pane to hold log view
         ScrollPane bottomPane = new ScrollPane();
@@ -249,19 +149,15 @@ public class MainFx extends Application {
         Scene mainScene = new Scene(rootPane);
 
         // put the scene onto the primary stage
-        primaryStage.setTitle(this.applicationTitle);
+        String applicationTitle = i18n.getString("app.title");
+        primaryStage.setTitle(applicationTitle);
         primaryStage.setResizable(true);
         primaryStage.setScene(mainScene);
 
         // on close
         primaryStage.setOnCloseRequest(e -> {
-            // send a command to the ApplicationExitController
-            // to handle to exit process...
-            //
-            // for new we just close the app directly
             e.consume();
             exitView.show();
-            //primaryStage.close();
         });
 
         // show the primary stage
@@ -271,5 +167,4 @@ public class MainFx extends Application {
     public static void main(String[] args) {
         Application.launch(args);
     }
-
 }

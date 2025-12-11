@@ -12,7 +12,7 @@ import java.util.Map;
 @Singleton
 public class FileSystem implements FileSystemComponent, IFileSystem
 {
-    private final DirectoryNode root;
+    private DirectoryNode root;
     private DirectoryNode currentDirectory;
     private CommandExecutor commandExecutor;
     private List<ICommand> commandList; // FIXME: perché non è utilizzata?
@@ -204,6 +204,19 @@ public class FileSystem implements FileSystemComponent, IFileSystem
     @Override
     public void setDataToSave(boolean dataToSave) {
         this.dataToSave = dataToSave;
+    }
+
+    @Override
+    public void create() {
+        // 1. Crea la nuova radice: passiamo 'null' come padre.
+        DirectoryNode newRoot = new DirectoryNode(null);
+
+        // 2. Resetta i campi di stato
+        this.root = newRoot;
+        this.currentDirectory = newRoot;
+        this.dataToSave = false;
+
+        System.out.println("File system state reset to initial structure.");
     }
 
     public static void setTranslator(BackendTranslator translator) {

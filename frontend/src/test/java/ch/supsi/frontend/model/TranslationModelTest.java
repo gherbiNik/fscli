@@ -1,6 +1,5 @@
 package ch.supsi.frontend.model;
 
-import ch.supsi.fscli.backend.application.TranslationApplication;
 import ch.supsi.fscli.frontend.model.TranslationModel;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

@@ -1,24 +1,18 @@
 package ch.supsi.fscli.frontend.model;
 
 import ch.supsi.fscli.backend.application.filesystem.IFileSystemApplication;
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
+
 import java.util.List;
 
+@Singleton
 public class CommandHelpModel implements ICommandHelpModel {
     private static CommandHelpModel instance;
-    private IFileSystemApplication fileSystemApplication;
+    private final IFileSystemApplication fileSystemApplication;
 
-    private CommandHelpModel() {}
-
-    // Singleton che richiede l'istanza dell'applicazione backend
-    public static CommandHelpModel getInstance(IFileSystemApplication fileSystemApplication) {
-        if (instance == null) {
-            instance = new CommandHelpModel();
-            instance.initialize(fileSystemApplication);
-        }
-        return instance;
-    }
-
-    private void initialize(IFileSystemApplication fileSystemApplication) {
+    @Inject
+    public CommandHelpModel(IFileSystemApplication fileSystemApplication) {
         this.fileSystemApplication = fileSystemApplication;
     }
 

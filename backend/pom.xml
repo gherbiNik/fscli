@@ -9,6 +9,7 @@
     <name>Filesystem Command-line Simulator</name>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
         <maven.build.timestamp.format>dd/MM/yyyy</maven.build.timestamp.format>
@@ -84,6 +85,8 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>3.5.3</version>
+                <configuration>
+                    <encoding>UTF-8</encoding> </configuration>
             </plugin>
         </plugins>
     </build>

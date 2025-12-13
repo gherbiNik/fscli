@@ -96,6 +96,7 @@ public class MainFx extends Application {
         fsStateMapperModel.addPropertyChangeListener(menuBarView);
         fsStateMapperModel.addPropertyChangeListener(logView);
         fsStateMapperModel.addPropertyChangeListener(commandLineView);
+        fsStateMapperModel.addPropertyChangeListener(outputView);
 
         // 5. SETUP STATICHE BACKEND (Legacy)
         // Mantenute perché la struttura backend le richiede ancora.

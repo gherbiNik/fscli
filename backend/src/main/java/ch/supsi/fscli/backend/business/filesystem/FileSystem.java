@@ -184,16 +184,27 @@ public class FileSystem implements FileSystemComponent, IFileSystem
     }
 
     @Override
-    public String executeCommand(String command) {  // FIXME: Pensa al FileSystem come se fosse il disco rigido fisico del tuo computer. Secondo te, il disco rigido dovrebbe sapere come interpretare i comandi testuali scritti da un utente (come "ls" o "mkdir"), oppure il suo compito dovrebbe essere solo quello di leggere e scrivere dati quando qualcuno glielo chiede?
+    public String executeCommand(String command) {
         CommandResult result = commandExecutor.execute(command);
-
+        // FIXME: Pensa al FileSystem come se fosse il disco rigido fisico del tuo computer.
+        //  Secondo te, il disco rigido dovrebbe sapere come interpretare i comandi testuali scritti da un utente (come "ls" o "mkdir"),
+        //  oppure il suo compito dovrebbe essere solo quello di leggere e scrivere dati quando qualcuno glielo chiede?
+        checkDataToSave(command);
         if(result.isSuccess()) {
-            //FIXME per pwd e clear non aggiorno
-            dataToSave = true;
+
             return result.getOutput();
         }
         else
             return "ERROR-"+result.getError();
+    }
+
+    private void checkDataToSave(String command) {
+        System.out.println("DEBUG: "+command);
+        if (command.contains("ls") || command.contains("pwd") || command.contains("clear"))
+            dataToSave = false;
+        else
+            dataToSave = true;
+
     }
 
     @Override

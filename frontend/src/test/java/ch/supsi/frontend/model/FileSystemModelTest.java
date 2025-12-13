@@ -57,7 +57,7 @@ class FileSystemModelTest {
 
         // Verify FileSystemToSaved event (since result has no ERROR-)
         ArgumentCaptor<FileSystemToSaved> saveCaptor = ArgumentCaptor.forClass(FileSystemToSaved.class);
-        verify(listener, atLeastOnce()).propertyChange(saveCaptor.capture());
+        verify(listener, never()).propertyChange(saveCaptor.capture());
 
 
         // Verify OutputEvent

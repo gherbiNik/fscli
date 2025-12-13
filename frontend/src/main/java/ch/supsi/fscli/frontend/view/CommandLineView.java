@@ -40,7 +40,7 @@ public class CommandLineView implements ViewComponent, PropertyChangeListener {
 
         this.commandLineLabel = new Label();
         this.commandLine = new TextField();
-
+        this.commandLine.setId("inputCommand");
         // Disabilito di default
         this.setDisable(true);
 

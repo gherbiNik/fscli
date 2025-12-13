@@ -79,7 +79,7 @@ public class MenuBarView implements ViewComponent, PropertyChangeListener {
 
         helpMenuItem.setOnAction(event -> helpView.show());
         aboutMenuItem.setOnAction(event -> creditsView.show());
-
+        helpMenu.setId("helpMenu");
     }
 
     private void initEditMenu() {
@@ -87,6 +87,8 @@ public class MenuBarView implements ViewComponent, PropertyChangeListener {
         preferencesMenuItem = new MenuItem();
         editMenu.getItems().add(preferencesMenuItem);
         preferencesMenuItem.setOnAction(actionEvent -> preferenceView.show());
+        preferencesMenuItem.setId("preferencesMenuItem");
+        editMenu.setId("editMenu");
     }
 
     private void initFileMenu() {
@@ -112,7 +114,6 @@ public class MenuBarView implements ViewComponent, PropertyChangeListener {
         exitMenuItem = new MenuItem();
         exitMenuItem.setId("exitMenuItem");
         exitMenuItem.setOnAction(event -> exitView.show());
-
 
 
         this.fileMenu = new Menu();
@@ -148,8 +149,11 @@ public class MenuBarView implements ViewComponent, PropertyChangeListener {
 
         // HELP MENU
         helpMenu.setText(i18n.getString("menu.help"));
+        helpMenuItem.setId("helpMenuItem");
         helpMenuItem.setText(i18n.getString("menu.help.help"));
+
         aboutMenuItem.setText(i18n.getString("menu.help.about"));
+        aboutMenuItem.setId("aboutMenuItem");
 
     }
 

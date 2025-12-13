@@ -54,7 +54,7 @@ public class PreferenceDAOTest {
         assertTrue(Files.exists(preferencesDirectory), "Preferences directory should be created.");
         assertTrue(Files.exists(preferencesFile), "Preferences file should be created.");
 
-        assertEquals("it-IT", prefs.getProperty("language-tag"));
+        assertEquals("it_IT", prefs.getProperty("language-tag"));
         assertEquals("80", prefs.getProperty("column"));
     }
 

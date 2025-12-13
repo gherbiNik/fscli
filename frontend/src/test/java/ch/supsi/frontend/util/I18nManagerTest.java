@@ -27,7 +27,7 @@ class I18nManagerTest {
 
     @Test
     void testSetAndGetLocale() {
-        Locale locale = new Locale("it-IT");
+        Locale locale = new Locale("it", "IT");
 
         i18nManager.setLocale(locale);
         assertEquals(locale, i18nManager.getLocale());
@@ -36,7 +36,7 @@ class I18nManagerTest {
     @Test
     void testGetStringFallbackToModel() {
         // setLocale deve essere chiamato per inizializzare il manager
-        i18nManager.setLocale(new Locale("it-IT"));
+        i18nManager.setLocale(new Locale("it", "IT"));
 
         // Verifichiamo il fallback al Model (Backend)
         when(translationModel.getString("missing.key")).thenReturn("BackendTranslation");

@@ -2,34 +2,28 @@ package ch.supsi.fscli.backend.business.service;
 
 import ch.supsi.fscli.backend.business.filesystem.*;
 import ch.supsi.fscli.backend.util.BackendTranslator;
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
 
 import java.util.Map;
 
+@Singleton
 public class FileSystemService implements IFileSystemService{
 
-    private static FileSystemService instance;
-    private FileSystem fileSystem;
+    private final FileSystem fileSystem;
     private BackendTranslator i18n;
 
-    private FileSystemService() {
-    }
-
-    public static FileSystemService getInstance(FileSystem fileSystem) {
-        if (instance == null) {
-            instance = new FileSystemService();
-            instance.initialize(fileSystem);
-        }
-        return instance;
-    }
-
-    private void initialize(FileSystem fileSystem){
+    @Inject
+    public FileSystemService(FileSystem fileSystem, BackendTranslator i18n) {
         this.fileSystem = fileSystem;
+        this.i18n = i18n;
     }
 
     public DirectoryNode getCurrentDirectory() {
         return fileSystem.getCurrentDirectory();
     }
 
+    // FIXME: ↓ capire se va tenuto o no ↓
     public void setTranslator(BackendTranslator translator) {
         i18n = translator;
     }

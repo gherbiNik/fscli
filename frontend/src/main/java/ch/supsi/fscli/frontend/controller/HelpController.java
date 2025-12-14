@@ -2,33 +2,25 @@ package ch.supsi.fscli.frontend.controller;
 
 import ch.supsi.fscli.frontend.model.ICommandHelpModel;
 import ch.supsi.fscli.frontend.view.HelpView;
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
 
+@Singleton
 public class HelpController {
-    private static HelpController instance;
-    private HelpView view;
-    private ICommandHelpModel model;
+    private final HelpView helpView;
+    private final ICommandHelpModel commandHelpModel;
 
-    private HelpController(){}
-
-    public static HelpController getInstance(HelpView view, ICommandHelpModel model){
-        if(instance == null){
-            instance = new HelpController();
-            instance.initialize(view, model);
-        }
-        return instance;
-    }
-
-    private void initialize(HelpView view, ICommandHelpModel model)
-    {
-        this.view = view;
-        this.model = model;
+    @Inject
+    public HelpController(HelpView helpView, ICommandHelpModel commandHelpModel) {
+        this.helpView = helpView;
+        this.commandHelpModel = commandHelpModel;
         updateView();
     }
 
     private void updateView() {
-        if (view != null && model != null) {
+        if (helpView != null && helpView != null) {
             // Recupera le stringhe dal model (che le prende dal backend) e le setta nella view
-            view.setCommandDescriptions(model.getCommandDescriptions());
+            helpView.setCommandDescriptions(commandHelpModel.getCommandDescriptions());
         }
     }
 }

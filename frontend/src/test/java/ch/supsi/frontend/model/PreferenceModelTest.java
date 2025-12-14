@@ -11,7 +11,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import java.beans.PropertyChangeListener;
-import java.lang.reflect.Field;
+// Rimuoviamo l'import java.lang.reflect.Field;
 import java.nio.file.Path;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -27,17 +27,12 @@ class PreferenceModelTest {
     private PreferenceModel preferenceModel;
 
     @BeforeEach
-    void setUp() throws Exception {
+    void setUp() {
         MockitoAnnotations.openMocks(this);
-        resetSingleton(PreferenceModel.class, "instance");
-        preferenceModel = PreferenceModel.getInstance(preferenceApplication);
-        preferenceModel.addPropertyChangeListener(propertyChangeListener);
-    }
+        preferenceModel = new PreferenceModel(preferenceApplication);
 
-    private void resetSingleton(Class<?> clazz, String fieldName) throws Exception {
-        Field instance = clazz.getDeclaredField(fieldName);
-        instance.setAccessible(true);
-        instance.set(null, null);
+        // Il wiring del listener resta manuale
+        preferenceModel.addPropertyChangeListener(propertyChangeListener);
     }
 
     @Test
@@ -55,18 +50,24 @@ class PreferenceModelTest {
 
     @Test
     void testFontRetrieval() {
-        when(preferenceApplication.getCommandLineFont()).thenReturn("Arial");
-        when(preferenceApplication.getOutputAreaFont()).thenReturn("Verdana");
-        when(preferenceApplication.getLogAreaFont()).thenReturn("Arial");
+        // Recuperiamo il nome del font di default del sistema su cui sta girando il test.
+        // In CI questo sarà probabilmente "System Regular", su Windows "Segoe UI", ecc.
+        String safeFont = Font.getDefault().getName();
 
+        // Istruiamo il mock per restituire questo nome "sicuro"
+        when(preferenceApplication.getCommandLineFont()).thenReturn(safeFont);
+        when(preferenceApplication.getOutputAreaFont()).thenReturn(safeFont);
+        when(preferenceApplication.getLogAreaFont()).thenReturn(safeFont);
+
+        // Testiamo
         Font cmdFont = preferenceModel.getCommandLineFont();
-        assertEquals("Arial", cmdFont.getName());
+        assertEquals(safeFont, cmdFont.getName());
 
         Font outFont = preferenceModel.getOutputAreaFont();
-        assertEquals("Verdana", outFont.getName());
+        assertEquals(safeFont, outFont.getName());
 
         Font logFont = preferenceModel.getLogAreaFont();
-        assertEquals("Arial", logFont.getName());
+        assertEquals(safeFont, logFont.getName());
     }
 
     @Test
@@ -97,6 +98,5 @@ class PreferenceModelTest {
 
         ArgumentCaptor<PreferenceSavedEvent> captor = ArgumentCaptor.forClass(PreferenceSavedEvent.class);
         verify(propertyChangeListener).propertyChange(captor.capture());
-
     }
 }

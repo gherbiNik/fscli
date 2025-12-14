@@ -1,52 +1,58 @@
 package ch.supsi.fscli.backend.application.filesystem;
 
-import ch.supsi.fscli.backend.business.filesystem.FileSystem;
+import ch.supsi.fscli.backend.business.command.business.CommandExecutor;
+import ch.supsi.fscli.backend.business.command.business.CommandLoader;
+import ch.supsi.fscli.backend.business.filesystem.IFileSystem;
+import ch.supsi.fscli.backend.util.BackendTranslator;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 public class FileSystemApplicationTest {
 
+    @Mock private IFileSystem fileSystem;
+    @Mock private CommandExecutor commandExecutor;
+    @Mock private CommandLoader commandLoader;
+    @Mock private BackendTranslator backendTranslator;
+
+    private FileSystemApplication app;
+
     @BeforeEach
     void setUp() {
-        // Reset singletons
-        try {
-            java.lang.reflect.Field fsAppInstance = FileSystemApplication.class.getDeclaredField("instance");
-            fsAppInstance.setAccessible(true);
-            fsAppInstance.set(null, null);
-
-            java.lang.reflect.Field fsInstance = FileSystem.class.getDeclaredField("instance");
-            fsInstance.setAccessible(true);
-            fsInstance.set(null, null);
-        } catch (Exception e) {
-            fail("Could not reset singletons");
-        }
-    }
-
-    @Test
-    @DisplayName("FileSystemApplication should be singleton")
-    void testSingleton() {
-        FileSystemApplication app1 = FileSystemApplication.getInstance();
-        FileSystemApplication app2 = FileSystemApplication.getInstance();
-        assertSame(app1, app2);
+        MockitoAnnotations.openMocks(this);
+        // Utilizziamo la Constructor Injection con i 4 mock
+        app = new FileSystemApplication(fileSystem, commandExecutor, commandLoader, backendTranslator);
     }
 
     @Test
     @DisplayName("Should create file system")
     void testCreateFileSystem() {
-        FileSystemApplication app = FileSystemApplication.getInstance();
+        // Verifica che createFileSystem deleghi correttamente al metodo create() del Business Layer
         assertDoesNotThrow(app::createFileSystem);
+        verify(fileSystem).create();
     }
 
     @Test
     @DisplayName("Created file system should be accessible")
     void testFileSystemAccessibility() {
-        FileSystemApplication app = FileSystemApplication.getInstance();
+
+        // Verifichiamo il funzionamento della delega valida: isDataToSave()
+        when(fileSystem.isDataToSave()).thenReturn(false);
+        assertFalse(app.isDataToSave());
+
+        // Verifichiamo la creazione
         app.createFileSystem();
 
-        FileSystem fs = FileSystem.getInstance();
-        assertNotNull(fs);
-        assertNotNull(fs.getRoot());
+        // Verifichiamo che la delega al reset sia avvenuta
+        verify(fileSystem).create();
+
+        // Eseguiamo un'ultima verifica di delega:
+        when(fileSystem.isDataToSave()).thenReturn(true);
+        assertTrue(app.isDataToSave());
     }
 }

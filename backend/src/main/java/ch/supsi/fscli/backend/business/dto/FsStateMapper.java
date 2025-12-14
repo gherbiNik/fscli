@@ -2,30 +2,21 @@ package ch.supsi.fscli.backend.business.dto;
 
 import ch.supsi.fscli.backend.business.filesystem.*;
 import ch.supsi.fscli.backend.business.service.ISaveDataService;
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
 
 import java.io.File;
 import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
 
+@Singleton
 public class FsStateMapper implements IFsStateMapper{
-    public static FsStateMapper myself;
-    private ISaveDataService saveDataService;
-    private FileSystem fileSystem;
+    private final ISaveDataService saveDataService;
+    private final FileSystem fileSystem;
 
-
-    private FsStateMapper() {
-    }
-
-    public static FsStateMapper getInstance(ISaveDataService saveDataService, FileSystem fileSystem) {
-        if (myself == null) {
-            myself = new FsStateMapper();
-            myself.initialize(saveDataService, fileSystem);
-        }
-        return myself;
-    }
-
-    private void initialize(ISaveDataService saveDataService, FileSystem fileSystem) {
+    @Inject
+    public FsStateMapper(ISaveDataService saveDataService, FileSystem fileSystem) {
         this.saveDataService = saveDataService;
         this.fileSystem = fileSystem;
     }
@@ -46,6 +37,11 @@ public class FsStateMapper implements IFsStateMapper{
     public void toDTOas(File file) {
         IFsStateDto state = mapper();
         saveDataService.saveAs(state, file);
+    }
+
+    @Override
+    public String getCurrentFileAbsolutePath() {
+        return saveDataService.getCurrentFileAbsolutePath();
     }
 
     /**

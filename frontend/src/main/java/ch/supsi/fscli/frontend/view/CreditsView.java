@@ -1,20 +1,23 @@
 package ch.supsi.fscli.frontend.view;
 
 import ch.supsi.fscli.frontend.util.I18nManager;
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.Separator;
 import javafx.scene.layout.VBox;
-import javafx.stage.Stage;
 import javafx.stage.Modality;
-import javafx.geometry.Insets;
-import javafx.geometry.Pos;
+import javafx.stage.Stage;
 
+@Singleton
 public class CreditsView implements ShowView {
 
     private Stage stage;
-    private I18nManager i18nManager;
+    private final I18nManager i18nManager;
 
     private Label titleLabel;
     private Label frontendVersionLabel;
@@ -26,6 +29,7 @@ public class CreditsView implements ShowView {
 
     private Button okButton;
 
+    @Inject
     public CreditsView(I18nManager i18nManager) {
         this.i18nManager = i18nManager;
         createLayout();
@@ -33,7 +37,7 @@ public class CreditsView implements ShowView {
 
     private void createLayout() {
         stage = new Stage();
-        stage.setTitle("");
+        stage.setTitle(""); // Initially empty; set by controller
         stage.initModality(Modality.APPLICATION_MODAL);
         stage.setResizable(false);
 
@@ -42,19 +46,21 @@ public class CreditsView implements ShowView {
         root.setPadding(new Insets(30));
         root.setAlignment(Pos.CENTER);
 
-        titleLabel = new Label("");
+        titleLabel = new Label(""); // Initially empty; set by controller
         titleLabel.setStyle("-fx-font-size: 18px; -fx-font-weight: bold;");
         titleLabel.setId("messageLabel");
 
+        // Frontend Info
         Label frontendHeader = new Label("Frontend");
         frontendHeader.setStyle("-fx-font-size: 16px; -fx-font-weight: bold;");
 
-        frontendVersionLabel = new Label("");
-        frontendBuildDateLabel = new Label("");
+        frontendVersionLabel = new Label(""); // Initially empty; set by controller
+        frontendBuildDateLabel = new Label(""); // Initially empty; set by controller
 
         Separator separator = new Separator();
         separator.setPrefWidth(500);
 
+        // Backend Info (initially set to empty; updated by controller)
         backendHeader = new Label("Backend");
         backendHeader.setStyle("-fx-font-size: 16px; -fx-font-weight: bold;");
 

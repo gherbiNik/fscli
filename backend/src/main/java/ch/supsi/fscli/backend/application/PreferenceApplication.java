@@ -1,27 +1,19 @@
 package ch.supsi.fscli.backend.application;
 
 import ch.supsi.fscli.backend.business.preferences.IPreferenceBusiness;
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
 
 
 import java.nio.file.Path;
 import java.util.Locale;
 
+@Singleton
 public class PreferenceApplication implements IPreferenceApplication{
-    private static  PreferenceApplication instance;
+    private final IPreferenceBusiness preferenceBusiness;
 
-    private IPreferenceBusiness preferenceBusiness;
-
-    private PreferenceApplication() {}
-
-    public static PreferenceApplication getInstance(IPreferenceBusiness preferenceBusiness) {
-        if (instance == null) {
-            instance = new PreferenceApplication();
-            instance.initialize(preferenceBusiness);
-        }
-        return instance;
-    }
-
-    private void initialize(IPreferenceBusiness preferenceBusiness) {
+    @Inject
+    public PreferenceApplication(IPreferenceBusiness preferenceBusiness) {
         this.preferenceBusiness = preferenceBusiness;
     }
 

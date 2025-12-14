@@ -1,11 +1,12 @@
 package ch.supsi.fscli.frontend.view;
 
-import ch.supsi.fscli.backend.application.filesystem.FileSystemApplication;
-import ch.supsi.fscli.frontend.controller.PreferenceController;
+import ch.supsi.fscli.frontend.controller.IPreferenceController;
 import ch.supsi.fscli.frontend.controller.filesystem.IFileSystemController;
 import ch.supsi.fscli.frontend.event.FileSystemCreationEvent;
 import ch.supsi.fscli.frontend.event.FileSystemOpenEvent;
 import ch.supsi.fscli.frontend.util.I18nManager;
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -14,29 +15,30 @@ import javafx.scene.control.TextField;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
+@Singleton
 public class CommandLineView implements ViewComponent, PropertyChangeListener {
-    private PreferenceController  preferenceController;
-    private I18nManager  i18n;
-    // FX Componenents
+
+    private final IPreferenceController preferenceController;
+    private final I18nManager i18n;
+    private final IFileSystemController fileSystemController;   // Dipendenza circolare
+
+    // FX Components
     private TextField commandLine;
     private Label commandLineLabel;
     private Button enter;
 
-    private IFileSystemController fileSystemController;
-
-    public CommandLineView(IFileSystemController fileSystemController, PreferenceController preferenceController, I18nManager i18nManager){
+    // Guice risolverà la dipendenza circolare perché nel controller abbiamo usato il setter!
+    @Inject
+    public CommandLineView(IFileSystemController fileSystemController, IPreferenceController preferenceController, I18nManager i18nManager){
         this.fileSystemController = fileSystemController;
         this.preferenceController = preferenceController;
         this.i18n = i18nManager;
         createLayout();
     }
 
-
     private void createLayout() {
-
         this.enter = new Button();
         this.enter.setId("enter");
-
 
         this.commandLineLabel = new Label();
         this.commandLine = new TextField();
@@ -49,10 +51,9 @@ public class CommandLineView implements ViewComponent, PropertyChangeListener {
         setLocalizedText();
 
         this.enter.setOnAction(actionEvent -> {
-                fileSystemController.sendCommand(commandLine.getText());
-                commandLine.clear();
-
-            }
+                    fileSystemController.sendCommand(commandLine.getText());
+                    commandLine.clear();
+                }
         );
 
         this.commandLine.setOnAction(event -> this.enter.fire());
@@ -76,11 +77,9 @@ public class CommandLineView implements ViewComponent, PropertyChangeListener {
         return this.commandLine;
     }
 
-
     public void setLocalizedText() {
         enter.setText(i18n.getString("commandLine.enter"));
         commandLineLabel.setText(i18n.getString("commandLine.command"));
-
     }
 
     @Override
@@ -90,7 +89,5 @@ public class CommandLineView implements ViewComponent, PropertyChangeListener {
         }
         if (evt instanceof FileSystemOpenEvent)
             setDisable(false);
-
-
     }
 }

@@ -24,7 +24,7 @@ public class FileSystemOpenEventTest {
     public void constructor0() {
         IllegalArgumentException e = assertThrows(
                 IllegalArgumentException.class,
-                () -> new FileSystemOpenEvent(null)
+                () -> new FileSystemOpenEvent(null, null, null, null)
         );
 
         assertEquals("null source", e.getMessage());

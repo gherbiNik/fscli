@@ -1,26 +1,28 @@
 package ch.supsi.fscli.frontend.view;
 
-import ch.supsi.fscli.frontend.controller.PreferenceController;
+import ch.supsi.fscli.frontend.controller.IPreferenceController; // Usiamo l'interfaccia!
 import ch.supsi.fscli.frontend.event.ClearEvent;
 import ch.supsi.fscli.frontend.event.FileSystemCreationEvent;
+import ch.supsi.fscli.frontend.event.FileSystemOpenEvent;
 import ch.supsi.fscli.frontend.event.OutputEvent;
 import ch.supsi.fscli.frontend.util.I18nManager;
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import javafx.scene.Node;
 import javafx.scene.control.TextArea;
 
-import javax.swing.text.View;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
+@Singleton
 public class OutputView implements ViewComponent, PropertyChangeListener {
 
-    private PreferenceController preferenceController;
-    private I18nManager i18nManager;
-
+    private final IPreferenceController preferenceController;
+    private final I18nManager i18nManager;
     private TextArea outputView;
 
-
-    public OutputView(I18nManager i18n, PreferenceController preferenceController){
+    @Inject
+    public OutputView(I18nManager i18n, IPreferenceController preferenceController){
         this.preferenceController = preferenceController;
         this.i18nManager = i18n;
         createLayout();
@@ -31,11 +33,6 @@ public class OutputView implements ViewComponent, PropertyChangeListener {
         this.outputView.setEditable(false);
         this.outputView.setId("outputView");
 
-        // EXAMPLE TEXT
-//        this.outputView.appendText("1This is an example output text...\n");
-//        this.outputView.appendText("2This is an example output text...\n");
-//        this.outputView.appendText("3This is an example output text...\n");
-//        this.outputView.appendText("4This is an example output text...\n");
         this.outputView.setPrefRowCount(this.preferenceController.getOutputAreaRow());
         outputView.setFont(this.preferenceController.getOutputAreaFont());
         outputView.setWrapText(false);
@@ -52,15 +49,14 @@ public class OutputView implements ViewComponent, PropertyChangeListener {
 
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
-
         if (evt instanceof OutputEvent) {
             String text = (String) evt.getNewValue();
             this.outputView.appendText(text);
         } else if (evt instanceof ClearEvent) {
             this.outputView.clear();
-        } else if(evt instanceof FileSystemCreationEvent){
+        } else if(evt instanceof FileSystemCreationEvent || evt instanceof FileSystemOpenEvent){
+            //System.out.println("entrato: "+evt.getSource());
             clear();
         }
     }
-
 }

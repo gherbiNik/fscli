@@ -29,24 +29,21 @@ class FsStateMapperTest {
 
     @BeforeEach
     void setUp() throws Exception {
-        // Reset FileSystem singleton
-        Field instanceField = FileSystem.class.getDeclaredField("instance");
-        instanceField.setAccessible(true);
-        instanceField.set(null, null);
-
-        // Reset Inode counter
+        // 1. Reset Inode counter
+        // Questo rimane necessario perché Inode ha una logica statica interna per gli ID
         Field idCounterField = Inode.class.getDeclaredField("idCounter");
         idCounterField.setAccessible(true);
         idCounterField.set(null, 0);
 
-        // Reset FsStateMapper singleton - ADD THIS
-        Field mapperInstanceField = FsStateMapper.class.getDeclaredField("myself");
-        mapperInstanceField.setAccessible(true);
-        mapperInstanceField.set(null, null);
+        // 2. Creiamo le istanze pulite (Niente più reflection sui singleton!)
+        fileSystem = new FileSystem();
+        fileSystem.create();
 
-        fileSystem = FileSystem.getInstance();
-        saveDataService = mock(SaveDataService.class);
-        mapper = FsStateMapper.getInstance(saveDataService, fileSystem);
+        // Mockiamo l'interfaccia, è più pulito
+        saveDataService = mock(ISaveDataService.class);
+
+        // 3. Injection manuale nel costruttore
+        mapper = new FsStateMapper(saveDataService, fileSystem);
     }
 
     @Test
@@ -93,19 +90,16 @@ class FsStateMapperTest {
         IFsStateDto state = capturedState[0];
         assertNotNull(state.getRoot());
         assertEquals(user.getUid(), state.getCurrentDirectoryUid());
-        assertTrue(state.getInodeTable().size() >= 4); // root, home, user, file, link
+        assertTrue(state.getInodeTable().size() >= 4);
+
+        // --- SIMULIAMO IL RIAVVIO ---
 
         // Reset file system for deserialization test
-        Field instanceField = FileSystem.class.getDeclaredField("instance");
-        instanceField.setAccessible(true);
-        instanceField.set(null, null);
-        fileSystem = FileSystem.getInstance();
+        // Molto più semplice ora: basta crearne uno nuovo!
+        fileSystem = new FileSystem();
 
         // Reinitialize mapper with new file system
-        Field mapperInstanceField = FsStateMapper.class.getDeclaredField("myself");
-        mapperInstanceField.setAccessible(true);
-        mapperInstanceField.set(null, null);
-        mapper = FsStateMapper.getInstance(saveDataService, fileSystem);
+        mapper = new FsStateMapper(saveDataService, fileSystem);
 
         // Act: Deserialize
         mapper.fromDTO("test.json");
@@ -146,6 +140,7 @@ class FsStateMapperTest {
         assertEquals(reconstructedRoot.getUid(), homeDir.getParent().getUid());
         assertNull(reconstructedRoot.getParent());
     }
+
     @Test
     void testSerializationToFile() {
         // Arrange

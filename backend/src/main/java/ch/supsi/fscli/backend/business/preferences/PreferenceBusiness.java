@@ -1,31 +1,22 @@
 package ch.supsi.fscli.backend.business.preferences;
 
 import ch.supsi.fscli.backend.dataAccess.preferences.IPreferenceDAO;
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
 
 
 import java.nio.file.Path;
 import java.util.Properties;
 
+@Singleton
 public class PreferenceBusiness implements IPreferenceBusiness{
-    private static PreferenceBusiness instance;
+    private final IPreferenceDAO preferencesDao;
+    private final Properties userPreferences;
 
-    private IPreferenceDAO preferencesDao;
-    private Properties userPreferences;
-
-    private PreferenceBusiness() {}
-
-
-    public static PreferenceBusiness getInstance(IPreferenceDAO preferencesDao) {
-        if (instance == null) {
-            instance = new PreferenceBusiness();
-            instance.initialize(preferencesDao);
-        }
-
-        return instance;
-    }
-
-    private void initialize( IPreferenceDAO preferencesDao ){
+    @Inject
+    public PreferenceBusiness(IPreferenceDAO preferencesDao) {
         this.preferencesDao = preferencesDao;
+        // Carichiamo le preferenze subito alla creazione del service.
         this.userPreferences = preferencesDao.getPreferences();
     }
 

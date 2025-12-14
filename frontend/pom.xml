@@ -81,7 +81,6 @@
     </dependencies>
 
     <build>
-        <finalName>fscli</finalName>
         <resources>
             <resource>
                 <directory>src/main/resources</directory>
@@ -117,6 +116,32 @@
                             <goal>single</goal>
                         </goals>
                     </execution>
+                </executions>
+            </plugin>
+            <!-- Code Coverage -->
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <version>0.8.14</version>
+                <executions>
+
+                    <!-- attach agent -->
+                    <execution>
+                        <id>prepare-agent</id>
+                        <goals>
+                            <goal>prepare-agent</goal>
+                        </goals>
+                    </execution>
+
+                    <!-- generate report -->
+                    <execution>
+                        <id>report</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>report</goal>
+                        </goals>
+                    </execution>
+
                 </executions>
             </plugin>
         </plugins>

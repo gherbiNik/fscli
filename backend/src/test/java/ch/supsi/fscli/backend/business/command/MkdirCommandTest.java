@@ -1,7 +1,5 @@
 package ch.supsi.fscli.backend.business.command;
 
-import ch.supsi.fscli.backend.business.command.business.CommandDetails;
-import ch.supsi.fscli.backend.business.command.business.CommandHelpContainer;
 import ch.supsi.fscli.backend.business.command.commands.AbstractValidatedCommand;
 import ch.supsi.fscli.backend.business.command.commands.CommandContext;
 import ch.supsi.fscli.backend.business.command.commands.CommandResult;
@@ -13,13 +11,14 @@ import ch.supsi.fscli.backend.business.filesystem.Inode;
 import ch.supsi.fscli.backend.business.service.FileSystemService;
 import ch.supsi.fscli.backend.business.service.IFileSystemService;
 import ch.supsi.fscli.backend.util.BackendTranslator;
-import ch.supsi.fscli.backend.business.command.business.CommandExecutor;
-import ch.supsi.fscli.backend.business.command.business.CommandParser;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Locale;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -28,44 +27,28 @@ class MkdirCommandTest {
     private MkdirCommand mkdirCommand;
     private IFileSystemService fileSystemService;
     private FileSystem fileSystem;
-    private CommandHelpContainer commandHelpContainer;
 
     @BeforeEach
     void setUp() {
-        // Reset di tutti i singleton
-        resetSingleton(CommandExecutor.class);
-        resetSingleton(CommandHelpContainer.class);
-        resetSingleton(FileSystemService.class);
-        resetSingleton(BackendTranslator.class);
-        resetSingleton(CommandParser.class);
-        resetSingleton(FileSystem.class);
-
-        // Inizializza dipendenze
-        fileSystem = FileSystem.getInstance();
-        fileSystemService = FileSystemService.getInstance(fileSystem);
-
-        BackendTranslator translator = BackendTranslator.getInstance();
+        // 1. Manual Injection
+        BackendTranslator translator = new BackendTranslator();
         translator.setLocaleDefault(Locale.US);
 
-        commandHelpContainer = CommandHelpContainer.getInstance(translator);
+        AbstractValidatedCommand.setTranslator(translator);
+        AbstractValidator.setTranslator(translator);
 
-        // Inizializza il comando specifico
-        Map<String, CommandDetails> m = commandHelpContainer.getCommandDetailsMap();
-        String synopsis = m.get("mkdir").synopsis();
-        String descr = m.get("mkdir").description();
-        mkdirCommand = new MkdirCommand(fileSystemService, "mkdir", synopsis, descr);
-        AbstractValidatedCommand.setTranslator(BackendTranslator.getInstance());
-        AbstractValidator.setTranslator(BackendTranslator.getInstance());
-    }
+        // 2. Creazione istanze
+        fileSystem = new FileSystem();
+        fileSystem.create();
+        fileSystemService = new FileSystemService(fileSystem, translator);
 
-    private void resetSingleton(Class<?> aClass) {
-        try {
-            java.lang.reflect.Field instance = aClass.getDeclaredField("instance");
-            instance.setAccessible(true);
-            instance.set(null, null);
-        } catch (Exception e) {
-            fail("Could not reset singleton for: " + aClass.getName());
-        }
+        // 3. Creazione comando
+        mkdirCommand = new MkdirCommand(
+                fileSystemService,
+                "mkdir",
+                "mkdir synopsis",
+                "mkdir description"
+        );
     }
 
     @Test

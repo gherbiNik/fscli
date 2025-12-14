@@ -1,29 +1,22 @@
 package ch.supsi.fscli.backend.util;
 
+import com.google.inject.Singleton;
+
 import java.text.MessageFormat;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
+@Singleton
 public class BackendTranslator {
     private static final String BUNDLE_BASE_NAME = "i18n.responses";
     private static final String BUNDLE_BASE_NAME_TEST = "i18n.test";
-    private static BackendTranslator instance;
 
     private ResourceBundle resourceBundle;
     private Locale currentLocale;
 
-    private BackendTranslator(){}
-
-    public static BackendTranslator getInstance(){
-        if(instance == null) {
-            instance = new BackendTranslator();
-
-        }
-        return instance;
-    }
+    public BackendTranslator(){}
 
     /* Testing purpose */
-
     public void setLocaleDefault(Locale locale){
         try {
             resourceBundle = ResourceBundle.getBundle(BUNDLE_BASE_NAME_TEST, locale);

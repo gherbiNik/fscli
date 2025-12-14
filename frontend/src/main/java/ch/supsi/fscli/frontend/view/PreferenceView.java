@@ -2,6 +2,8 @@ package ch.supsi.fscli.frontend.view;
 
 import ch.supsi.fscli.frontend.controller.IPreferenceController;
 import ch.supsi.fscli.frontend.util.I18nManager;
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import javafx.collections.FXCollections;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -19,9 +21,10 @@ import javafx.stage.Stage;
 
 import java.util.List;
 
+@Singleton
 public class PreferenceView implements ShowView {
-    private IPreferenceController controller;
-    private I18nManager i18nManager;
+    private final IPreferenceController controller;
+    private final I18nManager i18nManager;
 
     // --- UI Components as Fields ---
     private ComboBox<String> languageComboBox;
@@ -45,12 +48,7 @@ public class PreferenceView implements ShowView {
 
     private final Stage stage;
 
-
-    private void initialize() {
-
-
-    }
-
+    @Inject
     public PreferenceView(IPreferenceController controller, I18nManager i18nManager) {
         this.controller = controller;
         this.i18nManager = i18nManager;
@@ -85,6 +83,7 @@ public class PreferenceView implements ShowView {
 
         List<String> availableFonts = Font.getFamilies();
 
+        // --- Component Creation (without hardcoded text) ---
         languageLabel = new Label();
         languageComboBox = new ComboBox<>(FXCollections.observableArrayList("it-IT", "en-US"));
         languageComboBox.setId("languageComboBox");

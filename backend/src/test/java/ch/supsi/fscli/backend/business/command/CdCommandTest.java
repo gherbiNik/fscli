@@ -1,7 +1,5 @@
 package ch.supsi.fscli.backend.business.command;
 
-//import ch.supsi.fscli.backend.application.CommandHelpApplication;
-import ch.supsi.fscli.backend.business.command.business.CommandHelpContainer;
 import ch.supsi.fscli.backend.business.command.commands.*;
 import ch.supsi.fscli.backend.business.command.commands.validators.AbstractValidator;
 import ch.supsi.fscli.backend.business.filesystem.FileSystem;
@@ -9,7 +7,6 @@ import ch.supsi.fscli.backend.business.filesystem.Inode;
 import ch.supsi.fscli.backend.business.service.FileSystemService;
 import ch.supsi.fscli.backend.business.service.IFileSystemService;
 import ch.supsi.fscli.backend.util.BackendTranslator;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -22,22 +19,28 @@ import java.util.Locale;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class CdCommandTest {
-    private static FileSystem fileSystem;
-    private static IFileSystemService fileSystemService;
-    private static CdCommand cdCommand;
-    private static LnCommand lnCommand;
+    // 1. Niente più static!
+    private FileSystem fileSystem;
+    private IFileSystemService fileSystemService;
+    private CdCommand cdCommand;
+    private LnCommand lnCommand;
 
-    @BeforeAll
-    public static void setUp() {
-        BackendTranslator backendTranslator = BackendTranslator.getInstance();
+    @BeforeEach // 2. Eseguiamo prima di OGNI test
+    public void setUp() {
+        // 3. Manual Injection per isolare il test
+        BackendTranslator backendTranslator = new BackendTranslator();
         backendTranslator.setLocaleDefault(Locale.US);
 
+        // Configurazione legacy per i validatori statici
         AbstractValidatedCommand.setTranslator(backendTranslator);
         AbstractValidator.setTranslator(backendTranslator);
 
-        fileSystem = FileSystem.getInstance();
-        fileSystemService = FileSystemService.getInstance(fileSystem);
-        fileSystemService.setTranslator(backendTranslator);
+        fileSystem = new FileSystem();
+        fileSystem.create();
+        fileSystemService = new FileSystemService(fileSystem, backendTranslator);
+
+        // Non serve più il setter del translator sul service se lo passiamo nel costruttore
+        // fileSystemService.setTranslator(backendTranslator);
 
         cdCommand = new CdCommand(
                 fileSystemService,
@@ -48,12 +51,15 @@ public class CdCommandTest {
 
         lnCommand = new LnCommand(fileSystemService, "ln", "ln usage", "desc");
 
-        // Crea una struttura di directory per i test
+        // 4. Ricostruiamo la struttura pulita per ogni test
         fileSystemService.createDirectory("home");
         fileSystemService.createDirectory("home/user");
         fileSystemService.createDirectory("home/user/documents");
         fileSystemService.createDirectory("tmp");
         fileSystemService.createFile("home/test.txt");
+
+        // Assicuriamoci di partire dalla root
+        fileSystem.changeDirectory("/");
     }
 
     @Test
@@ -62,13 +68,12 @@ public class CdCommandTest {
                 , Collections.emptyList(), Collections.emptyList());
         CommandResult result = cdCommand.execute(context);
         assertFalse(result.isSuccess());
-
     }
 
     @Test
     public void testExecute_WithTooManyArguments_ShouldReturnError() {
         CommandContext context = new CommandContext(fileSystem.getCurrentDirectory(), Arrays.asList("home", "tmp")
-        , Collections.emptyList());
+                , Collections.emptyList());
 
         CommandResult result = cdCommand.execute(context);
 
@@ -99,6 +104,7 @@ public class CdCommandTest {
         assertTrue(result.isSuccess());
         assertEquals("/home/user", fileSystemService.getCurrentDirectoryAbsolutePath());
     }
+
     @Test
     public void testExecute_WithRelativePath_ShouldChangeDirectory() {
         // Prima vai in home
@@ -106,7 +112,7 @@ public class CdCommandTest {
 
         CommandContext context = new CommandContext(
                 fileSystemService.getCurrentDirectory(),
-                List.of("/home/user/documents"), Collections.emptyList()
+                List.of("user/documents"), Collections.emptyList() // path relativo corretto senza slash iniziale
         );
 
         CommandResult result = cdCommand.execute(context);
@@ -156,11 +162,12 @@ public class CdCommandTest {
         CommandResult result = cdCommand.execute(context);
 
         assertFalse(result.isSuccess());
+
         context = new CommandContext(
                 fileSystemService.getCurrentDirectory(),
                 List.of("../bbbb"), Collections.emptyList()
         );
-         result = cdCommand.execute(context);
+        result = cdCommand.execute(context);
 
         assertFalse(result.isSuccess());
     }
@@ -195,7 +202,6 @@ public class CdCommandTest {
     @Test
     @DisplayName("cd linkToDir: Deve entrare nella directory reale")
     void testCdThroughSoftLink() {
-
         fileSystemService.changeDirectory("/");
 
         // 1. Crea link
@@ -220,12 +226,11 @@ public class CdCommandTest {
     @Test
     @DisplayName("cd linkToDocs/subdir: Navigazione composta tramite link")
     void testCdThroughSoftLinkNested() {
-
         fileSystemService.changeDirectory("/");
-        // Crea link: myDocs -> documents
+        // Crea link: myDocs -> home
         createSoftLink("home", "myDocs");
 
-        // Esegui: cd myDocs/work
+        // Esegui: cd myDocs/user
         List<String> args = List.of("myDocs/user");
         CommandContext ctx = new CommandContext(fileSystemService.getCurrentDirectory(), args, Collections.emptyList());
 
@@ -257,5 +262,4 @@ public class CdCommandTest {
         CommandContext ctx = new CommandContext(fileSystemService.getCurrentDirectory(), args, opts);
         lnCommand.execute(ctx);
     }
-
 }

@@ -1,57 +1,52 @@
 package ch.supsi.fscli.frontend.model.mapper;
 
+import ch.supsi.fscli.backend.application.filesystem.IFileSystemApplication;
 import ch.supsi.fscli.backend.application.mapper.IFsStateMapperApplication;
 import ch.supsi.fscli.frontend.event.*;
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
+
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 
 import java.io.File;
 
+@Singleton
 public class FsStateMapperModel implements IFsStateMapperModel {
-    private static FsStateMapperModel instance;
-    private IFsStateMapperApplication iFsStateMapperApplication;
+    private final IFsStateMapperApplication iFsStateMapperApplication;
+    private final IFileSystemApplication fileSystemApplication;
     private final PropertyChangeSupport support;
 
-
-    private FsStateMapperModel() {
-        this.support = new PropertyChangeSupport(this);
-    }
-
-    public static FsStateMapperModel getInstance(IFsStateMapperApplication iFsStateMapperApplication) {
-        if (instance == null) {
-            instance = new FsStateMapperModel();
-            instance.initialize(iFsStateMapperApplication);
-        }
-        return instance;
-    }
-
-    private void initialize(IFsStateMapperApplication iFsStateMapperApplication) {
+    @Inject
+    public FsStateMapperModel(IFsStateMapperApplication iFsStateMapperApplication, IFileSystemApplication fileSystemApplication) {
         this.iFsStateMapperApplication = iFsStateMapperApplication;
+        this.fileSystemApplication = fileSystemApplication;
+        this.support = new PropertyChangeSupport(this);
     }
 
     public void addPropertyChangeListener(PropertyChangeListener pcl) {
         support.addPropertyChangeListener(pcl);
     }
 
-
     @Override
     public void save() {
         iFsStateMapperApplication.toDTO();
-        support.firePropertyChange(new FileSystemSaved(this));
+        support.firePropertyChange(new FileSystemSaved(this, "",null, iFsStateMapperApplication.getCurrentFileAbsolutePath()));
     }
 
     @Override
     public void open(String fileName) {
         iFsStateMapperApplication.fromDTO(fileName);
-        support.firePropertyChange(new FileSystemOpenEvent(this));
+        support.firePropertyChange(new FileSystemOpenEvent(this, "",null, iFsStateMapperApplication.getCurrentFileAbsolutePath()));
+
 
     }
 
     @Override
     public void saveAs(File file) {
         iFsStateMapperApplication.toDTOas(file);
-        support.firePropertyChange(new FileSystemSavedAs(this));
+        support.firePropertyChange(new FileSystemSavedAs(this, "",null, iFsStateMapperApplication.getCurrentFileAbsolutePath()));
 
     }
 }

@@ -1,30 +1,23 @@
 package ch.supsi.fscli.frontend.util;
 
+import ch.supsi.fscli.frontend.model.ITranslationModel;
 import ch.supsi.fscli.frontend.model.TranslationModel;
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
 
 import java.util.Locale;
 import java.util.ResourceBundle;
 
+@Singleton
 public class I18nManager {
-    private static I18nManager instance;
     private static final String BUNDLE_BASE_NAME = "i18n.labels";
-    private TranslationModel translationModel;
+    private final ITranslationModel translationModel;
 
     private ResourceBundle resourceBundle;
     private Locale locale;
 
-    private I18nManager(){}
-
-    public static I18nManager getInstance(TranslationModel translationModel) {
-        if(instance == null){
-            instance = new I18nManager();
-            instance.initialize(translationModel);
-        }
-        return instance;
-    }
-
-    private void initialize(TranslationModel translationModel)
-    {
+    @Inject
+    public I18nManager(ITranslationModel translationModel) {
         this.translationModel = translationModel;
     }
 

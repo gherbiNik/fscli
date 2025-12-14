@@ -1,10 +1,11 @@
 package ch.supsi.fscli.frontend.view;
 
 import ch.supsi.fscli.frontend.controller.filesystem.IFileSystemController;
-import ch.supsi.fscli.frontend.controller.mapper.FsStateMapperController;
 import ch.supsi.fscli.frontend.controller.mapper.IFsStateMapperController;
 import ch.supsi.fscli.frontend.event.*;
 import ch.supsi.fscli.frontend.util.I18nManager;
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import javafx.scene.Node;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
@@ -14,7 +15,7 @@ import javafx.scene.control.SeparatorMenuItem;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
-
+@Singleton
 public class MenuBarView implements ViewComponent, PropertyChangeListener {
     private final MenuBar menuBar;
     private final I18nManager i18n;
@@ -29,11 +30,14 @@ public class MenuBarView implements ViewComponent, PropertyChangeListener {
     private final ShowView saveAsView;
 
     private final IFsStateMapperController fsStateMapperController;
+
     // Componenti UI da aggiornare
     private Menu fileMenu, editMenu, helpMenu;
     private MenuItem newMenuItem, openMenuItem, saveMenuItem, saveAsMenuItem, exitMenuItem;
     private MenuItem preferencesMenuItem, helpMenuItem, aboutMenuItem;
 
+    // Riceve tutte le View concrete (che sono Singleton) e le assegna alle interfacce ShowView
+    @Inject
     public MenuBarView(I18nManager i18n, ExitView exitView, CreditsView creditsView, OpenView openView, SaveAsView saveAsView,
                        HelpView helpView, PreferenceView preferenceView, IFileSystemController fileSystemController, IFsStateMapperController fsStateMapperController) {
 
@@ -163,16 +167,20 @@ public class MenuBarView implements ViewComponent, PropertyChangeListener {
             this.saveMenuItem.setDisable(false);
             this.saveAsMenuItem.setDisable(false);
             this.newMenuItem.setDisable(true);
+            this.openMenuItem.setDisable(true);
+
         }
         if (evt instanceof FileSystemSaved || evt instanceof FileSystemSavedAs || evt instanceof FileSystemOpenEvent) {
             this.saveMenuItem.setDisable(true);
             this.saveAsMenuItem.setDisable(true);
+            this.newMenuItem.setDisable(true);
+            this.openMenuItem.setDisable(false);
         }
         if (evt instanceof FileSystemToSaved) {
+            this.openMenuItem.setDisable(true);
             this.saveMenuItem.setDisable(false);
             this.saveAsMenuItem.setDisable(false);
+            this.newMenuItem.setDisable(true);
         }
-
-
     }
 }

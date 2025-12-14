@@ -1,6 +1,8 @@
 package ch.supsi.fscli.frontend.view;
 
 import ch.supsi.fscli.frontend.util.I18nManager;
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -16,13 +18,17 @@ import javafx.stage.Stage;
 
 import java.util.List;
 
+@Singleton
 public class HelpView implements ShowView{
-    private I18nManager i18nManager;
+    private final I18nManager i18nManager;
     private List<String> commandDescriptions;
     private Stage stage = new Stage();
     private VBox root;
+
+
     private VBox commandsContainer;
 
+    @Inject
     public HelpView(I18nManager i18nManager) {
         this.i18nManager = i18nManager;
         createLayout();
@@ -34,7 +40,6 @@ public class HelpView implements ShowView{
         stage.setTitle(i18nManager.getString("help.name"));
         stage.initModality(Modality.APPLICATION_MODAL);
         stage.setResizable(false);
-
 
         root = new VBox(10);
         root.setId("helpPopup");
@@ -85,6 +90,7 @@ public class HelpView implements ShowView{
         Text bullet = new Text("• ");
         bullet.setFont(Font.font("Monospaced", FontWeight.BOLD, 12));
 
+
         Text rest = new Text(description);
         rest.setFont(Font.font("Monospaced", 12));
 
@@ -92,9 +98,9 @@ public class HelpView implements ShowView{
         tf.setPrefWidth(580);
         return tf;
     }
-
     @Override
     public void show() {
         stage.show();
     }
+
 }

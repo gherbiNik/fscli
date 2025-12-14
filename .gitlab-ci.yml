@@ -50,6 +50,8 @@ backend:
 
 frontend:
   stage: frontend
+  dependencies:
+    - backend
   image: gitlab-edu.supsi.ch:5050/dti-isin/labingsw/common:maven3java17
   before_script:
     - 'cd frontend'

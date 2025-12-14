@@ -1,5 +1,6 @@
 package ch.supsi.frontend.model;
 
+import ch.supsi.fscli.backend.application.filesystem.IFileSystemApplication;
 import ch.supsi.fscli.backend.application.mapper.IFsStateMapperApplication;
 import ch.supsi.fscli.frontend.event.FileSystemOpenEvent;
 import ch.supsi.fscli.frontend.event.FileSystemSaved;
@@ -13,9 +14,8 @@ import org.mockito.MockitoAnnotations;
 
 import java.beans.PropertyChangeListener;
 import java.io.File;
-import java.lang.reflect.Field;
+// Rimuoviamo l'import java.lang.reflect.Field;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.verify;
 
 class FsStateMapperModelTest {
@@ -24,21 +24,18 @@ class FsStateMapperModelTest {
     private IFsStateMapperApplication mapperApplication;
     @Mock
     private PropertyChangeListener listener;
+    @Mock
+    private IFileSystemApplication fileSystemApplication;
 
     private FsStateMapperModel model;
 
     @BeforeEach
-    void setUp() throws Exception {
+    void setUp() {
         MockitoAnnotations.openMocks(this);
-        resetSingleton(FsStateMapperModel.class, "instance");
-        model = FsStateMapperModel.getInstance(mapperApplication);
-        model.addPropertyChangeListener(listener);
-    }
+        model = new FsStateMapperModel(mapperApplication,fileSystemApplication);
 
-    private void resetSingleton(Class<?> clazz, String fieldName) throws Exception {
-        Field instance = clazz.getDeclaredField(fieldName);
-        instance.setAccessible(true);
-        instance.set(null, null);
+        // Il wiring del listener resta manuale
+        model.addPropertyChangeListener(listener);
     }
 
     @Test

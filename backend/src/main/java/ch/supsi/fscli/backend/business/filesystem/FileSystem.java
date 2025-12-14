@@ -4,36 +4,34 @@ import ch.supsi.fscli.backend.business.command.business.CommandExecutor;
 import ch.supsi.fscli.backend.business.command.commands.CommandResult;
 import ch.supsi.fscli.backend.business.command.commands.ICommand;
 import ch.supsi.fscli.backend.util.BackendTranslator;
+import com.google.inject.Singleton;
 
 import java.util.List;
 import java.util.Map;
 
+@Singleton
 public class FileSystem implements FileSystemComponent, IFileSystem
 {
-    private static FileSystem instance;
-    private final DirectoryNode root;
+    private DirectoryNode root;
     private DirectoryNode currentDirectory;
     private CommandExecutor commandExecutor;
-    private List<ICommand> commandList;
+    private List<ICommand> commandList; // FIXME: perché non è utilizzata?
     private boolean dataToSave;
     private static BackendTranslator i18n;
 
 
-    public static FileSystem getInstance() {
-        if (instance == null) {
-            instance = new FileSystem();
-        }
-        return instance;
-    }
-
-    private FileSystem(){
-        root = new DirectoryNode(null);
-        dataToSave = true;
-        currentDirectory = root;
+    public FileSystem(){
+        root = null;
+        dataToSave = false;
     }
 
     public void setCommandExecutor(CommandExecutor commandExecutor) {
         this.commandExecutor = commandExecutor;
+    }
+
+    @Override
+    public boolean isCreated() {
+        return root != null;
     }
 
     public DirectoryNode getRoot() {
@@ -192,14 +190,24 @@ public class FileSystem implements FileSystemComponent, IFileSystem
     @Override
     public String executeCommand(String command) {
         CommandResult result = commandExecutor.execute(command);
-
+        // FIXME: Pensa al FileSystem come se fosse il disco rigido fisico del tuo computer.
+        //  Secondo te, il disco rigido dovrebbe sapere come interpretare i comandi testuali scritti da un utente (come "ls" o "mkdir"),
+        //  oppure il suo compito dovrebbe essere solo quello di leggere e scrivere dati quando qualcuno glielo chiede?
+        checkDataToSave(command);
         if(result.isSuccess()) {
-            //FIXME per pwd e clear non aggiorno
-            dataToSave = true;
+
             return result.getOutput();
         }
         else
             return "ERROR-"+result.getError();
+    }
+
+    private void checkDataToSave(String command) {
+        System.out.println("DEBUG: "+command);
+        if (command.contains("ls") || command.contains("pwd") || command.contains("clear")){}
+        else
+            dataToSave = true;
+
     }
 
     @Override
@@ -210,6 +218,19 @@ public class FileSystem implements FileSystemComponent, IFileSystem
     @Override
     public void setDataToSave(boolean dataToSave) {
         this.dataToSave = dataToSave;
+    }
+
+    @Override
+    public void create() {
+        // 1. Crea la nuova radice: passiamo 'null' come padre.
+        DirectoryNode newRoot = new DirectoryNode(null);
+
+        // 2. Resetta i campi di stato
+        this.root = newRoot;
+        this.currentDirectory = newRoot;
+        this.dataToSave = true;
+
+        System.out.println("File system state reset to initial structure.");
     }
 
     public static void setTranslator(BackendTranslator translator) {

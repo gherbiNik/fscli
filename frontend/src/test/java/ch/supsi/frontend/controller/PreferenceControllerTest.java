@@ -8,10 +8,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import java.lang.reflect.Field;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.*;
 
 class PreferenceControllerTest {
@@ -22,17 +19,11 @@ class PreferenceControllerTest {
     private PreferenceController preferenceController;
 
     @BeforeEach
-    void setUp() throws Exception {
+    void setUp() {
         MockitoAnnotations.openMocks(this);
-        resetSingleton(PreferenceController.class, "instance");
-        preferenceController = PreferenceController.getInstance(preferenceModel);
+        preferenceController = new PreferenceController(preferenceModel);
     }
 
-    private void resetSingleton(Class<?> clazz, String fieldName) throws Exception {
-        Field instance = clazz.getDeclaredField(fieldName);
-        instance.setAccessible(true);
-        instance.set(null, null);
-    }
 
     @Test
     void testSetPreferences() {
@@ -42,9 +33,11 @@ class PreferenceControllerTest {
 
     @Test
     void testGetPreferences() {
-        when(preferenceModel.getPreferences("key")).thenReturn("value");
-        String result = preferenceController.getPreferences("key");
-        assertEquals("value", result);
+        String key = "key";
+        String expectedValue = "value";
+        when(preferenceModel.getPreferences(key)).thenReturn(expectedValue);
+        String result = preferenceController.getPreferences(key);
+        assertEquals(expectedValue, result);
     }
 
     @Test
@@ -67,13 +60,23 @@ class PreferenceControllerTest {
 
     @Test
     void testSavePreferences() {
+        // Parametri di test
+        String lang = "en-US";
+        String col = "80";
+        String outRow = "10";
+        String logRow = "5";
+        String fontCL = "Arial";
+        String fontOut = "Verdana";
+        String fontLog = "Courier";
+
         preferenceController.savePreferences(
-                "en-US", "80", "10", "5",
-                "Arial", "Verdana", "Courier"
+                lang, col, outRow, logRow,
+                fontCL, fontOut, fontLog
         );
+
         verify(preferenceModel).savePreferences(
-                "en-US", "80", "10", "5",
-                "Arial", "Verdana", "Courier"
+                lang, col, outRow, logRow,
+                fontCL, fontOut, fontLog
         );
     }
 }

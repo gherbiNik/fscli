@@ -1,9 +1,5 @@
 package ch.supsi.fscli.backend.business.command;
 
-import ch.supsi.fscli.backend.business.command.business.CommandDetails;
-import ch.supsi.fscli.backend.business.command.business.CommandExecutor;
-import ch.supsi.fscli.backend.business.command.business.CommandHelpContainer;
-import ch.supsi.fscli.backend.business.command.business.CommandParser;
 import ch.supsi.fscli.backend.business.command.commands.*;
 import ch.supsi.fscli.backend.business.command.commands.validators.AbstractValidator;
 import ch.supsi.fscli.backend.business.filesystem.FileSystem;
@@ -15,58 +11,39 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 public class LnCommandTest {
+    // 1. Niente più static
     private LnCommand lnCommand;
     private IFileSystemService fileSystemService;
     private FileSystem fileSystem;
-    private CommandHelpContainer commandHelpContainer;
 
-    @BeforeEach
+    @BeforeEach // 2. Eseguiamo prima di OGNI test
     void setUp() {
-        // 1. Reset dei Singleton per garantire un ambiente pulito
-        resetSingleton(CommandExecutor.class);
-        resetSingleton(CommandHelpContainer.class);
-        resetSingleton(FileSystemService.class);
-        resetSingleton(BackendTranslator.class);
-        resetSingleton(CommandParser.class);
-        resetSingleton(FileSystem.class);
-
-        // 2. Inizializzazione dipendenze reali
-        fileSystem = FileSystem.getInstance();
-        fileSystemService = FileSystemService.getInstance(fileSystem);
-
-        BackendTranslator translator = BackendTranslator.getInstance();
+        // 3. Manual Injection e Setup Ambiente
+        BackendTranslator translator = new BackendTranslator();
         translator.setLocaleDefault(Locale.US);
 
-        commandHelpContainer = CommandHelpContainer.getInstance(translator);
+        AbstractValidatedCommand.setTranslator(translator);
+        AbstractValidator.setTranslator(translator);
 
+        fileSystem = new FileSystem();
+        fileSystem.create();
+        fileSystemService = new FileSystemService(fileSystem, translator);
 
-        Map<String, CommandDetails> m = commandHelpContainer.getCommandDetailsMap();
-        String synopsis = m.get("ln").synopsis();
-        String descr = m.get("ln").description();
-
-        lnCommand = new LnCommand(fileSystemService, "ln", synopsis, descr);
-
-        AbstractValidatedCommand.setTranslator(BackendTranslator.getInstance());
-        AbstractValidator.setTranslator(BackendTranslator.getInstance());
-    }
-
-    private void resetSingleton(Class<?> aClass) {
-        try {
-            java.lang.reflect.Field instance = aClass.getDeclaredField("instance");
-            instance.setAccessible(true);
-            instance.set(null, null);
-        } catch (Exception e) {
-            fail("Could not reset singleton for: " + aClass.getName());
-        }
+        // Passiamo direttamente le chiavi di traduzione presenti nel file test_en_US.properties
+        // In questo modo il comando potrà tradurle correttamente.
+        lnCommand = new LnCommand(
+                fileSystemService,
+                "ln",
+                "c.ln.synopsis",
+                "d.ln"
+        );
     }
 
     @Test
@@ -82,7 +59,7 @@ public class LnCommandTest {
 
         Inode source = fileSystemService.getInode("source.txt");
         Inode link = fileSystemService.getInode("hardlink.txt");
-        //System.out.println(fileSystem);
+
         assertNotNull(link);
         // Verifica cruciale per Hard Link: devono avere lo stesso UID (stesso oggetto Inode)
         assertEquals(source.getUid(), link.getUid());
@@ -117,8 +94,6 @@ public class LnCommandTest {
         Inode source = fileSystemService.getInode("source.txt");
         Inode linkInside = fileSystemService.getInode("dir/source.txt");
 
-        //System.out.println(fileSystem);
-
         assertNotNull(linkInside, "Il file dovrebbe essere stato creato dentro dir");
         assertEquals(source.getUid(), linkInside.getUid());
     }
@@ -136,7 +111,7 @@ public class LnCommandTest {
         assertTrue(result.isSuccess());
         Inode link = fileSystemService.getInode("softlink");
         assertNotNull(link);
-        //System.out.println(fileSystem);
+
         // Verifica che sia un tipo diverso (SOFTLINK) o comunque un nuovo oggetto con UID diverso
         assertNotEquals(fileSystemService.getInode("source.txt").getUid(), link.getUid());
     }
@@ -158,7 +133,7 @@ public class LnCommandTest {
         assertTrue(result.isSuccess());
         Inode link = fileSystemService.getInode("softlink");
         assertNotNull(link);
-        System.out.println(fileSystem);
+
         // Verifica che sia un tipo diverso (SOFTLINK) o comunque un nuovo oggetto con UID diverso
         assertNotEquals(fileSystemService.getInode("/dir/dir/dir/source.txt").getUid(), link.getUid());
     }
@@ -177,7 +152,7 @@ public class LnCommandTest {
         assertTrue(result.isSuccess());
         Inode link = fileSystemService.getInode("softlink");
         assertNotNull(link);
-        //System.out.println(fileSystem);
+
         // Verifica che sia un tipo diverso (SOFTLINK) o comunque un nuovo oggetto con UID diverso
         assertNotEquals(fileSystemService.getInode("dir/source.txt").getUid(), link.getUid());
     }
@@ -256,8 +231,4 @@ public class LnCommandTest {
 
         assertFalse(result.isSuccess());
     }
-
-
-
-
 }

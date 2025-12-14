@@ -1,7 +1,9 @@
 package ch.supsi.fscli.frontend.view;
 
-import ch.supsi.fscli.frontend.controller.ExitController;
+import ch.supsi.fscli.frontend.controller.IExitController;
 import ch.supsi.fscli.frontend.util.I18nManager;
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -12,15 +14,18 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
+@Singleton
 public class ExitView implements ShowView {
-    private I18nManager i18nManager;
 
-    private Stage stage = new Stage();
+    private final I18nManager i18nManager;
+    private final IExitController exitController;
+
+    private Stage stage;
     private Button confirmButton;
     private Button cancelButton;
-    private ExitController exitController;
 
-    public ExitView(ExitController exitController, I18nManager i18nManager) {
+    @Inject
+    public ExitView(IExitController exitController, I18nManager i18nManager) {
         this.exitController = exitController;
         this.i18nManager = i18nManager;
         createLayout();
@@ -44,9 +49,6 @@ public class ExitView implements ShowView {
 
         HBox buttonBox = new HBox(10);
         buttonBox.setAlignment(Pos.CENTER);
-
-        //confirmation.exit.confirm="Confirm"
-        //confirmation.exit.cancel="Cancel"
 
         confirmButton = new Button(i18nManager.getString("confirmation.exit.confirm"));
         confirmButton.setPrefWidth(80);
@@ -79,5 +81,4 @@ public class ExitView implements ShowView {
     public void show() {
         stage.showAndWait();
     }
-
 }

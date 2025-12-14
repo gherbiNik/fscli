@@ -1,5 +1,6 @@
 package ch.supsi.frontend.model;
 
+import ch.supsi.fscli.backend.application.filesystem.IFileSystemApplication;
 import ch.supsi.fscli.backend.application.mapper.IFsStateMapperApplication;
 import ch.supsi.fscli.frontend.event.FileSystemOpenEvent;
 import ch.supsi.fscli.frontend.event.FileSystemSaved;
@@ -23,13 +24,15 @@ class FsStateMapperModelTest {
     private IFsStateMapperApplication mapperApplication;
     @Mock
     private PropertyChangeListener listener;
+    @Mock
+    private IFileSystemApplication fileSystemApplication;
 
     private FsStateMapperModel model;
 
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        model = new FsStateMapperModel(mapperApplication);
+        model = new FsStateMapperModel(mapperApplication, fileSystemApplication);
 
         // Il wiring del listener resta manuale
         model.addPropertyChangeListener(listener);

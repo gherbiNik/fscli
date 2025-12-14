@@ -184,7 +184,7 @@ public class MainInterfaceTest extends AbstractGUITest {
 
             // Simulation: Backend responds with success
             Platform.runLater(() -> {
-                outputView.propertyChange(new OutputEvent(this, "output", null, "File myFile.txt created.\n"));
+                outputView.propertyChange(new OutputEvent(this, "output", null, ""));
             });
             WaitForAsyncUtils.waitForFxEvents();
 

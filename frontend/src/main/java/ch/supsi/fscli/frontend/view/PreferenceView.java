@@ -85,49 +85,64 @@ public class PreferenceView implements ShowView {
 
         List<String> availableFonts = Font.getFamilies();
 
-        // --- Component Creation (without hardcoded text) ---
         languageLabel = new Label();
         languageComboBox = new ComboBox<>(FXCollections.observableArrayList("it-IT", "en-US"));
+        languageComboBox.setId("languageComboBox");
+
         grid.add(languageLabel, 0, 0);
         grid.add(languageComboBox, 1, 0);
 
         columnsLabel = new Label();
         columnsSpinner = new Spinner<>(40, 100, 80);
+        columnsSpinner.setId("columnsSpinner");
+
         grid.add(columnsLabel, 0, 1);
         grid.add(columnsSpinner, 1, 1);
 
         outputLinesLabel = new Label();
         outputLinesSpinner = new Spinner<>(3, 50, 10);
+        outputLinesSpinner.setId("outputLinesSpinner");
+
         grid.add(outputLinesLabel, 0, 2);
         grid.add(outputLinesSpinner, 1, 2);
 
         logLinesLabel = new Label();
         logLinesSpinner = new Spinner<>(3, 50, 5);
+        logLinesSpinner.setId("logLinesSpinner");
+
         grid.add(logLinesLabel, 0, 3);
         grid.add(logLinesSpinner, 1, 3);
 
         commandLineFontLabel = new Label();
         commandLineFontComboBox = new ComboBox<>(FXCollections.observableArrayList(availableFonts));
+        commandLineFontComboBox.setId("commandLineFontComboBox");
+
         grid.add(commandLineFontLabel, 0, 4);
         grid.add(commandLineFontComboBox, 1, 4);
 
         outputAreaFontLabel = new Label();
         outputAreaFontComboBox = new ComboBox<>(FXCollections.observableArrayList(availableFonts));
+        outputAreaFontComboBox.setId("outputAreaFontComboBox");
+
         grid.add(outputAreaFontLabel, 0, 5);
         grid.add(outputAreaFontComboBox, 1, 5);
 
         logAreaFontLabel = new Label();
         logAreaFontComboBox = new ComboBox<>(FXCollections.observableArrayList(availableFonts));
+        logAreaFontComboBox.setId("logAreaFontComboBox");
+
         grid.add(logAreaFontLabel, 0, 6);
         grid.add(logAreaFontComboBox, 1, 6);
 
         saveButton = new Button();
+        saveButton.setId("saveButton");
         saveButton.setOnAction(e -> {
             savePreferences();
             closeView();
         });
 
         cancelButton = new Button();
+        cancelButton.setId("cancelButton");
         cancelButton.setOnAction(e -> closeView());
 
         HBox buttonBox = new HBox(10, saveButton, cancelButton);

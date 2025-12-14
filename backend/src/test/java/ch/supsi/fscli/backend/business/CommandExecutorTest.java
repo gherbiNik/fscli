@@ -36,6 +36,7 @@ class CommandExecutorTest {
 
         // 2. Creiamo il "mondo" (FileSystem e Service)
         fileSystem = new FileSystem();
+        fileSystem.create();
         fileSystemService = new FileSystemService(fileSystem, translator);
 
         CommandParser parser = new CommandParser();

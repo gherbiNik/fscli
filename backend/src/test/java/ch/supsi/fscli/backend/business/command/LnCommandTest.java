@@ -33,6 +33,7 @@ public class LnCommandTest {
         AbstractValidator.setTranslator(translator);
 
         fileSystem = new FileSystem();
+        fileSystem.create();
         fileSystemService = new FileSystemService(fileSystem, translator);
 
         // Passiamo direttamente le chiavi di traduzione presenti nel file test_en_US.properties

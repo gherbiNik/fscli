@@ -37,6 +37,7 @@ class FsStateMapperTest {
 
         // 2. Creiamo le istanze pulite (Niente più reflection sui singleton!)
         fileSystem = new FileSystem();
+        fileSystem.create();
 
         // Mockiamo l'interfaccia, è più pulito
         saveDataService = mock(ISaveDataService.class);

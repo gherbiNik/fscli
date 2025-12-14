@@ -35,6 +35,7 @@ public class LsCommandTest {
         AbstractValidator.setTranslator(translator);
 
         fileSystem = new FileSystem();
+        fileSystem.create();
         fileSystemService = new FileSystemService(fileSystem, translator);
 
         // Passiamo direttamente le stringhe (o chiavi) necessarie

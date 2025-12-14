@@ -36,6 +36,7 @@ public class CdCommandTest {
         AbstractValidator.setTranslator(backendTranslator);
 
         fileSystem = new FileSystem();
+        fileSystem.create();
         fileSystemService = new FileSystemService(fileSystem, backendTranslator);
 
         // Non serve più il setter del translator sul service se lo passiamo nel costruttore

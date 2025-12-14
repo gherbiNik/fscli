@@ -5,6 +5,7 @@ import ch.supsi.fscli.backend.business.command.commands.AbstractValidatedCommand
 import ch.supsi.fscli.backend.business.command.commands.validators.AbstractValidator;
 import ch.supsi.fscli.backend.business.filesystem.FileSystem;
 import ch.supsi.fscli.backend.util.BackendTranslator;
+import ch.supsi.fscli.frontend.model.ExitModel;
 import ch.supsi.fscli.frontend.model.filesystem.FileSystemModel;
 import ch.supsi.fscli.frontend.model.PreferenceModel;
 import ch.supsi.fscli.frontend.model.mapper.FsStateMapperModel;
@@ -79,6 +80,7 @@ public class MainFx extends Application {
         FileSystemModel fileSystemModel = injector.getInstance(FileSystemModel.class);
         PreferenceModel preferenceModel = injector.getInstance(PreferenceModel.class);
         FsStateMapperModel fsStateMapperModel = injector.getInstance(FsStateMapperModel.class);
+        ExitModel exitModel = injector.getInstance(ExitModel.class);
 
         injector.getInstance(ch.supsi.fscli.frontend.controller.HelpController.class);
         injector.getInstance(ch.supsi.fscli.frontend.controller.CreditsController.class);
@@ -90,6 +92,8 @@ public class MainFx extends Application {
         fileSystemModel.addPropertyChangeListener(logView);
         fileSystemModel.addPropertyChangeListener(outputView);
         fileSystemModel.addPropertyChangeListener(menuBarView);
+
+        exitModel.addPropertyChangeListener(logView);
 
         preferenceModel.addPropertyChangeListener(logView);
 

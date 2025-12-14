@@ -26,9 +26,8 @@ public class FileSystemApplication implements IFileSystemApplication {
         this.translator = translator;
 
         // 1. WIRING MANUALE (Setter Injection): necessario per rompere il ciclo tra FileSystem e Executor.
-        if (fileSystem instanceof FileSystem) {
-            ((FileSystem) fileSystem).setCommandExecutor(executor);
-        }
+        fileSystem.setCommandExecutor(executor);
+
 
         // 2. CARICAMENTO COMANDI: li carichiamo una volta sola nel costruttore
         this.loadedCommands = commandLoader.loadCommands();
@@ -61,7 +60,7 @@ public class FileSystemApplication implements IFileSystemApplication {
 
     @Override
     public boolean isFileSystemCreated() {
-        return fileSystem != null;
+        return fileSystem.isCreated();
     }
 
 

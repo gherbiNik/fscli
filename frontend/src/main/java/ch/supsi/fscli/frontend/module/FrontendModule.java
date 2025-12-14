@@ -33,6 +33,7 @@ public class FrontendModule extends AbstractModule {
         bind(ICommandHelpModel.class).to(CommandHelpModel.class).in(Singleton.class);
         bind(IFileSystemModel.class).to(FileSystemModel.class).in(Singleton.class);
         bind(IFsStateMapperModel.class).to(FsStateMapperModel.class).in(Singleton.class);
+        bind(IExitModel.class).to(ExitModel.class).in(Singleton.class);
 
         // 4. CONTROLLER (Logica)
         // Interfacce -> Implementazioni

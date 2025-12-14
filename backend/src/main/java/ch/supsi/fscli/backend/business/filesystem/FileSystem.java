@@ -21,13 +21,17 @@ public class FileSystem implements FileSystemComponent, IFileSystem
 
 
     public FileSystem(){
-        root = new DirectoryNode(null);
-        dataToSave = true;
-        currentDirectory = root;
+        root = null;
+        dataToSave = false;
     }
 
     public void setCommandExecutor(CommandExecutor commandExecutor) {
         this.commandExecutor = commandExecutor;
+    }
+
+    @Override
+    public boolean isCreated() {
+        return root != null;
     }
 
     public DirectoryNode getRoot() {
@@ -200,8 +204,7 @@ public class FileSystem implements FileSystemComponent, IFileSystem
 
     private void checkDataToSave(String command) {
         System.out.println("DEBUG: "+command);
-        if (command.contains("ls") || command.contains("pwd") || command.contains("clear"))
-            dataToSave = false;
+        if (command.contains("ls") || command.contains("pwd") || command.contains("clear")){}
         else
             dataToSave = true;
 
@@ -225,7 +228,7 @@ public class FileSystem implements FileSystemComponent, IFileSystem
         // 2. Resetta i campi di stato
         this.root = newRoot;
         this.currentDirectory = newRoot;
-        this.dataToSave = false;
+        this.dataToSave = true;
 
         System.out.println("File system state reset to initial structure.");
     }

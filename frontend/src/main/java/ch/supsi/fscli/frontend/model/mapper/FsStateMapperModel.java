@@ -1,5 +1,6 @@
 package ch.supsi.fscli.frontend.model.mapper;
 
+import ch.supsi.fscli.backend.application.filesystem.IFileSystemApplication;
 import ch.supsi.fscli.backend.application.mapper.IFsStateMapperApplication;
 import ch.supsi.fscli.frontend.event.*;
 import com.google.inject.Inject;
@@ -14,11 +15,13 @@ import java.io.File;
 @Singleton
 public class FsStateMapperModel implements IFsStateMapperModel {
     private final IFsStateMapperApplication iFsStateMapperApplication;
+    private final IFileSystemApplication fileSystemApplication;
     private final PropertyChangeSupport support;
 
     @Inject
-    public FsStateMapperModel(IFsStateMapperApplication iFsStateMapperApplication) {
+    public FsStateMapperModel(IFsStateMapperApplication iFsStateMapperApplication, IFileSystemApplication fileSystemApplication) {
         this.iFsStateMapperApplication = iFsStateMapperApplication;
+        this.fileSystemApplication = fileSystemApplication;
         this.support = new PropertyChangeSupport(this);
     }
 
@@ -36,6 +39,7 @@ public class FsStateMapperModel implements IFsStateMapperModel {
     public void open(String fileName) {
         iFsStateMapperApplication.fromDTO(fileName);
         support.firePropertyChange(new FileSystemOpenEvent(this, "",null, iFsStateMapperApplication.getCurrentFileAbsolutePath()));
+
 
     }
 

@@ -32,7 +32,7 @@ class FsStateMapperModelTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        model = new FsStateMapperModel(mapperApplication, fileSystemApplication);
+        model = new FsStateMapperModel(mapperApplication,fileSystemApplication);
 
         // Il wiring del listener resta manuale
         model.addPropertyChangeListener(listener);

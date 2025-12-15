@@ -34,7 +34,6 @@ backend:
   artifacts:
     paths:
       - backend/target/fscli-backend.jar
-      - backend/target/classes/  # Aggiungi le risorse compilate
       - .m2/repository/ch/supsi/fscli/
     expire_in: 1 hour
 
@@ -44,28 +43,13 @@ frontend:
     - backend
   image: gitlab-edu.supsi.ch:5050/dti-isin/labingsw/common:maven3java17
   before_script:
-    - cd frontend
-    # Avvia Xvfb e attendi che sia pronto
+    - 'cd frontend'
     - 'Xvfb :99 -screen 0 1920x1080x16 &'
-    - 'export DISPLAY=:99'
-    - 'sleep 3'
-    # Estrai le risorse dal JAR del backend nel classpath di test
-    - 'mkdir -p target/test-classes'
-    - 'cd target/test-classes'
-    - 'jar xf ../../../backend/target/fscli-backend.jar i18n/'
-    - 'cd ../..'
-    # Debug: verifica che le risorse siano state estratte
-    - 'ls -la target/test-classes/i18n/ || echo "Risorse i18n non trovate"'
   script:
-    - 'mvn $MAVEN_OPTS $MAVEN_CLI_OPTS -Dheadless clean package'
+    - 'DISPLAY=:99 mvn $MAVEN_OPTS $MAVEN_CLI_OPTS -Dheadless clean package'
   after_script:
     - cd ..
   artifacts:
-    when: always
     paths:
       - frontend/target/fscli-jar-with-dependencies.jar
-      - frontend/target/surefire-reports/
     expire_in: 1 hour
-    reports:
-      junit:
-        - frontend/target/surefire-reports/TEST-*.xml

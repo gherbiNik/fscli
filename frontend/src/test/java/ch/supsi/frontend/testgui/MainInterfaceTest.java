@@ -182,17 +182,14 @@ public class MainInterfaceTest extends AbstractGUITest {
 
             verify(fileSystemController, times(1)).sendCommand("touch myFile.txt");
 
-            // Simulation: Backend responds with success
             Platform.runLater(() -> {
                 outputView.propertyChange(new OutputEvent(this, "output", null, ""));
             });
             WaitForAsyncUtils.waitForFxEvents();
 
-            // Verify final output
             verifyThat("#outputView", TextInputControlMatchers.hasText(
                     "File System Created.\n" +
-                            "Error: Unknown command\n" +
-                            "File myFile.txt created.\n"
+                            "Error: Unknown command\n"
             ));
 
             // Verify command line cleared

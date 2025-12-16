@@ -4,7 +4,9 @@ import ch.supsi.fscli.frontend.util.I18nManager;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
@@ -24,6 +26,8 @@ public class HelpView implements ShowView{
     private VBox root;
 
 
+    private VBox commandsContainer;
+
     @Inject
     public HelpView(I18nManager i18nManager) {
         this.i18nManager = i18nManager;
@@ -38,13 +42,31 @@ public class HelpView implements ShowView{
         stage.setResizable(false);
 
         root = new VBox(10);
+        root.setId("helpPopup");
         root.setPadding(new Insets(20));
+        root.setAlignment(Pos.TOP_LEFT);
 
         Label titleLabel = new Label(i18nManager.getString("help.title"));
         titleLabel.setFont(Font.font("System", FontWeight.BOLD, 14));
-        root.getChildren().add(titleLabel);
+        titleLabel.setId("messageLabel");
 
-        Scene scene = new Scene(root, 600, 400);
+        commandsContainer = new VBox(5);
+
+        Button okButton = new Button("OK");
+        okButton.setPrefWidth(100);
+        okButton.setOnAction(event -> stage.close());
+        okButton.setId("helpPopupOkButton");
+
+        root.getChildren().add(titleLabel);
+        root.getChildren().add(commandsContainer);
+
+        VBox buttonContainer = new VBox(okButton);
+        buttonContainer.setAlignment(Pos.CENTER);
+        buttonContainer.setPadding(new Insets(20, 0, 0, 0));
+
+        root.getChildren().add(buttonContainer);
+
+        Scene scene = new Scene(root, 600, 450);
         stage.setScene(scene);
     }
 
@@ -54,15 +76,12 @@ public class HelpView implements ShowView{
     }
 
     private void populateCommands() {
-        // Clear existing command labels (skip the title: index 0)
-        if (root.getChildren().size() > 1) {
-            root.getChildren().remove(1, root.getChildren().size());
-        }
+        commandsContainer.getChildren().clear();
 
         if (commandDescriptions != null) {
             for (String cmd : commandDescriptions) {
                 TextFlow tf = createCommandLabel(cmd);
-                root.getChildren().add(tf);
+                commandsContainer.getChildren().add(tf);
             }
         }
     }

@@ -31,7 +31,6 @@ public class HelpCommand extends AbstractValidatedCommand {
     protected CommandResult executeCommand(CommandContext context) {
         // Controllo se la lista è stata iniettata correttamente
         if (this.commands == null || this.commands.isEmpty()) {
-            // TODO chiedere a diego
             System.out.println("DEBUG: "+commands);
             return CommandResult.error(getName() + ": " + translate("system.error.nocommands"));
         }

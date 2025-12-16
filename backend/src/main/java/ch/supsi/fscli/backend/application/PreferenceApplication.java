@@ -37,6 +37,15 @@ public class PreferenceApplication implements IPreferenceApplication{
     public Locale loadLanguagePreference() {
         String langTag = this.getPreference("language-tag");
 
+        // FIX: Gestione corretta del formato lingua_PAESE (es. it_IT, en_US)
+        if (langTag != null && langTag.contains("_")) {
+            String[] parts = langTag.split("_");
+            if (parts.length >= 2) {
+                return new Locale(parts[0], parts[1]);
+            }
+        }
+
+        // Fallback per tag semplici (es. "en", "it") o formati non standard
         return new Locale(langTag);
     }
 

@@ -1,15 +1,15 @@
 package ch.supsi.fscli.backend.util;
 
 import com.google.inject.Singleton;
-
-import java.text.MessageFormat;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
 @Singleton
 public class BackendTranslator {
     private static final String BUNDLE_BASE_NAME = "i18n.responses";
-    private static final String BUNDLE_BASE_NAME_TEST = "i18n.test";
+
+    // Definiamo una costante per il fallback sicuro
+    private static final Locale DEFAULT_FALLBACK_LOCALE = Locale.US;
 
     private ResourceBundle resourceBundle;
     private Locale currentLocale;
@@ -19,18 +19,20 @@ public class BackendTranslator {
     /* Testing purpose */
     public void setLocaleDefault(Locale locale){
         try {
-            resourceBundle = ResourceBundle.getBundle(BUNDLE_BASE_NAME_TEST, locale);
+            resourceBundle = ResourceBundle.getBundle(BUNDLE_BASE_NAME, locale);
+            // Se la lingua caricata non corrisponde a quella richiesta, usa il fallback
             if (!resourceBundle.getLocale().getLanguage().equals(locale.getLanguage())) {
-                System.err.println("No matching language bundle for: " + locale + ". Falling back to root.");
-                resourceBundle = ResourceBundle.getBundle(BUNDLE_BASE_NAME_TEST, Locale.ROOT);
-                this.currentLocale = Locale.ROOT;
+                System.err.println("No matching language bundle for: " + locale + ". Falling back to default (US).");
+                resourceBundle = ResourceBundle.getBundle(BUNDLE_BASE_NAME, DEFAULT_FALLBACK_LOCALE);
+                this.currentLocale = DEFAULT_FALLBACK_LOCALE;
             } else {
                 this.currentLocale = locale;
             }
         } catch (Exception e) {
-            System.err.println("Could not load resource bundle for locale: " + locale + ". Falling back to default.");
-            resourceBundle = ResourceBundle.getBundle(BUNDLE_BASE_NAME_TEST, Locale.ROOT);
-            this.currentLocale = Locale.ROOT;
+            System.err.println("Could not load resource bundle for locale: " + locale + ". Falling back to default (US).");
+            // Qui il fallback è sicuro perché sappiamo che test_en_US esiste
+            resourceBundle = ResourceBundle.getBundle(BUNDLE_BASE_NAME, DEFAULT_FALLBACK_LOCALE);
+            this.currentLocale = DEFAULT_FALLBACK_LOCALE;
         }
     }
 
@@ -38,26 +40,25 @@ public class BackendTranslator {
         try {
             resourceBundle = ResourceBundle.getBundle(BUNDLE_BASE_NAME, locale);
             if (!resourceBundle.getLocale().getLanguage().equals(locale.getLanguage())) {
-                System.err.println("No matching language bundle for: " + locale + ". Falling back to root.");
-                resourceBundle = ResourceBundle.getBundle(BUNDLE_BASE_NAME, Locale.ROOT);
-                this.currentLocale = Locale.ROOT;
+                System.err.println("No matching language bundle for: " + locale + ". Falling back to default (US).");
+                resourceBundle = ResourceBundle.getBundle(BUNDLE_BASE_NAME, DEFAULT_FALLBACK_LOCALE);
+                this.currentLocale = DEFAULT_FALLBACK_LOCALE;
             } else {
                 this.currentLocale = locale;
             }
         } catch (Exception e) {
-            System.err.println("Could not load resource bundle for locale: " + locale + ". Falling back to default.");
-            resourceBundle = ResourceBundle.getBundle(BUNDLE_BASE_NAME, Locale.ROOT);
-            this.currentLocale = Locale.ROOT;
+            System.err.println("Could not load resource bundle for locale: " + locale + ". Falling back to default (US).");
+            resourceBundle = ResourceBundle.getBundle(BUNDLE_BASE_NAME, DEFAULT_FALLBACK_LOCALE);
+            this.currentLocale = DEFAULT_FALLBACK_LOCALE;
         }
     }
 
     public String getString(String key) {
         try {
-            System.out.println(resourceBundle.getString(key));
+            // Nota: Rimuoverei il System.out.println in produzione per pulizia, ma per ora ok
             return resourceBundle.getString(key);
         } catch (Exception e) {
             System.err.println("Key not found inside the frontend bundle: " + key);
-
             return "!" + key + "!";
         }
     }

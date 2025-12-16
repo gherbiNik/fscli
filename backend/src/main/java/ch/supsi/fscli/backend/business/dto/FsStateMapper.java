@@ -135,7 +135,7 @@ public class FsStateMapper implements IFsStateMapper{
     private Inode createInodeFromDto(InodeDto dto) {
         Inode inode = null;
         if(dto instanceof IFileNodeDto) {
-            inode = new FileNode(null);
+            inode = new FileNode();
         } else if(dto instanceof IDirectoryNodeDto) {
             inode = new DirectoryNode(null);
         } else if(dto instanceof ISoftLinkDto) {

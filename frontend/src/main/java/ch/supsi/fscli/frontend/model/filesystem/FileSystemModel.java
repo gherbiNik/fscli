@@ -41,9 +41,12 @@ public class FileSystemModel implements IFileSystemModel {
     @Override
     public String sendCommand(String userInput) {
         String result = application.sendCommand(userInput);
-        System.out.println("result" + result);
+
+        // Magia per capire se è errore o no
         if (!result.contains("ERROR-")){
-            support.firePropertyChange(new FileSystemToSaved(this));
+            if (application.isDataToSave()) {
+                support.firePropertyChange(new FileSystemToSaved(this));
+            }
         } else
             result = result.replace("ERROR-","");
         // Costruiamo il messaggio formattato

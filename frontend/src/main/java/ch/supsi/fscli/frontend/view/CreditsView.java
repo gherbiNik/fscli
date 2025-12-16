@@ -6,6 +6,7 @@ import com.google.inject.Singleton;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.Separator;
 import javafx.scene.layout.VBox;
@@ -26,6 +27,8 @@ public class CreditsView implements ShowView {
     private Label backendBuildDateLabel;
     private Label authorLabel;
 
+    private Button okButton;
+
     @Inject
     public CreditsView(I18nManager i18nManager) {
         this.i18nManager = i18nManager;
@@ -39,11 +42,13 @@ public class CreditsView implements ShowView {
         stage.setResizable(false);
 
         VBox root = new VBox(15);
+        root.setId("aboutPopup");
         root.setPadding(new Insets(30));
         root.setAlignment(Pos.CENTER);
 
         titleLabel = new Label(""); // Initially empty; set by controller
         titleLabel.setStyle("-fx-font-size: 18px; -fx-font-weight: bold;");
+        titleLabel.setId("messageLabel");
 
         // Frontend Info
         Label frontendHeader = new Label("Frontend");
@@ -65,7 +70,12 @@ public class CreditsView implements ShowView {
         Separator separator2 = new Separator();
         separator2.setPrefWidth(500);
 
-        authorLabel = new Label(""); // Initially empty; set by controller
+        authorLabel = new Label("");
+
+        okButton = new Button("OK");
+        okButton.setPrefWidth(100);
+        okButton.setOnAction(event -> stage.close());
+        okButton.setId("aboutPopupOkButton");
 
         root.getChildren().addAll(
                 titleLabel,
@@ -77,10 +87,11 @@ public class CreditsView implements ShowView {
                 backendVersionLabel,
                 backendBuildDateLabel,
                 separator2,
-                authorLabel
+                authorLabel,
+                okButton
         );
 
-        Scene scene = new Scene(root, 600, 400);
+        Scene scene = new Scene(root, 600, 450);
         stage.setScene(scene);
     }
 

@@ -38,6 +38,7 @@ class RmdirCommandTest {
 
         // 2. Creazione istanze fresche
         fileSystem = new FileSystem();
+        fileSystem.create();
         fileSystemService = new FileSystemService(fileSystem, translator);
 
         // 3. Creazione del comando

@@ -34,11 +34,11 @@ public class TouchCommand extends AbstractValidatedCommand{
                 fileSystemService.createFile(fileName);
 
                 anyFileCreated = true;
-
-                output.append(translate("touch_file_prefix"))
-                        .append(fileName)
-                        .append(translate("touch_created_suffix"))
-                        .append("\n");
+                output.append("\n");
+//                output.append(translate("touch_file_prefix"))
+//                        .append(fileName)
+//                        .append(translate("touch_created_suffix"))
+//                        .append("\n");
             } catch (Exception e) {
                 hasErrors = true;
                 //errors.append("touch: cannot create file '").append(fileName).append("': ").append(e.getMessage());

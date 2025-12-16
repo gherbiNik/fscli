@@ -22,7 +22,7 @@ public class DirectoryNodeTest {
     @Test
     @DisplayName("Should add child to directory")
     void testAddChildren() {
-        FileNode file = new FileNode(subDir);
+        FileNode file = new FileNode();
         subDir.addChild("test.txt", file);
         assertNotNull(subDir.getChild("test.txt"));
     }
@@ -30,8 +30,8 @@ public class DirectoryNodeTest {
     @Test
     @DisplayName("Should handle multiple children")
     void testMultipleChildren() {
-        FileNode file1 = new FileNode(subDir);
-        FileNode file2 = new FileNode(subDir);
+        FileNode file1 = new FileNode();
+        FileNode file2 = new FileNode();
         DirectoryNode childDir = new DirectoryNode(subDir);
 
         subDir.addChild("f1.txt", file1);
@@ -54,7 +54,7 @@ public class DirectoryNodeTest {
     @Test
     @DisplayName("Get child names returns correct set")
     void testGetChildNames() {
-        FileNode file1 = new FileNode(subDir);
+        FileNode file1 = new FileNode();
         DirectoryNode childDir = new DirectoryNode(subDir);
         subDir.addChild("f1.txt", file1);
         subDir.addChild("documents", childDir);

@@ -39,6 +39,7 @@ class MkdirCommandTest {
 
         // 2. Creazione istanze
         fileSystem = new FileSystem();
+        fileSystem.create();
         fileSystemService = new FileSystemService(fileSystem, translator);
 
         // 3. Creazione comando

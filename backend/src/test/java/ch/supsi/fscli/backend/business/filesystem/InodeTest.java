@@ -17,7 +17,7 @@ public class InodeTest {
     @Test
     @DisplayName("Root directory should have null parent")
     void testFileNodeCreation() {
-        FileNode file = new FileNode(parent);
+        FileNode file = new FileNode();
         assertNotNull(file);
         assertTrue(file.toString().contains("FILE"));
     }
@@ -33,8 +33,8 @@ public class InodeTest {
     @Test
     @DisplayName("Root directory should have null parent")
     void testUniqueUid() {
-        FileNode file1 = new FileNode(parent);
-        FileNode file2 = new FileNode(parent);
+        FileNode file1 = new FileNode();
+        FileNode file2 = new FileNode();
         assertNotEquals(file1.toString(), file2.toString());
     }
 }

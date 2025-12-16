@@ -20,10 +20,9 @@ public class FrontendModule extends AbstractModule {
     @Override
     protected void configure() {
         // 1. CARICAMENTO DEL BACKEND
-        // Questo comando dice a Guice: "Leggi anche tutte le istruzioni del BackendModule"
         install(new BackendModule());
 
-        // 2. UTILITY 🛠️
+        // 2. UTILITY
         bind(I18nManager.class).in(Singleton.class);
 
         // 3. MODEL (Dati)
@@ -33,6 +32,7 @@ public class FrontendModule extends AbstractModule {
         bind(ICommandHelpModel.class).to(CommandHelpModel.class).in(Singleton.class);
         bind(IFileSystemModel.class).to(FileSystemModel.class).in(Singleton.class);
         bind(IFsStateMapperModel.class).to(FsStateMapperModel.class).in(Singleton.class);
+        bind(IExitModel.class).to(ExitModel.class).in(Singleton.class);
 
         // 4. CONTROLLER (Logica)
         // Interfacce -> Implementazioni
@@ -47,7 +47,6 @@ public class FrontendModule extends AbstractModule {
 
         // 5. VIEW (Grafica)
         // Le view sono classi concrete, le registriamo come Singleton
-        // così possiamo iniettarle ovunque servano.
         bind(MenuBarView.class).in(Singleton.class);
         bind(CommandLineView.class).in(Singleton.class);
         bind(OutputView.class).in(Singleton.class);

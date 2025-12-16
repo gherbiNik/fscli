@@ -23,7 +23,6 @@ public class FileSystemService implements IFileSystemService{
         return fileSystem.getCurrentDirectory();
     }
 
-    // FIXME: ↓ capire se va tenuto o no ↓
     public void setTranslator(BackendTranslator translator) {
         i18n = translator;
     }
@@ -279,7 +278,7 @@ public class FileSystemService implements IFileSystemService{
             throw new IllegalArgumentException(i18n.getString("file_already_exists_prefix") + fileName);
         }
 
-        FileNode newFile = new FileNode(targetDir);
+        FileNode newFile = new FileNode();
         targetDir.addChild(fileName, newFile);
     }
 

@@ -3,6 +3,7 @@ package ch.supsi.fscli.frontend.view;
 import ch.supsi.fscli.frontend.controller.IPreferenceController; // Usiamo l'interfaccia!
 import ch.supsi.fscli.frontend.event.ClearEvent;
 import ch.supsi.fscli.frontend.event.FileSystemCreationEvent;
+import ch.supsi.fscli.frontend.event.FileSystemOpenEvent;
 import ch.supsi.fscli.frontend.event.OutputEvent;
 import ch.supsi.fscli.frontend.util.I18nManager;
 import com.google.inject.Inject;
@@ -53,7 +54,8 @@ public class OutputView implements ViewComponent, PropertyChangeListener {
             this.outputView.appendText(text);
         } else if (evt instanceof ClearEvent) {
             this.outputView.clear();
-        } else if(evt instanceof FileSystemCreationEvent){
+        } else if(evt instanceof FileSystemCreationEvent || evt instanceof FileSystemOpenEvent){
+            //System.out.println("entrato: "+evt.getSource());
             clear();
         }
     }

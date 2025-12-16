@@ -60,5 +60,8 @@ public class LogView implements ViewComponent, PropertyChangeListener {
 
         if (evt instanceof FileSystemOpenEvent)
             log(i18n.getString("log.fileOpen") + evt.getNewValue());
+
+        if (evt instanceof ExitAbortedEvent)
+            log(i18n.getString("log.exitAbort"));
     }
 }

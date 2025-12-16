@@ -23,7 +23,7 @@ public class PreferenceModel implements IPreferenceModel{
         support = new PropertyChangeSupport(this);
     }
 
-    //FIXME capire se fare interfaccia observable
+
     public void addPropertyChangeListener(PropertyChangeListener pcl) {
         support.addPropertyChangeListener(pcl);
     }

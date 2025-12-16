@@ -33,6 +33,7 @@ public class MvCommandTest {
         AbstractValidator.setTranslator(translator);
 
         fileSystem = new FileSystem();
+        fileSystem.create();
         fileSystemService = new FileSystemService(fileSystem, translator);
 
         mvCommand = new MvCommand(

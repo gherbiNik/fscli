@@ -50,21 +50,24 @@ class PreferenceModelTest {
 
     @Test
     void testFontRetrieval() {
-        // Nota: I PreferenceModel converte la stringa font in un oggetto Font.
-        // Dobbiamo mockare la stringa come farebbe l'Application Layer.
-        when(preferenceApplication.getCommandLineFont()).thenReturn("Arial");
-        when(preferenceApplication.getOutputAreaFont()).thenReturn("Verdana");
-        when(preferenceApplication.getLogAreaFont()).thenReturn("Arial");
+        // Recuperiamo il nome del font di default del sistema su cui sta girando il test.
+        // In CI questo sarà probabilmente "System Regular", su Windows "Segoe UI", ecc.
+        String safeFont = Font.getDefault().getName();
 
+        // Istruiamo il mock per restituire questo nome "sicuro"
+        when(preferenceApplication.getCommandLineFont()).thenReturn(safeFont);
+        when(preferenceApplication.getOutputAreaFont()).thenReturn(safeFont);
+        when(preferenceApplication.getLogAreaFont()).thenReturn(safeFont);
+
+        // Testiamo
         Font cmdFont = preferenceModel.getCommandLineFont();
-        // Verifichiamo il nome che è l'unica cosa che possiamo garantire su Font
-        assertEquals("Arial", cmdFont.getName());
+        assertEquals(safeFont, cmdFont.getName());
 
         Font outFont = preferenceModel.getOutputAreaFont();
-        assertEquals("Verdana", outFont.getName());
+        assertEquals(safeFont, outFont.getName());
 
         Font logFont = preferenceModel.getLogAreaFont();
-        assertEquals("Arial", logFont.getName());
+        assertEquals(safeFont, logFont.getName());
     }
 
     @Test

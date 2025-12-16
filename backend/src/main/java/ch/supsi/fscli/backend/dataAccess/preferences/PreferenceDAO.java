@@ -86,7 +86,7 @@ public class PreferenceDAO implements IPreferenceDAO {
         Properties defaultPreferences = new Properties();
 
         // Create basic default preferences
-        defaultPreferences.setProperty("language-tag", "it-IT");
+        defaultPreferences.setProperty("language-tag", "en_US");
         defaultPreferences.setProperty("column", DEFAULT_COLUMN+"");
         defaultPreferences.setProperty("output-area-row", DEFAULT_OUTPUT_AREA_ROW + "");
         defaultPreferences.setProperty("log-area-row", DEFAULT_LOG_AREA_ROW + "");

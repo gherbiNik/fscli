@@ -42,7 +42,6 @@ public class ExitView implements ShowView {
         root.setPadding(new Insets(20));
         root.setAlignment(Pos.CENTER);
 
-        //TODO: check if there is something to save
 
         Label messageLabel = new Label(i18nManager.getString("confirmation.exit.ask"));
         messageLabel.setStyle("-fx-font-size: 14px;");

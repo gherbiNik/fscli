@@ -40,6 +40,7 @@ class FileSystemTest {
 
         // 2. Creiamo le istanze (Manual Injection)
         fileSystem = new FileSystem();
+        fileSystem.create();
         fileSystemService = new FileSystemService(fileSystem, translator);
 
         root = fileSystem.getRoot();

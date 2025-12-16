@@ -3,8 +3,6 @@ package ch.supsi.fscli.backend.business.filesystem;
 public abstract class Inode implements FileSystemComponent{
     private static int idCounter = 0;
     private int uid;
-    // FIXME da capire
-    private int linkCount = 1;
     private InodeType type;
 
     public Inode(InodeType type) {
@@ -20,7 +18,6 @@ public abstract class Inode implements FileSystemComponent{
     public String toString() {
         return "Inode{" +
                 "uid=" + uid +
-                ", linkCount=" + linkCount +
                 ", type=" + type;
     }
 

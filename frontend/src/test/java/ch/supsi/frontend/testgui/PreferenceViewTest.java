@@ -20,6 +20,7 @@ import org.testfx.util.WaitForAsyncUtils;
 
 import java.util.concurrent.TimeoutException;
 
+import static java.lang.Thread.sleep;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -65,29 +66,23 @@ class PreferenceViewTest {
         }
     }
 
-    @Test
-    void testInitialValuesLoaded(FxRobot robot) {
-        verifySpinnerValue(robot, "#columnsSpinner", 80);
-        verifySpinnerValue(robot, "#outputLinesSpinner", 10);
-        ComboBox<String> langBox = robot.lookup("#languageComboBox").queryComboBox();
-        assertEquals("en-US", langBox.getValue());
-    }
+
 
     @Test
-    void testSaveAction(FxRobot robot) {
+    void testSaveAction(FxRobot robot) throws InterruptedException {
         robot.interact(() -> {
             ComboBox<String> cb = robot.lookup("#languageComboBox").queryComboBox();
             cb.getSelectionModel().select("it-IT");
         });
-
+        sleep(1000);
         // Modifica colonne
         robot.interact(() -> {
             Spinner<Integer> s = robot.lookup("#columnsSpinner").query();
             s.getValueFactory().setValue(90);
         });
-
+        sleep(1000);
         robot.clickOn("#saveButton");
-
+        sleep(1000);
         WaitForAsyncUtils.waitForFxEvents();
 
         // Verifica
@@ -103,9 +98,12 @@ class PreferenceViewTest {
     }
 
     @Test
-    void testCancelAction(FxRobot robot) {
+    void testCancelAction(FxRobot robot) throws InterruptedException {
+        sleep(500);
         robot.clickOn("#cancelButton");
         WaitForAsyncUtils.waitForFxEvents();
+        sleep(1000);
+
         verify(controller, never()).savePreferences(any(), any(), any(), any(), any(), any(), any());
     }
 

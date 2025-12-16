@@ -37,11 +37,12 @@ class PreferenceViewTest {
     private PreferenceView preferenceView;
 
     @Start
-    public void start(Stage stage) throws InterruptedException {
+    public void start(Stage stage) {
         MockitoAnnotations.openMocks(this);
 
         lenient().when(i18nManager.getString(any())).thenAnswer(invocation -> "LB_" + invocation.getArgument(0));
 
+        // Stub Controller (Dati iniziali)
         lenient().when(controller.getPreferences("language-tag")).thenReturn("en-US");
         lenient().when(controller.getPreferences("column")).thenReturn("80");
         lenient().when(controller.getPreferences("output-area-row")).thenReturn("10");
@@ -50,15 +51,10 @@ class PreferenceViewTest {
         lenient().when(controller.getPreferences("font-output-area")).thenReturn("Arial");
         lenient().when(controller.getPreferences("font-log-area")).thenReturn("Arial");
 
-        // Avvio interfaccia
         Platform.runLater(() -> {
             preferenceView = new PreferenceView(controller, i18nManager);
             preferenceView.show();
         });
-
-        WaitForAsyncUtils.waitForFxEvents();
-
-        Thread.sleep(2000);
     }
 
     @AfterEach
@@ -73,15 +69,18 @@ class PreferenceViewTest {
     void testInitialValuesLoaded(FxRobot robot) {
         verifySpinnerValue(robot, "#columnsSpinner", 80);
         verifySpinnerValue(robot, "#outputLinesSpinner", 10);
-
         ComboBox<String> langBox = robot.lookup("#languageComboBox").queryComboBox();
         assertEquals("en-US", langBox.getValue());
     }
 
     @Test
     void testSaveAction(FxRobot robot) {
-        robot.clickOn("#languageComboBox").clickOn("it-IT"); // Seleziona italiano
+        robot.interact(() -> {
+            ComboBox<String> cb = robot.lookup("#languageComboBox").queryComboBox();
+            cb.getSelectionModel().select("it-IT");
+        });
 
+        // Modifica colonne
         robot.interact(() -> {
             Spinner<Integer> s = robot.lookup("#columnsSpinner").query();
             s.getValueFactory().setValue(90);
@@ -91,6 +90,7 @@ class PreferenceViewTest {
 
         WaitForAsyncUtils.waitForFxEvents();
 
+        // Verifica
         verify(controller, times(1)).savePreferences(
                 eq("it-IT"),
                 eq("90"),
@@ -106,7 +106,6 @@ class PreferenceViewTest {
     void testCancelAction(FxRobot robot) {
         robot.clickOn("#cancelButton");
         WaitForAsyncUtils.waitForFxEvents();
-
         verify(controller, never()).savePreferences(any(), any(), any(), any(), any(), any(), any());
     }
 

@@ -38,13 +38,11 @@ class PreferenceViewTest {
 
     @Start
     public void start(Stage stage) {
-        // init  Mock manuale
+        // Inizializza i Mock
         MockitoAnnotations.openMocks(this);
 
-        //  Configura Stubbing (lenient per evitare errori di stub non usati)
-        lenient().when(i18nManager.getString(any())).thenAnswer(i -> i.getArgument(0));
+        lenient().when(i18nManager.getString(anyString())).thenAnswer(invocation -> invocation.getArgument(0));
 
-        // Stub controller
         lenient().when(controller.getPreferences("language-tag")).thenReturn("en-US");
         lenient().when(controller.getPreferences("column")).thenReturn("80");
         lenient().when(controller.getPreferences("output-area-row")).thenReturn("10");
@@ -53,7 +51,6 @@ class PreferenceViewTest {
         lenient().when(controller.getPreferences("font-output-area")).thenReturn("Arial");
         lenient().when(controller.getPreferences("font-log-area")).thenReturn("Arial");
 
-        // Avvia la vista
         Platform.runLater(() -> {
             preferenceView = new PreferenceView(controller, i18nManager);
             preferenceView.show();
@@ -62,6 +59,7 @@ class PreferenceViewTest {
 
     @AfterEach
     void tearDown() throws TimeoutException {
+        // Pulizia dello stage e chiusura della vista
         FxToolkit.hideStage();
         if (preferenceView != null) {
             Platform.runLater(() -> preferenceView.closeView());
@@ -70,14 +68,19 @@ class PreferenceViewTest {
 
     @Test
     void testInitialValuesLoaded(FxRobot robot) {
+        // Verifica Spinner Colonne
         verifySpinnerValue(robot, "#columnsSpinner", 80);
+
+        // Verifica Spinner Righe Output
+        verifySpinnerValue(robot, "#outputLinesSpinner", 10);
+
+        // Verifica ComboBox Lingua
         ComboBox<String> langBox = robot.lookup("#languageComboBox").queryComboBox();
         assertEquals("en-US", langBox.getValue());
     }
 
     @Test
     void testSaveAction(FxRobot robot) {
-        //mod
         robot.clickOn("#languageComboBox").clickOn("it-IT");
 
         robot.interact(() -> {
@@ -87,17 +90,16 @@ class PreferenceViewTest {
 
         robot.clickOn("#saveButton");
 
-        // Aspetta che JavaFX finisca di elaborare l'evento click
         WaitForAsyncUtils.waitForFxEvents();
 
         verify(controller, times(1)).savePreferences(
-                eq("it-IT"),        // Lingua cambiata
-                eq("90"),           // Colonne cambiate
-                eq("10"),           // Output lines (default)
-                eq("5"),            // Log lines (default)
-                any(),
-                any(),
-                any()
+                eq("it-IT"),        // Modificato
+                eq("90"),           // Modificato
+                eq("10"),           // Invariato (Default stub)
+                eq("5"),            // Invariato (Default stub)
+                eq("Arial"),        // Invariato (Default stub)
+                eq("Arial"),        // Invariato (Default stub)
+                eq("Arial")         // Invariato (Default stub)
         );
     }
 
@@ -106,7 +108,6 @@ class PreferenceViewTest {
         robot.clickOn("#cancelButton");
         WaitForAsyncUtils.waitForFxEvents();
 
-        // Verifica che savePreferences NON sia chiamato
         verify(controller, never()).savePreferences(any(), any(), any(), any(), any(), any(), any());
     }
 

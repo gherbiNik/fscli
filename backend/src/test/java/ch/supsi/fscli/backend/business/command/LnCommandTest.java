@@ -41,8 +41,8 @@ public class LnCommandTest {
         lnCommand = new LnCommand(
                 fileSystemService,
                 "ln",
-                "c.ln.synopsis",
-                "d.ln"
+                "ln synopsis",
+                "ln description"
         );
     }
 

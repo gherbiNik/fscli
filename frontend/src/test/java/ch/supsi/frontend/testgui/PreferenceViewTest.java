@@ -37,11 +37,10 @@ class PreferenceViewTest {
     private PreferenceView preferenceView;
 
     @Start
-    public void start(Stage stage) {
-        // Inizializza i Mock
+    public void start(Stage stage) throws InterruptedException {
         MockitoAnnotations.openMocks(this);
 
-        lenient().when(i18nManager.getString(anyString())).thenAnswer(invocation -> invocation.getArgument(0));
+        lenient().when(i18nManager.getString(any())).thenAnswer(invocation -> "LB_" + invocation.getArgument(0));
 
         lenient().when(controller.getPreferences("language-tag")).thenReturn("en-US");
         lenient().when(controller.getPreferences("column")).thenReturn("80");
@@ -51,15 +50,19 @@ class PreferenceViewTest {
         lenient().when(controller.getPreferences("font-output-area")).thenReturn("Arial");
         lenient().when(controller.getPreferences("font-log-area")).thenReturn("Arial");
 
+        // Avvio interfaccia
         Platform.runLater(() -> {
             preferenceView = new PreferenceView(controller, i18nManager);
             preferenceView.show();
         });
+
+        WaitForAsyncUtils.waitForFxEvents();
+
+        Thread.sleep(2000);
     }
 
     @AfterEach
     void tearDown() throws TimeoutException {
-        // Pulizia dello stage e chiusura della vista
         FxToolkit.hideStage();
         if (preferenceView != null) {
             Platform.runLater(() -> preferenceView.closeView());
@@ -68,20 +71,16 @@ class PreferenceViewTest {
 
     @Test
     void testInitialValuesLoaded(FxRobot robot) {
-        // Verifica Spinner Colonne
         verifySpinnerValue(robot, "#columnsSpinner", 80);
-
-        // Verifica Spinner Righe Output
         verifySpinnerValue(robot, "#outputLinesSpinner", 10);
 
-        // Verifica ComboBox Lingua
         ComboBox<String> langBox = robot.lookup("#languageComboBox").queryComboBox();
         assertEquals("en-US", langBox.getValue());
     }
 
     @Test
     void testSaveAction(FxRobot robot) {
-        robot.clickOn("#languageComboBox").clickOn("it-IT");
+        robot.clickOn("#languageComboBox").clickOn("it-IT"); // Seleziona italiano
 
         robot.interact(() -> {
             Spinner<Integer> s = robot.lookup("#columnsSpinner").query();
@@ -93,13 +92,13 @@ class PreferenceViewTest {
         WaitForAsyncUtils.waitForFxEvents();
 
         verify(controller, times(1)).savePreferences(
-                eq("it-IT"),        // Modificato
-                eq("90"),           // Modificato
-                eq("10"),           // Invariato (Default stub)
-                eq("5"),            // Invariato (Default stub)
-                eq("Arial"),        // Invariato (Default stub)
-                eq("Arial"),        // Invariato (Default stub)
-                eq("Arial")         // Invariato (Default stub)
+                eq("it-IT"),
+                eq("90"),
+                eq("10"),
+                eq("5"),
+                eq("Arial"),
+                eq("Arial"),
+                eq("Arial")
         );
     }
 

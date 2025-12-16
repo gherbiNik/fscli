@@ -33,11 +33,11 @@ public class MkdirCommand extends AbstractValidatedCommand {
             try {
                 fileSystemService.createDirectory(directoryName);
                 any = true;
-
-                output.append(translate("directory_created_prefix"))
-                        .append(directoryName)
-                        .append(translate("directory_created_suffix"))
-                        .append("\n");
+                output.append("\n");
+//                output.append(translate("directory_created_prefix"))
+//                        .append(directoryName)
+//                        .append(translate("directory_created_suffix"))
+//                        .append("\n");
             } catch (Exception e) {
                 hasErrors = true;
                 errors.append(getName())

@@ -38,10 +38,11 @@ public class RmdirCommand extends AbstractValidatedCommand{
                 if(fileSystemService.removeDirectory(directoryName)) {
                     //output.append("Directory '").append(directoryName).append("' deleted successfully\n");
                     any = true;
-                    output.append(translate("rmdir_dir_prefix"))
-                            .append(directoryName)
-                            .append(translate("rmdir_deleted_suffix"))
-                            .append("\n");
+                    output.append("\n");
+//                    output.append(translate("rmdir_dir_prefix"))
+//                            .append(directoryName)
+//                            .append(translate("rmdir_deleted_suffix"))
+//                            .append("\n");
                 } else {
                     //output.append("Directory '").append(directoryName).append("' cannot be deleted: it is not empty!\n");
                     output.append(translate("rmdir_dir_prefix"))

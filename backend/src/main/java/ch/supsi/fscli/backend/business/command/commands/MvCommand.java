@@ -58,11 +58,8 @@ public class MvCommand extends AbstractValidatedCommand{
                 String source = args.get(0);
                 fileSystemService.move(source, destination);
                 fileSystemService.setDataToSave(true);
-                return CommandResult.success(translate("mv_success_prefix")
-                        + source
-                        + translate("mv_success_middle")
-                        + destination
-                        + translate("mv_success_suffix"));
+                String output = "\n";
+                return CommandResult.success(output);
             }
 
             List<String> sources = args.subList(0, args.size() - 1);
@@ -81,11 +78,8 @@ public class MvCommand extends AbstractValidatedCommand{
             }
 
             fileSystemService.setDataToSave(true);
-            return CommandResult.success(translate("mv_success_prefix")
-                    + successMsg
-                    + translate("mv_success_middle")
-                    + destination
-                    + translate("mv_success_suffix"));
+            String output = "\n";
+            return CommandResult.success(output);
 
         } catch (IllegalArgumentException e) {
             return CommandResult.error(getName() + ": " + e.getMessage());

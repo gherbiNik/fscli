@@ -38,10 +38,11 @@ public class RmCommand extends AbstractValidatedCommand {
                 fileSystemService.removeFile(fileName);
 
                 any = true;
-                output.append(translate("rm_deleted_prefix"))
-                        .append(fileName)
-                        .append(translate("rm_deleted_suffix"))
-                        .append("\n");
+                output.append("\n");
+//                output.append(translate("rm_deleted_prefix"))
+//                        .append(fileName)
+//                        .append(translate("rm_deleted_suffix"))
+//                        .append("\n");
             } catch (Exception e) {
                 //errors.append("rm: cannot remove file '").append(fileName).append("': ").append(e.getMessage()).append("\n");
                 errors.append(getName())

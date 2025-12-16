@@ -85,7 +85,7 @@ public class PreferenceView implements ShowView {
 
         // --- Component Creation (without hardcoded text) ---
         languageLabel = new Label();
-        languageComboBox = new ComboBox<>(FXCollections.observableArrayList("it-IT", "en-US"));
+        languageComboBox = new ComboBox<>(FXCollections.observableArrayList("it_IT", "en_US"));
         languageComboBox.setId("languageComboBox");
 
         grid.add(languageLabel, 0, 0);
